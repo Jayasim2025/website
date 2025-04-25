@@ -1,0 +1,32 @@
+.workspace-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.workspace-main {
+  flex: 1;
+  transition: margin-left var(--transition-speed) var(--transition-function);
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.workspace-main.sidebar-open {
+  margin-left: 280px;
+}
+
+.workspace-content {
+  padding: 2rem;
+  min-height: calc(100vh - 70px);
+}
+
+@media (max-width: 768px) {
+  .workspace-main.sidebar-open {
+    margin-left: 0;
+  }
+  
+  .workspace-content {
+    padding: 1.5rem 1rem;
+  }
+}

@@ -1,3 +1,5 @@
+/* Fix the hero badges and feature card styling */
+
 .hero-section {
   min-height: 100vh;
   display: flex;
@@ -20,9 +22,10 @@
   gap: 1rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
-.badge {
+.hero-badge {
   padding: 0.6rem 1.2rem;
   border-radius: 9999px;
   background-color: rgba(255, 255, 255, 0.1);
@@ -37,7 +40,7 @@
   transition: all var(--transition-speed) var(--transition-function);
 }
 
-.badge:hover {
+.hero-badge:hover {
   transform: translateY(-2px);
   background-color: rgba(255, 255, 255, 0.15);
 }
@@ -184,7 +187,7 @@
   background-clip: text;
 }
 
-.feature-card {
+.hero-feature-card {
   position: absolute;
   top: 20px;
   left: -1px;
@@ -202,7 +205,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.feature-icon {
+.hero-feature-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -215,13 +218,13 @@
   font-size: 1.2rem;
 }
 
-.feature-card h4 {
+.hero-feature-card h4 {
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
 }
 
-.feature-card p {
+.hero-feature-card p {
   margin: 0;
   font-size: 0.875rem;
   color: var(--text-secondary);
@@ -268,7 +271,7 @@
     padding: 1rem;
   }
 
-  .feature-card {
+  .hero-feature-card {
     left: 10px;
     top: 10px;
     padding: 0.75rem;

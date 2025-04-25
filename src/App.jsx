@@ -14,11 +14,19 @@ import Loader from "./components/Loader"
 import LoginModal from "./components/LoginModal"
 import FAQ from "./components/FAQ"
 import HowItWorks from "./components/HowItWorks"
-import Integrations from "./components/Integrations"
 import { Canvas } from "@react-three/fiber"
 import { Environment, OrbitControls } from "@react-three/drei"
 import BackgroundScene from "./components/BackgroundScene"
 import "./App.css"
+
+import WorkspaceLayout from "./components/workspace/WorkspaceLayout"
+import Dashboard from "./components/workspace/Dashboard"
+import Projects from "./components/workspace/Projects"
+import Settings from "./components/workspace/Settings"
+import Members from "./components/workspace/Members"
+import Billing from "./components/workspace/Billing"
+import WorkspaceIntegrations from "./components/workspace/Integrations"
+import Integrations from "./components/Integrations"
 
 // Placeholder pages for footer links
 const AboutPage = () => (
@@ -209,6 +217,14 @@ function App() {
               <Route path="/privacy" element={<PrivacyPolicyPage />} />
               <Route path="/terms" element={<TermsOfServicePage />} />
               <Route path="/cookies" element={<CookiePolicyPage />} />
+              <Route path="/workspace" element={<WorkspaceLayout theme={theme} toggleTheme={toggleTheme} />}>
+                <Route index element={<Dashboard />} />
+                <Route path="projects" element={<Projects />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="members" element={<Members />} />
+                <Route path="billing" element={<Billing />} />
+                <Route path="integrations" element={<WorkspaceIntegrations />} />
+              </Route>
             </Routes>
           </motion.div>
         )}

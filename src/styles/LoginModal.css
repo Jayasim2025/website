@@ -108,6 +108,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-secondary);
+  z-index: 1;
 }
 
 .input-with-icon input {
@@ -125,6 +126,11 @@
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.input-with-icon input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
 }
 
 .form-options {

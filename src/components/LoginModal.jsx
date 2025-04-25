@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
 import "../styles/LoginModal.css"
+import { useNavigate } from "react-router-dom"
 
 const LoginModal = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true)
@@ -10,11 +11,14 @@ const LoginModal = ({ onClose }) => {
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
 
+  const navigate = useNavigate()
+
   const handleSubmit = (e) => {
     e.preventDefault()
     // Handle login/signup logic here
     console.log("Form submitted:", { email, password, name })
-    onClose()
+    // Navigate to workspace
+    navigate("/workspace")
   }
 
   const toggleForm = () => {

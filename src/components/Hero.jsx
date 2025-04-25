@@ -37,11 +37,11 @@ const Hero = ({ toggleLoginModal }) => {
         <div className="hero-content">
           <div className="hero-text">
             <motion.div className="hero-badges" variants={containerVariants} initial="hidden" animate="visible">
-              <motion.span className="badge" variants={itemVariants} transition={{ duration: 0.5 }}>
+              <motion.span className="hero-badge" variants={itemVariants} transition={{ duration: 0.5 }}>
                 <span className="badge-dot"></span>
                 125+ Languages Supported
               </motion.span>
-              <motion.span className="badge" variants={itemVariants} transition={{ duration: 0.5 }}>
+              <motion.span className="hero-badge" variants={itemVariants} transition={{ duration: 0.5 }}>
                 <span className="badge-dot"></span>
                 AI-Powered Subtitles
               </motion.span>
@@ -141,7 +141,7 @@ const Hero = ({ toggleLoginModal }) => {
                 className="feature-video"
               />
               <motion.div
-                className="feature-card"
+                className="hero-feature-card"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 1.4 }}
@@ -150,7 +150,7 @@ const Hero = ({ toggleLoginModal }) => {
                   boxShadow: "0 15px 30px rgba(0, 0, 0, 0.2)",
                 }}
               >
-                <span className="feature-icon">✓</span>
+                <span className="hero-feature-icon">✓</span>
                 <div>
                   <h4>125+ Languages</h4>
                   <p>Global reach with one click</p>
