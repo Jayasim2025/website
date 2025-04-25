@@ -5,66 +5,67 @@ import { motion } from "framer-motion"
 import { useInView } from "react-intersection-observer"
 import "../styles/Pricing.css"
 
+const pricingPlans = [
+  {
+    name: "Free",
+    description: "For individuals and hobby projects. With Rate limits",
+    price: "$0",
+    period: "/month",
+    popular: false,
+    bestFor: "",
+    buttonText: "Get started",
+    features: [
+      { name: "Up to 200 mb of media processing", included: true },
+      { name: "Transcription in 36 languages", included: true },
+      { name: "Translation in 36 languages", included: true },
+      { name: "Basic subtitle editor", included: true },
+      { name: "Export in SRT & VTT formats", included: true },
+      { name: "Email support", included: false },
+      { name: "Glossary customization", included: false },
+    ],
+  },
+  {
+    name: "Pro",
+    description: "For podcasters, content creators, and small teams. Up to 15-20x higher rate limits than free",
+    price: "$20",
+    period: "/month",
+    popular: true,
+    bestFor: "Most Popular",
+    buttonText: "Get Started",
+    features: [
+      { name: "Up to 20 hours of speech processing", included: true },
+      { name: "20 GB storage limit per month", included: true },
+      { name: "Transcription in 125 languages", included: true },
+      { name: "Translation in 125 languages", included: true },
+      { name: "Upto 2 translations per media project", included: true },
+      { name: "Advanced subtitle editor with batch processing", included: true },
+    ],
+  },
+  {
+    name: "Super",
+    description: "For growing teams and agencies. Up to 25-30x higher rate limits than free",
+    price: "$60",
+    period: "/month",
+    popular: false,
+    bestFor: "Best for Teams",
+    buttonText: "Get Started",
+    features: [
+      { name: "Up to 50 hours of speech processing", included: true },
+      { name: "50 GB storage limit per month", included: true },
+      { name: "Transcription in 125 languages", included: true },
+      { name: "Translation in 125 languages", included: true },
+      { name: "Upto 10 translations per media project", included: true },
+      { name: "Advanced subtitle editor with batch processing", included: true },
+    ],
+  },
+]
+
 const Pricing = () => {
   const [isAnnual, setIsAnnual] = useState(false)
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   })
-
-  const pricingPlans = [
-    {
-      name: "Free",
-      description: "For individuals and hobby projects",
-      price: "$0",
-      period: "/month",
-      popular: false,
-      buttonText: "Get started",
-      features: [
-        { name: "Up to 200 mb of media processing", included: true },
-        { name: "Transcription in 36 languages", included: true },
-        { name: "Translation in 36 languages", included: true },
-        { name: "Basic subtitle editor", included: true },
-        { name: "Export in SRT & VTT formats", included: true },
-        { name: "Email support", included: false },
-        { name: "Glossary customization", included: false },
-      ],
-    },
-    {
-      name: "Pro",
-      description: "For content creators and small teams",
-      price: "$20",
-      period: "/month",
-      popular: true,
-      buttonText: "Get Started",
-      features: [
-        { name: "Up to 20 hours of speech processing", included: true },
-        { name: "20 GB storage limit per month", included: true },
-        { name: "Transcription in 125 languages", included: true },
-        { name: "Translation in 125 languages", included: true },
-        { name: "Up to 2 translations per media project", included: true },
-        { name: "Advanced subtitle editor", included: true },
-        { name: "Priority support", included: true },
-      ],
-    },
-    {
-      name: "Super",
-      description: "For growing teams and agencies",
-      price: "$60",
-      period: "/month",
-      popular: false,
-      buttonText: "Get Started",
-      features: [
-        { name: "Up to 50 hours of speech processing", included: true },
-        { name: "50 GB storage limit per month", included: true },
-        { name: "Transcription in 125 languages", included: true },
-        { name: "Translation in 125 languages", included: true },
-        { name: "Up to 10 translations per media project", included: true },
-        { name: "Advanced subtitle editor with batch processing", included: true },
-        { name: "Dedicated account manager", included: true },
-      ],
-    },
-  ]
 
   const calculatePrice = (price, isAnnual) => {
     if (price === "$0") return "$0"
@@ -79,11 +80,15 @@ const Pricing = () => {
 
   return (
     <section className="pricing-section" id="pricing" ref={ref}>
+      <div className="pricing-background">
+        <div className="pricing-gradient"></div>
+      </div>
+
       <div className="container">
         <motion.div
           className="section-header"
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
         >
           <h2>Simple, Transparent Pricing</h2>
@@ -118,15 +123,24 @@ const Pricing = () => {
             <motion.div
               className={`pricing-card ${plan.popular ? "popular" : ""}`}
               key={index}
-              initial={{ opacity: 0, y: 50 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
               transition={{ duration: 0.6, delay: index * 0.15 }}
               whileHover={{
                 y: -10,
-                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
+                boxShadow: plan.popular ? "0 20px 40px rgba(138, 43, 226, 0.2)" : "0 20px 40px rgba(0, 0, 0, 0.1)",
               }}
             >
-              {plan.popular && <div className="popular-badge">Most Popular</div>}
+              {plan.bestFor && (
+                <motion.div
+                  className="best-for"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5 + index * 0.15, duration: 0.3 }}
+                >
+                  {plan.bestFor}
+                </motion.div>
+              )}
 
               <div className="plan-header">
                 <h3>{plan.name}</h3>
@@ -148,16 +162,17 @@ const Pricing = () => {
                 <span className="period">{calculatePeriod(isAnnual)}</span>
               </motion.div>
 
-              <motion.button
+              <motion.a
+                href="#"
                 className="plan-button"
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 10px 20px rgba(0, 112, 243, 0.2)",
+                  boxShadow: "0 10px 20px rgba(138, 43, 226, 0.2)",
                 }}
                 whileTap={{ scale: 0.95 }}
               >
                 {plan.buttonText}
-              </motion.button>
+              </motion.a>
 
               <div className="plan-features">
                 {plan.features.map((feature, featureIndex) => (
@@ -168,7 +183,16 @@ const Pricing = () => {
                     animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
                     transition={{ duration: 0.3, delay: 0.6 + featureIndex * 0.05 + index * 0.1 }}
                   >
-                    {feature.included ? <i className="fas fa-check"></i> : <i className="fas fa-times"></i>}
+                    {feature.included ? (
+                      <motion.div
+                        whileHover={{ scale: 1.2, rotate: 10 }}
+                        transition={{ type: "spring", stiffness: 500 }}
+                      >
+                        <i className="fas fa-check"></i>
+                      </motion.div>
+                    ) : (
+                      <i className="fas fa-times"></i>
+                    )}
                     <span>{feature.name}</span>
                   </motion.div>
                 ))}
@@ -179,48 +203,77 @@ const Pricing = () => {
 
         <motion.div
           className="enterprise-plan"
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <div className="enterprise-content">
-            <div className="enterprise-info">
-              <h3>Enterprise</h3>
-              <p>Custom solutions for media companies and broadcasters with high-volume needs</p>
-              <ul className="enterprise-features">
-                <li>
-                  <i className="fas fa-check"></i> Unlimited processing hours
-                </li>
-                <li>
-                  <i className="fas fa-check"></i> Custom API integrations
-                </li>
-                <li>
-                  <i className="fas fa-check"></i> Dedicated account manager
-                </li>
-                <li>
-                  <i className="fas fa-check"></i> 99.9% uptime SLA
-                </li>
-                <li>
-                  <i className="fas fa-check"></i> Custom training and onboarding
-                </li>
-              </ul>
-              <motion.button
-                className="enterprise-button"
+          <div className="enterprise-header">
+            <h2>High-Volume Media Solutions</h2>
+            <p>
+              Unlock enterprise-grade capabilities designed for media companies, broadcasters, and content networks with
+              demanding workloads. Scale effortlessly with our high-performance infrastructure, dedicated support, and
+              customizable workflows.
+            </p>
+          </div>
+
+          <div className="enterprise-plans">
+            <motion.div
+              className="enterprise-card"
+              whileHover={{
+                y: -10,
+                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <div className="best-value">Best Value</div>
+              <h3>Business</h3>
+              <p>For power users and growing organizations. Up to 30-50x higher rate limits than free</p>
+
+              <div className="plan-price">
+                <span className="price">{isAnnual ? "$1,800" : "$200"}</span>
+                <span className="period">{isAnnual ? "/year" : "/month"}</span>
+              </div>
+
+              <motion.a
+                href="#"
+                className="plan-button"
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 10px 20px rgba(0, 112, 243, 0.2)",
+                  boxShadow: "0 10px 20px rgba(138, 43, 226, 0.2)",
                 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Contact Sales
-              </motion.button>
-            </div>
-            <div className="enterprise-image">
-              <img
-                src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=600&auto=format&fit=crop"
-                alt="Enterprise team"
-              />
-            </div>
+                Get Started
+              </motion.a>
+            </motion.div>
+
+            <motion.div
+              className="enterprise-card"
+              whileHover={{
+                y: -10,
+                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <h3>Enterprise</h3>
+              <p>For media companies and broadcasters</p>
+
+              <div className="plan-price">
+                <p>Starts from</p>
+                <span className="price">$2k+</span>
+                <span className="period">{isAnnual ? "/year" : "/month"}</span>
+              </div>
+
+              <motion.a
+                href="#"
+                className="plan-button contact"
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 10px 20px rgba(138, 43, 226, 0.2)",
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Contact sales
+              </motion.a>
+            </motion.div>
           </div>
         </motion.div>
       </div>

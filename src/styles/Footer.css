@@ -9,6 +9,9 @@
   grid-template-columns: 1fr 2fr;
   gap: 4rem;
   margin-bottom: 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 .footer-brand {
@@ -107,6 +110,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
 }
 
 .footer-bottom p {

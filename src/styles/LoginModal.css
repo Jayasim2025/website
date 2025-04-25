@@ -18,10 +18,11 @@
   background-color: var(--card-background);
   border-radius: 16px;
   width: 100%;
-  max-width: 500px;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: var(--card-shadow);
   position: relative;
-  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -47,7 +48,7 @@
 }
 
 .modal-header {
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -55,44 +56,46 @@
 .modal-logo {
   display: flex;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .modal-logo .logo-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   background: var(--primary-gradient);
   color: white;
   border-radius: 12px;
   font-weight: bold;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   box-shadow: var(--glow-shadow);
 }
 
 .modal-header h2 {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
 .modal-header p {
   color: var(--text-secondary);
+  font-size: 0.9rem;
 }
 
 .login-form {
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .input-with-icon {
@@ -114,7 +117,7 @@
   border: 1px solid var(--border-color);
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--text-color);
-  font-size: 1rem;
+  font-size: 0.9rem;
   transition: all var(--transition-speed) var(--transition-function);
 }
 
@@ -128,7 +131,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
 }
 
 .remember-me {
@@ -143,7 +147,6 @@
 
 .forgot-password {
   color: var(--primary-color);
-  font-size: 0.875rem;
 }
 
 .submit-button {
@@ -154,23 +157,24 @@
   color: white;
   font-weight: 600;
   transition: all var(--transition-speed) var(--transition-function);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .submit-button:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   box-shadow: var(--glow-shadow);
 }
 
 .social-login {
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 .social-login p {
   color: var(--text-secondary);
   margin-bottom: 1rem;
   position: relative;
+  font-size: 0.85rem;
 }
 
 .social-login p::before,
@@ -198,8 +202,8 @@
 }
 
 .social-button {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -221,14 +225,15 @@
 }
 
 .social-button:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .modal-footer {
-  padding: 1.5rem 2rem;
+  padding: 1rem 1.5rem;
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
 }
 
 .modal-footer p {
@@ -250,20 +255,7 @@
 @media (max-width: 576px) {
   .login-modal {
     max-width: 100%;
-    border-radius: 0;
-    height: 100%;
-    overflow-y: auto;
-  }
-
-  .modal-header,
-  .login-form,
-  .modal-footer {
-    padding: 1.5rem;
-  }
-
-  .form-options {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    border-radius: 12px;
+    max-height: 85vh;
   }
 }

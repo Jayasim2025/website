@@ -1,6 +1,10 @@
+"use client"
+import { Link } from "react-router-dom"
 import "../styles/Footer.css"
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear()
+
   return (
     <footer className="footer">
       <div className="footer-content">
@@ -12,16 +16,16 @@ const Footer = () => {
           <p>Upload video of any language and get subtitles automatically.</p>
 
           <div className="footer-social">
-            <a href="#" aria-label="Twitter">
+            <a href="https://twitter.com/translatea2z" aria-label="Twitter">
               <i className="fab fa-twitter"></i>
             </a>
-            <a href="#" aria-label="LinkedIn">
+            <a href="https://linkedin.com/company/translatea2z" aria-label="LinkedIn">
               <i className="fab fa-linkedin-in"></i>
             </a>
-            <a href="#" aria-label="Instagram">
+            <a href="https://instagram.com/translatea2z" aria-label="Instagram">
               <i className="fab fa-instagram"></i>
             </a>
-            <a href="#" aria-label="YouTube">
+            <a href="https://youtube.com/c/translatea2z" aria-label="YouTube">
               <i className="fab fa-youtube"></i>
             </a>
           </div>
@@ -38,7 +42,7 @@ const Footer = () => {
                 <a href="#pricing">Pricing</a>
               </li>
               <li>
-                <a href="#">Integrations</a>
+                <a href="#integrations">Integrations</a>
               </li>
               <li>
                 <a href="#faq">FAQ</a>
@@ -50,16 +54,16 @@ const Footer = () => {
             <h4>Company</h4>
             <ul>
               <li>
-                <a href="#">About Us</a>
+                <Link to="/about">About Us</Link>
               </li>
               <li>
-                <a href="#">Careers</a>
+                <Link to="/careers">Careers</Link>
               </li>
               <li>
-                <a href="#">Blog</a>
+                <Link to="/blog">Blog</Link>
               </li>
               <li>
-                <a href="#contact">Contact</a>
+                <Link to="/contact">Contact</Link>
               </li>
             </ul>
           </div>
@@ -68,16 +72,16 @@ const Footer = () => {
             <h4>Resources</h4>
             <ul>
               <li>
-                <a href="#">Documentation</a>
+                <Link to="/documentation">Documentation</Link>
               </li>
               <li>
-                <a href="#">API Reference</a>
+                <Link to="/api-reference">API Reference</Link>
               </li>
               <li>
-                <a href="#">Community</a>
+                <Link to="/community">Community</Link>
               </li>
               <li>
-                <a href="#">Support</a>
+                <Link to="/support">Support</Link>
               </li>
             </ul>
           </div>
@@ -86,16 +90,16 @@ const Footer = () => {
             <h4>Legal</h4>
             <ul>
               <li>
-                <a href="#">Privacy Policy</a>
+                <Link to="/privacy-policy">Privacy Policy</Link>
               </li>
               <li>
-                <a href="#">Terms of Service</a>
+                <Link to="/terms-of-service">Terms of Service</Link>
               </li>
               <li>
-                <a href="#">Cookie Policy</a>
+                <Link to="/cookie-policy">Cookie Policy</Link>
               </li>
               <li>
-                <a href="#">GDPR</a>
+                <Link to="/gdpr">GDPR</Link>
               </li>
             </ul>
           </div>
@@ -103,11 +107,11 @@ const Footer = () => {
       </div>
 
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} Translatea2z. All rights reserved.</p>
+        <p>© {currentYear} Translatea2z. All rights reserved.</p>
         <div className="footer-bottom-links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Cookies</a>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/terms">Terms</Link>
+          <Link to="/cookies">Cookies</Link>
         </div>
       </div>
     </footer>

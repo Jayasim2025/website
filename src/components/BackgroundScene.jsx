@@ -20,14 +20,14 @@ const BackgroundScene = () => {
       {/* Ambient light */}
       <ambientLight intensity={0.2} />
 
-      {/* Directional light */}
-      <directionalLight position={[5, 5, 5]} intensity={0.5} color="#0070f3" />
-      <directionalLight position={[-5, -5, -5]} intensity={0.2} color="#00a2ff" />
+      {/* Directional light - Updated to purple theme */}
+      <directionalLight position={[5, 5, 5]} intensity={0.5} color="#8a2be2" />
+      <directionalLight position={[-5, -5, -5]} intensity={0.2} color="#a64dff" />
 
-      {/* Distorted sphere */}
+      {/* Distorted sphere - Updated to purple theme */}
       <Sphere ref={sphereRef} args={[5, 64, 64]} position={[0, 0, -15]}>
         <MeshDistortMaterial
-          color="#0070f3"
+          color="#8a2be2"
           attach="material"
           distort={0.4}
           speed={2}
@@ -38,10 +38,10 @@ const BackgroundScene = () => {
         />
       </Sphere>
 
-      {/* Second sphere */}
+      {/* Second sphere - Updated to purple theme */}
       <Sphere args={[3, 64, 64]} position={[8, -4, -10]}>
         <MeshDistortMaterial
-          color="#00a2ff"
+          color="#a64dff"
           attach="material"
           distort={0.6}
           speed={3}

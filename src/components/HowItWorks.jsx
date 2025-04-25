@@ -155,7 +155,7 @@ const HowItWorks = () => {
             className="try-free-button"
             whileHover={{
               scale: 1.05,
-              boxShadow: "0 10px 20px rgba(0, 112, 243, 0.2)",
+              boxShadow: "0 10px 20px rgba(138, 43, 226, 0.2)",
             }}
             whileTap={{ scale: 0.95 }}
           >

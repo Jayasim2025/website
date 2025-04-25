@@ -9,9 +9,12 @@ const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }
 
   const menuItems = [
     { id: "home", label: "Home", icon: "home" },
+    { id: "how-it-works", label: "How It Works", icon: "info-circle" },
     { id: "features", label: "Features", icon: "bolt" },
     { id: "testimonials", label: "Testimonials", icon: "comment" },
+    { id: "integrations", label: "Integrations", icon: "plug" },
     { id: "pricing", label: "Pricing", icon: "tag" },
+    { id: "faq", label: "FAQ", icon: "question-circle" },
     { id: "contact", label: "Contact", icon: "envelope" },
   ]
 

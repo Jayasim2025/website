@@ -53,8 +53,8 @@ const Hero = ({ toggleLoginModal }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              Transform <span className="gradient-text">Speech</span> into <span className="gradient-text">Global</span>{" "}
-              content
+              Generate <span className="gradient-text">Subtitles</span> in{" "}
+              <span className="gradient-text">Seconds</span>
             </motion.h1>
 
             <motion.p
@@ -63,8 +63,8 @@ const Hero = ({ toggleLoginModal }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.7 }}
             >
-              Generate accurate subtitles and translations in seconds. Perfect for creators, media companies, and anyone
-              looking to reach global audiences.
+              Transform your audio and video content with accurate speech-to-text, subtitles, and translations. Perfect
+              for creators, media companies, and anyone looking to reach global audiences.
             </motion.p>
 
             <motion.div
@@ -77,7 +77,7 @@ const Hero = ({ toggleLoginModal }) => {
                 className="btn btn-primary hero-btn"
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 0 25px rgba(0, 112, 243, 0.5)",
+                  boxShadow: "0 0 25px rgba(138, 43, 226, 0.5)",
                 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -85,17 +85,17 @@ const Hero = ({ toggleLoginModal }) => {
                 <i className="fas fa-arrow-right"></i>
               </motion.button>
 
-              <motion.button
+              <motion.a
+                href="#how-it-works"
                 className="btn btn-secondary"
                 whileHover={{
                   scale: 1.05,
                   backgroundColor: "var(--primary-light)",
                 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={toggleLoginModal}
               >
-                Try Demo
-              </motion.button>
+                How it works
+              </motion.a>
             </motion.div>
 
             <motion.div
@@ -109,19 +109,19 @@ const Hero = ({ toggleLoginModal }) => {
                 <motion.span whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
                   <img
                     src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?q=80&w=100&auto=format&fit=crop"
-                    alt="Company logo"
+                    alt="FA logo"
                   />
                 </motion.span>
                 <motion.span whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
                   <img
                     src="https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=100&auto=format&fit=crop"
-                    alt="Company logo"
+                    alt="10 LOC logo"
                   />
                 </motion.span>
                 <motion.span whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
                   <img
                     src="https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=100&auto=format&fit=crop"
-                    alt="Company logo"
+                    alt="Welocalize logo"
                   />
                 </motion.span>
               </div>
@@ -135,31 +135,11 @@ const Hero = ({ toggleLoginModal }) => {
             transition={{ duration: 1, delay: 0.5 }}
           >
             <div className="video-container">
-              <video ref={videoRef} autoPlay muted loop playsInline className="feature-video">
-                <source
-                  src="https://cdn.pixabay.com/vimeo/328940142/subtitle-24538.mp4?width=640&hash=e9e0f9a3c2c1d8c1c2e1e1c1c1c1c1c1c1c1c1c1"
-                  type="video/mp4"
-                />
-                Your browser does not support the video tag.
-              </video>
-
-              <motion.div
-                className="processing-card"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.2 }}
-                whileHover={{
-                  y: -5,
-                  boxShadow: "0 15px 30px rgba(0, 0, 0, 0.2)",
-                }}
-              >
-                <div className="processing-info">
-                  <p>Processing Speed</p>
-                  <p className="small">(1 hour of audio)</p>
-                </div>
-                <p className="processing-time">~2 minutes</p>
-              </motion.div>
-
+              <img
+                src="https://images.unsplash.com/photo-1626379953822-baec19c3accd?q=80&w=1000&auto=format&fit=crop"
+                alt="Subtitle Dashboard Preview"
+                className="feature-video"
+              />
               <motion.div
                 className="feature-card"
                 initial={{ opacity: 0, x: 20 }}

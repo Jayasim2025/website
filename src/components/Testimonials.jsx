@@ -69,8 +69,8 @@ const Testimonials = () => {
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
           transition={{ duration: 0.6 }}
         >
-          <h2>Creators Love Our Platform</h2>
-          <p>Join thousands of content creators who are reaching global audiences</p>
+          <h2>What Our Customers Say</h2>
+          <p>Trusted by content creators and media professionals worldwide</p>
         </motion.div>
 
         <motion.div
