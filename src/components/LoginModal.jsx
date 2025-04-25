@@ -1,0 +1,165 @@
+"use client"
+
+import { motion } from "framer-motion"
+import { useState } from "react"
+import "../styles/LoginModal.css"
+
+const LoginModal = ({ onClose }) => {
+  const [isLogin, setIsLogin] = useState(true)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [name, setName] = useState("")
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    // Handle login/signup logic here
+    console.log("Form submitted:", { email, password, name })
+    onClose()
+  }
+
+  const toggleForm = () => {
+    setIsLogin(!isLogin)
+  }
+
+  return (
+    <motion.div
+      className="modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="login-modal"
+        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 50, scale: 0.9 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="close-modal" onClick={onClose}>
+          <i className="fas fa-times"></i>
+        </button>
+
+        <div className="modal-header">
+          <div className="modal-logo">
+            <div className="logo-icon">T</div>
+          </div>
+          <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
+          <p>{isLogin ? "Sign in to continue to Translatea2z" : "Get started with your free account"}</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="login-form">
+          {!isLogin && (
+            <div className="form-group">
+              <label htmlFor="name">Full Name</label>
+              <div className="input-with-icon">
+                <i className="fas fa-user"></i>
+                <input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your name"
+                  required={!isLogin}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+            <div className="input-with-icon">
+              <i className="fas fa-envelope"></i>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <div className="input-with-icon">
+              <i className="fas fa-lock"></i>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+          </div>
+
+          {isLogin && (
+            <div className="form-options">
+              <div className="remember-me">
+                <input type="checkbox" id="remember" />
+                <label htmlFor="remember">Remember me</label>
+              </div>
+              <a href="#" className="forgot-password">
+                Forgot password?
+              </a>
+            </div>
+          )}
+
+          <motion.button
+            type="submit"
+            className="submit-button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isLogin ? "Sign In" : "Create Account"}
+          </motion.button>
+
+          <div className="social-login">
+            <p>Or continue with</p>
+            <div className="social-buttons">
+              <motion.button
+                type="button"
+                className="social-button google"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <i className="fab fa-google"></i>
+              </motion.button>
+              <motion.button
+                type="button"
+                className="social-button facebook"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <i className="fab fa-facebook-f"></i>
+              </motion.button>
+              <motion.button
+                type="button"
+                className="social-button twitter"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <i className="fab fa-twitter"></i>
+              </motion.button>
+            </div>
+          </div>
+        </form>
+
+        <div className="modal-footer">
+          <p>
+            {isLogin ? "Don't have an account?" : "Already have an account?"}
+            <button className="toggle-form" onClick={toggleForm}>
+              {isLogin ? "Sign Up" : "Sign In"}
+            </button>
+          </p>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+export default LoginModal
