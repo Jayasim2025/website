@@ -1,5 +1,7 @@
 .admin-dashboard {
-  padding: 1rem;
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .dashboard-header {
@@ -12,6 +14,10 @@
 .dashboard-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .last-updated {
@@ -37,6 +43,12 @@
   border: 1px solid var(--border-color);
   position: relative;
   overflow: hidden;
+  transition: all var(--transition-speed) var(--transition-function);
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .stat-card::before {
@@ -66,7 +78,8 @@
 
 .stat-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 1rem;
 }
 
@@ -312,5 +325,20 @@
 
   .quick-actions-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .last-updated {
+    margin-top: 0.5rem;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
   }
 }

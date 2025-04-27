@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Users, FileText, Globe, TrendingUp, DollarSign, Clock, CheckCircle, AlertCircle } from "lucide-react"
+import "../styles/admin/AdminDashboard.css"
 
 const AdminDashboard = () => {
   // Animation variants
@@ -84,102 +85,91 @@ const AdminDashboard = () => {
     },
   ]
 
+  // Translation activity data for the chart
+  const translationData = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    values: [1200, 1900, 3000, 5000, 4000, 6500],
+  }
+
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        <div className="flex items-center space-x-2 text-sm text-text-secondary">
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="admin-dashboard">
+      <div className="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <div className="last-updated">
           <Clock size={16} />
           <span>Last updated: {new Date().toLocaleString()}</span>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="stats-grid">
         {stats.map((stat, index) => (
-          <motion.div
-            key={index}
-            variants={itemVariants}
-            className="bg-background-color rounded-xl overflow-hidden shadow-sm border border-border-color"
-          >
-            <div className={`h-2 bg-gradient-to-r ${stat.color}`}></div>
-            <div className="p-5">
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-text-secondary text-sm">{stat.title}</p>
-                  <h3 className="text-2xl font-bold mt-1">{stat.value}</h3>
-                  <span className="text-xs font-medium text-green-500 bg-green-100 px-2 py-0.5 rounded-full">
-                    {stat.change}
-                  </span>
-                </div>
-                <div className="p-2 rounded-lg bg-primary-light text-primary-color">{stat.icon}</div>
+          <motion.div key={index} variants={itemVariants} className="stat-card">
+            <div className="stat-header">
+              <div className="stat-content">
+                <p className="stat-title">{stat.title}</p>
+                <h3 className="stat-value">{stat.value}</h3>
+                <span className="stat-change">{stat.change}</span>
               </div>
+              <div className="stat-icon">{stat.icon}</div>
             </div>
           </motion.div>
         ))}
       </div>
 
       {/* Charts and Activity Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="dashboard-grid">
         {/* Chart Section */}
-        <motion.div
-          variants={itemVariants}
-          className="lg:col-span-2 bg-background-color rounded-xl p-5 shadow-sm border border-border-color"
-        >
-          <h2 className="text-lg font-semibold mb-4">Translation Activity</h2>
-          <div className="h-64 flex items-center justify-center">
-            <div className="text-center text-text-secondary">
-              <TrendingUp size={48} className="mx-auto mb-2 text-primary-color" />
-              <p>Interactive chart will be displayed here</p>
-              <p className="text-sm">Showing translation activity over time</p>
+        <motion.div variants={itemVariants} className="chart-section">
+          <h2>Translation Activity</h2>
+          <div className="chart-content">
+            <div className="bar-chart">
+              {translationData.values.map((value, index) => (
+                <div key={index} className="chart-bar-container">
+                  <div
+                    className="chart-bar"
+                    style={{ height: `${(value / Math.max(...translationData.values)) * 100}%` }}
+                  ></div>
+                  <div className="chart-label">{translationData.labels[index]}</div>
+                </div>
+              ))}
             </div>
           </div>
         </motion.div>
 
         {/* Recent Activity */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-background-color rounded-xl p-5 shadow-sm border border-border-color"
-        >
-          <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
-          <div className="space-y-4">
+        <motion.div variants={itemVariants} className="activity-section">
+          <h2>Recent Activity</h2>
+          <div className="activity-list">
             {activities.map((activity, index) => (
-              <div key={index} className="flex items-start space-x-3">
-                <div className={`p-2 rounded-full ${activity.iconBg}`}>{activity.icon}</div>
-                <div>
-                  <p className="text-sm">
-                    <span className="font-medium">{activity.user}</span> {activity.action}
+              <div key={index} className="activity-item">
+                <div className={`activity-icon ${activity.iconBg}`}>{activity.icon}</div>
+                <div className="activity-details">
+                  <p className="activity-text">
+                    <span className="activity-user">{activity.user}</span> {activity.action}
                   </p>
-                  <p className="text-xs text-text-secondary">{activity.time}</p>
+                  <p className="activity-time">{activity.time}</p>
                 </div>
               </div>
             ))}
           </div>
-          <button className="mt-4 text-sm text-primary-color hover:underline w-full text-center">
-            View All Activity
-          </button>
+          <button className="view-all-button">View All Activity</button>
         </motion.div>
       </div>
 
       {/* Quick Actions */}
-      <motion.div
-        variants={itemVariants}
-        className="bg-background-color rounded-xl p-5 shadow-sm border border-border-color"
-      >
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div variants={itemVariants} className="quick-actions-section">
+        <h2>Quick Actions</h2>
+        <div className="quick-actions-grid">
           {[
-            { label: "Add User", icon: <Users size={20} />, color: "bg-blue-500" },
-            { label: "New Language", icon: <Globe size={20} />, color: "bg-green-500" },
-            { label: "Update Content", icon: <FileText size={20} />, color: "bg-purple-500" },
-            { label: "View Reports", icon: <TrendingUp size={20} />, color: "bg-yellow-500" },
+            { label: "Add User", icon: <Users size={20} />, color: "blue" },
+            { label: "New Language", icon: <Globe size={20} />, color: "green" },
+            { label: "Update Content", icon: <FileText size={20} />, color: "purple" },
+            { label: "View Reports", icon: <TrendingUp size={20} />, color: "yellow" },
           ].map((action, index) => (
-            <button
-              key={index}
-              className="flex flex-col items-center justify-center p-4 rounded-lg border border-border-color hover:bg-primary-light transition-colors"
-            >
-              <div className={`p-2 rounded-full ${action.color} text-white mb-2`}>{action.icon}</div>
-              <span className="text-sm font-medium">{action.label}</span>
+            <button key={index} className={`action-button ${action.color}`}>
+              <div className="action-icon">{action.icon}</div>
+              <span className="action-label">{action.label}</span>
             </button>
           ))}
         </div>

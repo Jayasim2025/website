@@ -57,48 +57,42 @@ const LoginModal = ({ onClose }) => {
           {!isLogin && (
             <div className="form-group">
               <label htmlFor="name">Full Name</label>
-              <div className="input-with-icon">
-                <i className="fas fa-user"></i>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your name"
-                  required={!isLogin}
-                />
-              </div>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your name"
+                required={!isLogin}
+                className="form-input"
+              />
             </div>
           )}
 
           <div className="form-group">
             <label htmlFor="email">Email Address</label>
-            <div className="input-with-icon">
-              <i className="fas fa-envelope"></i>
-              <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-              />
-            </div>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              className="form-input"
+            />
           </div>
 
           <div className="form-group">
             <label htmlFor="password">Password</label>
-            <div className="input-with-icon">
-              <i className="fas fa-lock"></i>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                required
-              />
-            </div>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+              className="form-input"
+            />
           </div>
 
           {isLogin && (

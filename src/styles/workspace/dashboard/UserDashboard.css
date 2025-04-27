@@ -1,10 +1,14 @@
 .user-dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 1.5rem;
 }
 
 .dashboard-header {
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .dashboard-header h1 {
@@ -39,6 +43,17 @@
   box-shadow: var(--card-shadow);
   border: 1px solid var(--border-color);
   transition: all var(--transition-speed) var(--transition-function);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
 }
 
 .stat-card:hover {
@@ -355,4 +370,64 @@
 }
 
 .action-icon {
-  width: 48px\
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.action-button.blue .action-icon {
+  background-color: #3b82f6;
+}
+
+.action-button.green .action-icon {
+  background-color: #10b981;
+}
+
+.action-button.purple .action-icon {
+  background-color: #8b5cf6;
+}
+
+.action-button.yellow .action-icon {
+  background-color: #f59e0b;
+}
+
+.action-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+@media (max-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .last-updated {
+    margin-top: 0.5rem;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}

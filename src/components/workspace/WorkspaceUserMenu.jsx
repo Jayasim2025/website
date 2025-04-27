@@ -14,7 +14,7 @@ const WorkspaceUserMenu = ({ closeUserMenu, theme, toggleTheme }) => {
   }
 
   const navigateToDashboard = () => {
-    navigate("/workspace")
+    navigate("/workspace/dashboard")
     closeUserMenu()
   }
 

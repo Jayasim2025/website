@@ -74,13 +74,13 @@
 }
 
 .modal-header h2 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   margin-bottom: 0.5rem;
 }
 
 .modal-header p {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .login-form {
@@ -95,40 +95,27 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
-.input-with-icon {
-  position: relative;
-}
-
-.input-with-icon i {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-secondary);
-  z-index: 1;
-}
-
-.input-with-icon input {
+.form-input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  padding: 0.75rem 1rem;
   border-radius: 8px;
   border: 1px solid var(--border-color);
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--text-color);
-  font-size: 0.9rem;
+  font-size: 1rem;
   transition: all var(--transition-speed) var(--transition-function);
 }
 
-.input-with-icon input:focus {
+.form-input:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px var(--primary-light);
 }
 
-.input-with-icon input::placeholder {
+.form-input::placeholder {
   color: var(--text-secondary);
   opacity: 0.7;
 }
@@ -138,7 +125,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.25rem;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .remember-me {
@@ -157,11 +144,12 @@
 
 .submit-button {
   width: 100%;
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 1.5rem;
   border-radius: 8px;
   background: var(--primary-gradient);
   color: white;
   font-weight: 600;
+  font-size: 1rem;
   transition: all var(--transition-speed) var(--transition-function);
   margin-bottom: 1.25rem;
 }
@@ -180,7 +168,7 @@
   color: var(--text-secondary);
   margin-bottom: 1rem;
   position: relative;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .social-login p::before,
@@ -208,8 +196,8 @@
 }
 
 .social-button {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -239,7 +227,7 @@
   padding: 1rem 1.5rem;
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .modal-footer p {
