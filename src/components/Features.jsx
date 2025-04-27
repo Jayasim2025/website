@@ -116,7 +116,7 @@ const Features = () => {
           }}
         >
           <motion.h2
-            className="section-title"
+            className="section-title gradient-glow"
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
@@ -143,7 +143,7 @@ const Features = () => {
                 <div className="feature-icon">
                   <i className={`fas ${feature.icon}`}></i>
                 </div>
-                <h3>{feature.title}</h3>
+                <h3 className="gradient-text">{feature.title}</h3>
               </div>
 
               <p className="feature-description">{feature.description}</p>

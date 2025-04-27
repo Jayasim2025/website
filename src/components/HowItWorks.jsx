@@ -85,7 +85,7 @@ const HowItWorks = () => {
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
         >
-          <h2>How It Works</h2>
+          <h2 className="gradient-glow">How It Works</h2>
           <p>
             Creating professional subtitles and translations has never been easier. Our streamlined process gets you
             from raw media to final delivery in just minutes.
@@ -113,7 +113,7 @@ const HowItWorks = () => {
               >
                 {step.icon}
               </motion.div>
-              <h3>{step.title}</h3>
+              <h3 className="gradient-text">{step.title}</h3>
               <p>{step.description}</p>
             </motion.div>
           ))}
@@ -126,7 +126,7 @@ const HowItWorks = () => {
           transition={{ duration: 0.6, delay: 0.6 }}
           whileHover={{ boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)" }}
         >
-          <h3>Processing Time Estimates</h3>
+          <h3 className="gradient-text">Processing Time Estimates</h3>
           <div className="time-estimates">
             <div className="estimate">
               <span className="estimate-label">1 hour audio (audio-only file)</span>

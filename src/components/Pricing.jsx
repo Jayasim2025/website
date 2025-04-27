@@ -91,7 +91,7 @@ const Pricing = () => {
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6 }}
         >
-          <h2>Simple, Transparent Pricing</h2>
+          <h2 className="gradient-glow">Simple, Transparent Pricing</h2>
           <p>Choose the plan that fits your needs. All plans include a 14-day free trial.</p>
 
           <motion.div
@@ -143,7 +143,7 @@ const Pricing = () => {
               )}
 
               <div className="plan-header">
-                <h3>{plan.name}</h3>
+                <h3 className="gradient-text">{plan.name}</h3>
                 <p>{plan.description}</p>
               </div>
 
@@ -158,7 +158,7 @@ const Pricing = () => {
                   ease: "easeInOut",
                 }}
               >
-                <span className="price">{calculatePrice(plan.price, isAnnual)}</span>
+                <span className="price gradient-text">{calculatePrice(plan.price, isAnnual)}</span>
                 <span className="period">{calculatePeriod(isAnnual)}</span>
               </motion.div>
 
@@ -208,7 +208,7 @@ const Pricing = () => {
           transition={{ duration: 0.6, delay: 0.6 }}
         >
           <div className="enterprise-header">
-            <h2>High-Volume Media Solutions</h2>
+            <h2 className="gradient-glow">High-Volume Media Solutions</h2>
             <p>
               Unlock enterprise-grade capabilities designed for media companies, broadcasters, and content networks with
               demanding workloads. Scale effortlessly with our high-performance infrastructure, dedicated support, and
@@ -225,11 +225,11 @@ const Pricing = () => {
               }}
             >
               <div className="best-value">Best Value</div>
-              <h3>Business</h3>
+              <h3 className="gradient-text">Business</h3>
               <p>For power users and growing organizations. Up to 30-50x higher rate limits than free</p>
 
               <div className="plan-price">
-                <span className="price">{isAnnual ? "$1,800" : "$200"}</span>
+                <span className="price gradient-text">{isAnnual ? "$1,800" : "$200"}</span>
                 <span className="period">{isAnnual ? "/year" : "/month"}</span>
               </div>
 
@@ -253,12 +253,12 @@ const Pricing = () => {
                 boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
               }}
             >
-              <h3>Enterprise</h3>
+              <h3 className="gradient-text">Enterprise</h3>
               <p>For media companies and broadcasters</p>
 
               <div className="plan-price">
                 <p>Starts from</p>
-                <span className="price">$2k+</span>
+                <span className="price gradient-text">$2k+</span>
                 <span className="period">{isAnnual ? "/year" : "/month"}</span>
               </div>
 

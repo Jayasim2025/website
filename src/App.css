@@ -5,7 +5,7 @@
   --primary-color: #8a2be2;
   --primary-hover: #7126c0;
   --primary-light: rgba(138, 43, 226, 0.15);
-  --primary-gradient: linear-gradient(135deg, #8a2be2 0%, #a64dff 100%);
+  --primary-gradient: linear-gradient(135deg, #9932cc 0%, #8a2be2 50%, #a64dff 100%);
 
   --secondary-color: #333;
   --text-color: #f5f5f5;
@@ -40,7 +40,7 @@
   --primary-color: #8a2be2;
   --primary-hover: #7126c0;
   --primary-light: rgba(138, 43, 226, 0.1);
-  --primary-gradient: linear-gradient(135deg, #8a2be2 0%, #a64dff 100%);
+  --primary-gradient: linear-gradient(135deg, #9932cc 0%, #8a2be2 50%, #a64dff 100%);
 
   --secondary-color: #f5f5f5;
   --text-color: #111;
@@ -182,6 +182,18 @@ img {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+  display: inline-block;
+}
+
+/* Enhanced glow effect for important text */
+.gradient-glow {
+  background: linear-gradient(135deg, #9932cc 0%, #8a2be2 50%, #a64dff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
+  display: inline-block;
 }
 
 /* Glow effect utility class */

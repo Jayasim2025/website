@@ -258,6 +258,26 @@
   text-decoration: underline;
 }
 
+/* Add glow effect for gradient text */
+.gradient-text {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+  display: inline-block;
+}
+
+/* Enhanced glow effect for important text */
+.gradient-glow {
+  background: linear-gradient(135deg, #9932cc 0%, #8a2be2 50%, #a64dff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
+  display: inline-block;
+}
+
 @media (max-width: 576px) {
   .login-modal {
     max-width: 100%;

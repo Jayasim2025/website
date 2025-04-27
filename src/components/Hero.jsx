@@ -53,8 +53,8 @@ const Hero = ({ toggleLoginModal }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
             >
-              Generate <span className="gradient-text">Subtitles</span> in{" "}
-              <span className="gradient-text">Seconds</span>
+              Generate <span className="gradient-glow">Subtitles</span> in{" "}
+              <span className="gradient-glow">Seconds</span>
             </motion.h1>
 
             <motion.p
@@ -80,6 +80,7 @@ const Hero = ({ toggleLoginModal }) => {
                   boxShadow: "0 0 25px rgba(138, 43, 226, 0.5)",
                 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={toggleLoginModal}
               >
                 Get started free
                 <i className="fas fa-arrow-right"></i>
@@ -152,7 +153,7 @@ const Hero = ({ toggleLoginModal }) => {
               >
                 <span className="hero-feature-icon">✓</span>
                 <div>
-                  <h4>125+ Languages</h4>
+                  <h4 className="gradient-text">125+ Languages</h4>
                   <p>Global reach with one click</p>
                 </div>
               </motion.div>
