@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useRef, useEffect } from "react"
+import { Link } from "react-router-dom"
 import "../styles/Hero.css"
 
 const Hero = ({ toggleLoginModal }) => {
@@ -86,17 +87,28 @@ const Hero = ({ toggleLoginModal }) => {
                 <i className="fas fa-arrow-right"></i>
               </motion.button>
 
-              <motion.a
-                href="#how-it-works"
-                className="btn btn-secondary"
-                whileHover={{
-                  scale: 1.05,
-                  backgroundColor: "var(--primary-light)",
-                }}
-                whileTap={{ scale: 0.95 }}
-              >
-                How it works
-              </motion.a>
+              <div className="pricing-dropdown-container">
+                <motion.div
+                  className="pricing-dropdown"
+                  whileHover={{
+                    scale: 1.05,
+                    backgroundColor: "var(--primary-light)",
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link to="/pricing" className="btn btn-secondary">
+                    Pricing
+                  </Link>
+                  <div className="pricing-dropdown-content">
+                    <Link to="/pricing?type=individual" className="dropdown-item">
+                      Individual
+                    </Link>
+                    <Link to="/pricing?type=enterprise" className="dropdown-item">
+                      Enterprise
+                    </Link>
+                  </div>
+                </motion.div>
+              </div>
             </motion.div>
 
             <motion.div

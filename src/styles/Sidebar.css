@@ -95,7 +95,7 @@
   margin-bottom: 0.5rem;
 }
 
-.sidebar-nav button {
+.sidebar-nav a {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -103,17 +103,21 @@
   padding: 0.75rem 1rem;
   border-radius: 8px;
   color: var(--text-secondary);
-  font-weight: 500;
+  font-weight: 600;
+  font-family: var(--font-secondary);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
   transition: all var(--transition-speed) var(--transition-function);
   position: relative;
+  text-decoration: none;
 }
 
-.sidebar-nav button:hover {
+.sidebar-nav a:hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-color);
 }
 
-.sidebar-nav button.active {
+.sidebar-nav a.active {
   background-color: var(--primary-light);
   color: var(--primary-color);
 }
@@ -136,7 +140,43 @@
   gap: 1rem;
 }
 
-.theme-toggle,
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all var(--transition-speed) var(--transition-function);
+}
+
+.theme-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.theme-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.theme-toggle-text {
+  margin-left: 0.75rem;
+}
+
+.theme-toggle:hover,
+.login-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  transform: translateY(-2px);
+}
+
 .login-button {
   display: flex;
   align-items: center;
@@ -149,10 +189,28 @@
   transition: all var(--transition-speed) var(--transition-function);
 }
 
+.theme-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.theme-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.theme-toggle-text {
+  margin-left: 0.5rem;
+}
+
 .theme-toggle:hover,
 .login-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-color);
+  transform: translateY(-2px);
 }
 
 .login-button {

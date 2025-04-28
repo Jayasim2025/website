@@ -3,6 +3,8 @@
 import { createBrowserRouter } from "react-router-dom"
 import { useState, useEffect } from "react"
 import HomePage from "./pages/HomePage"
+import PricingPage from "./pages/PricingPage"
+import IntegrationsPage from "./pages/IntegrationsPage"
 import WorkspaceLayout from "./components/workspace/WorkspaceLayout"
 import Dashboard from "./components/workspace/Dashboard"
 import Projects from "./components/workspace/Projects"
@@ -65,6 +67,22 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <ThemeProvider>{({ theme, toggleTheme }) => <HomePage theme={theme} toggleTheme={toggleTheme} />}</ThemeProvider>
+    ),
+  },
+  {
+    path: "/pricing",
+    element: (
+      <ThemeProvider>
+        {({ theme, toggleTheme }) => <PricingPage theme={theme} toggleTheme={toggleTheme} />}
+      </ThemeProvider>
+    ),
+  },
+  {
+    path: "/integrations",
+    element: (
+      <ThemeProvider>
+        {({ theme, toggleTheme }) => <IntegrationsPage theme={theme} toggleTheme={toggleTheme} />}
+      </ThemeProvider>
     ),
   },
   {

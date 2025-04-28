@@ -214,6 +214,14 @@
   border-radius: 8px;
 }
 
+.integrations-section.light-background {
+  background-color: transparent !important;
+}
+
+.integrations-container {
+  background-color: transparent;
+}
+
 @media (max-width: 992px) {
   .enterprise-content {
     grid-template-columns: 1fr;

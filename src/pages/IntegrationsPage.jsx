@@ -1,24 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Canvas } from "@react-three/fiber"
 import { Environment, OrbitControls } from "@react-three/drei"
 import { Suspense } from "react"
 import Sidebar from "../components/Sidebar"
-import Hero from "../components/Hero"
-import Features from "../components/Features"
-import Testimonials from "../components/Testimonials"
-import Pricing from "../components/Pricing"
-import CallToAction from "../components/CallToAction"
 import Footer from "../components/Footer"
 import LoginModal from "../components/LoginModal"
-import FAQ from "../components/FAQ"
-import HowItWorks from "../components/HowItWorks"
 import BackgroundScene from "../components/BackgroundScene"
 import Integrations from "../components/Integrations"
+import "../styles/IntegrationsPage.css"
 
-function HomePage({ theme, toggleTheme }) {
+function IntegrationsPage({ theme, toggleTheme }) {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -51,12 +45,21 @@ function HomePage({ theme, toggleTheme }) {
       />
 
       <main className={`main-content ${sidebarOpen ? "sidebar-open" : ""}`}>
-        <Hero toggleLoginModal={toggleLoginModal} />
-        <HowItWorks />
-        <Features />
-        <Testimonials />
-        <FAQ />
-        <CallToAction />
+        <div className="integrations-page">
+          <div className="container">
+            <motion.div
+              className="integrations-page-header"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h1 className="gradient-text">Integrations</h1>
+              <p>Connect Translatea2z with your favorite tools and platforms</p>
+            </motion.div>
+
+            <Integrations />
+          </div>
+        </div>
         <Footer />
       </main>
 
@@ -65,4 +68,4 @@ function HomePage({ theme, toggleTheme }) {
   )
 }
 
-export default HomePage
+export default IntegrationsPage

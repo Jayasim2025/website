@@ -44,7 +44,7 @@ const Integrations = () => {
   })
 
   return (
-    <section className="integrations-section" ref={ref} id="integrations">
+    <section className="integrations-section light-background" ref={ref} id="integrations">
       <div className="container">
         <motion.div
           className="section-header"
