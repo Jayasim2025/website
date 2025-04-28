@@ -113,8 +113,7 @@
 }
 
 .sidebar-nav a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-color);
+  background-color: var(--sidebar-hover);
 }
 
 .sidebar-nav a.active {

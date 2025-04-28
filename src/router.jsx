@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import HomePage from "./pages/HomePage"
 import PricingPage from "./pages/PricingPage"
 import IntegrationsPage from "./pages/IntegrationsPage"
+import FAQPage from "./pages/FAQPage"
 import WorkspaceLayout from "./components/workspace/WorkspaceLayout"
 import Dashboard from "./components/workspace/Dashboard"
 import Projects from "./components/workspace/Projects"
@@ -42,7 +43,7 @@ import Pricing from "./pages/Pricing"
 import Feedback from "./pages/Feedback"
 
 // Create a theme state provider
-const ThemeProvider = ({ children }) => {
+export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     // Get theme from localStorage or default to dark
     return localStorage.getItem("theme") || "dark"
@@ -83,6 +84,12 @@ const router = createBrowserRouter([
       <ThemeProvider>
         {({ theme, toggleTheme }) => <IntegrationsPage theme={theme} toggleTheme={toggleTheme} />}
       </ThemeProvider>
+    ),
+  },
+  {
+    path: "/faq",
+    element: (
+      <ThemeProvider>{({ theme, toggleTheme }) => <FAQPage theme={theme} toggleTheme={toggleTheme} />}</ThemeProvider>
     ),
   },
   {

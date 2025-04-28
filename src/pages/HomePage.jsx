@@ -1,26 +1,25 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AnimatePresence } from "framer-motion"
 import { Canvas } from "@react-three/fiber"
 import { Environment, OrbitControls } from "@react-three/drei"
 import { Suspense } from "react"
+import { useLocation } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
 import Hero from "../components/Hero"
 import Features from "../components/Features"
 import Testimonials from "../components/Testimonials"
-import Pricing from "../components/Pricing"
 import CallToAction from "../components/CallToAction"
 import Footer from "../components/Footer"
 import LoginModal from "../components/LoginModal"
-import FAQ from "../components/FAQ"
 import HowItWorks from "../components/HowItWorks"
 import BackgroundScene from "../components/BackgroundScene"
-import Integrations from "../components/Integrations"
 
 function HomePage({ theme, toggleTheme }) {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const location = useLocation()
 
   const toggleLoginModal = () => {
     setShowLoginModal(!showLoginModal)
@@ -29,6 +28,24 @@ function HomePage({ theme, toggleTheme }) {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
   }
+
+  // Handle scrolling to sections when navigating from other pages
+  useEffect(() => {
+    if (location.state?.scrollToSection) {
+      const sectionId = location.state.scrollToSection
+      const section = document.getElementById(sectionId)
+
+      if (section) {
+        // Small delay to ensure the page is fully loaded
+        setTimeout(() => {
+          section.scrollIntoView({ behavior: "smooth" })
+        }, 100)
+      }
+
+      // Clear the state to prevent scrolling on subsequent renders
+      window.history.replaceState({}, document.title)
+    }
+  }, [location.state])
 
   return (
     <>
@@ -55,7 +72,6 @@ function HomePage({ theme, toggleTheme }) {
         <HowItWorks />
         <Features />
         <Testimonials />
-        <FAQ />
         <CallToAction />
         <Footer />
       </main>

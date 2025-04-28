@@ -2,30 +2,29 @@
 
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import "../styles/Sidebar.css"
 
 const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }) => {
   const [activeSection, setActiveSection] = useState("home")
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     // Set the active section based on the current pathname
     const pathname = window.location.pathname
+    const hash = window.location.hash.substring(1) || ""
 
     if (pathname === "/") {
-      setActiveSection("home")
+      setActiveSection(hash || "home")
     } else if (pathname === "/integrations") {
       setActiveSection("integrations")
     } else if (pathname === "/pricing") {
       setActiveSection("pricing")
+    } else if (pathname === "/faq") {
+      setActiveSection("faq")
     }
-
-    // Check if there's a hash in the URL when on homepage
-    if (pathname === "/" && window.location.hash) {
-      const hash = window.location.hash.substring(1) // Remove the # character
-      setActiveSection(hash)
-    }
-  }, [window.location.pathname, window.location.hash])
+  }, [location])
 
   const menuItems = [
     { id: "home", label: "Home", icon: "home", path: "/" },
@@ -34,41 +33,48 @@ const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }
     { id: "testimonials", label: "Testimonials", icon: "comment", path: "/#testimonials" },
     { id: "integrations", label: "Integrations", icon: "plug", path: "/integrations" },
     { id: "pricing", label: "Pricing", icon: "tag", path: "/pricing" },
-    { id: "faq", label: "FAQ", icon: "question-circle", path: "/#faq" },
+    { id: "faq", label: "FAQ", icon: "question-circle", path: "/faq" },
     { id: "contact", label: "Contact", icon: "envelope", path: "/#contact" },
   ]
 
   function handleNavigation(item) {
-    // Check if the URL matches the path
-    // Remove any hash from current path for comparison
-    const currentPath = window.location.pathname
-
-    // Set active based on current path matching menu item path
-    if (item.path === "/" && currentPath === "/") {
-      setActiveSection("home")
-    } else if (item.path === "/integrations" && currentPath === "/integrations") {
-      setActiveSection("integrations")
-    } else if (item.path === "/pricing" && currentPath === "/pricing") {
-      setActiveSection("pricing")
-    } else if (item.path.includes("#") && currentPath === "/") {
-      const sectionId = item.path.split("#")[1]
-      setActiveSection(sectionId)
-    }
-
-    // Handle navigation
-    if (item.path.startsWith("/#")) {
-      const sectionId = item.path.substring(2)
-      const section = document.getElementById(sectionId)
-      if (section && window.location.pathname === "/") {
-        section.scrollIntoView({ behavior: "smooth" })
-      } else {
-        // Navigate to homepage first, then scroll after a delay
-        window.location.href = item.path
-      }
-    }
-
     if (window.innerWidth < 768) {
       toggleSidebar()
+    }
+
+    // Handle "Home" navigation specifically
+    if (item.id === "home") {
+      setActiveSection("home")
+
+      if (location.pathname === "/") {
+        // Already on home page, scroll to top
+        window.scrollTo({ top: 0, behavior: "smooth" })
+      } else {
+        // Navigate to home page
+        navigate("/")
+      }
+      return
+    }
+
+    // Check if it's a hash link on the home page
+    if (item.path.includes("#")) {
+      const sectionId = item.path.split("#")[1]
+      setActiveSection(sectionId)
+
+      if (location.pathname === "/") {
+        // Already on home page, just scroll to the section
+        const section = document.getElementById(sectionId)
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth" })
+        }
+      } else {
+        // Navigate to home page with the hash
+        navigate("/", { state: { scrollToSection: sectionId } })
+      }
+    } else {
+      // Regular page navigation
+      setActiveSection(item.id)
+      navigate(item.path)
     }
   }
 
@@ -130,10 +136,13 @@ const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }
             <ul>
               {menuItems.map((item) => (
                 <li key={item.id}>
-                  <Link
-                    to={item.path}
+                  <a
+                    href={item.path}
                     className={activeSection === item.id ? "active" : ""}
-                    onClick={() => handleNavigation(item)}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      handleNavigation(item)
+                    }}
                   >
                     <i className={`fas fa-${item.icon}`}></i>
                     <span>{item.label}</span>
@@ -144,7 +153,7 @@ const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                       />
                     )}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
