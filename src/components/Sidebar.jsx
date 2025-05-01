@@ -35,6 +35,7 @@ const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }
     { id: "pricing", label: "Pricing", icon: "tag", path: "/pricing" },
     { id: "faq", label: "FAQ", icon: "question-circle", path: "/faq" },
     { id: "contact", label: "Contact", icon: "envelope", path: "/#contact" },
+    { id: "admin", label: "Admin", icon: "shield-alt", path: "/admin-login" },
   ]
 
   function handleNavigation(item) {
@@ -53,6 +54,13 @@ const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }
         // Navigate to home page
         navigate("/")
       }
+      return
+    }
+
+    // Handle "Admin" navigation specifically
+    if (item.id === "admin") {
+      setActiveSection("admin")
+      navigate("/admin-login")
       return
     }
 
