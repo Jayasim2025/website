@@ -1,7 +1,38 @@
-import { NavLink } from "react-router-dom"
+"use client"
+
+import { NavLink, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
 import "../styles/admin/AdminSidebar.css"
 
-const AdminSidebar = ({ isOpen }) => {
+const AdminSidebar = ({ isOpen, setIsOpen }) => {
+  const [isMobile, setIsMobile] = useState(false)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+
+    return () => {
+      window.removeEventListener("resize", checkMobile)
+    }
+  }, [])
+
+  const handleNavClick = (path) => {
+    if (isMobile) {
+      // Close sidebar on mobile when a navigation item is clicked
+      setIsOpen(false)
+
+      // Small delay to allow the sidebar animation to start before navigating
+      setTimeout(() => {
+        navigate(path)
+      }, 50)
+    }
+  }
+
   const navItems = [
     { to: "/admin/dashboard", icon: "fas fa-home", label: "Dashboard" },
     { to: "/admin/users", icon: "fas fa-users", label: "Users" },
@@ -23,7 +54,12 @@ const AdminSidebar = ({ isOpen }) => {
 
       <nav className="sidebar-nav">
         {navItems.map((item) => (
-          <NavLink key={item.to} to={item.to} className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}
+            onClick={() => handleNavClick(item.to)}
+          >
             <i className={item.icon}></i>
             <span>{item.label}</span>
           </NavLink>

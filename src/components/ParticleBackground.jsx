@@ -30,7 +30,7 @@ const ParticleBackground = ({ theme }) => {
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         radius: Math.random() * 2 + 1,
-        color: theme === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.1)",
+        color: theme === "dark" ? "rgba(255, 255, 255, 0.3)" : "rgba(166, 123, 213, 0.2)",
         speedX: Math.random() * 0.5 - 0.25,
         speedY: Math.random() * 0.5 - 0.25,
       })
@@ -60,7 +60,7 @@ const ParticleBackground = ({ theme }) => {
       })
 
       // Draw connections
-      ctx.strokeStyle = theme === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.03)"
+      ctx.strokeStyle = theme === "dark" ? "rgba(166, 123, 213, 0.08)" : "rgba(166, 123, 213, 0.1)"
       ctx.lineWidth = 0.5
 
       for (let i = 0; i < particles.length; i++) {

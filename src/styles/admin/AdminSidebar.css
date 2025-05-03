@@ -48,13 +48,13 @@
 }
 
 .nav-item:hover {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+  background-color: rgba(166, 123, 213, 0.15);
+  color: #a67bd5;
 }
 
 .nav-item.active {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+  background-color: rgba(166, 123, 213, 0.15);
+  color: #a67bd5;
   font-weight: 600;
 }
 
@@ -73,7 +73,7 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #b68fd9 0%, #a67bd5 50%, #c193e3 100%);
   color: white;
   display: flex;
   align-items: center;

@@ -70,28 +70,28 @@ const Features = () => {
         "Background noise filtering",
         "Technical terminology support",
       ],
-      accentColor: "#8a2be2",
+      accentColor: "#a67bd5", // Updated to lighter purple
     },
     {
       title: "Automatic Translation",
       icon: "fa-language",
       description: "Translate content into multiple languages with natural-sounding results.",
       steps: ["Neural machine translation", "Context preservation", "Dialect recognition", "Slang and idiom handling"],
-      accentColor: "#a64dff",
+      accentColor: "#b68fd9", // Updated to lighter purple
     },
     {
       title: "Custom Dictionaries",
       icon: "fa-book",
       description: "Improve accuracy for specialized terminology and proper nouns.",
       steps: ["Industry-specific terms", "Brand name recognition", "Technical vocabulary", "Proper noun handling"],
-      accentColor: "#9932cc",
+      accentColor: "#c193e3", // Updated to lighter purple
     },
     {
       title: "Collaborative Editing",
       icon: "fa-users",
       description: "Edit and refine transcripts with your entire team in real-time.",
       steps: ["Real-time collaboration", "Comment & annotation", "Version history tracking", "Role-based permissions"],
-      accentColor: "#7b68ee",
+      accentColor: "#b68fd9", // Updated to lighter purple
     },
   ]
 
