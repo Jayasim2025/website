@@ -6,8 +6,8 @@ import "../styles/LoginModal.css"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 
-// Update the API_BASE_URL to use the local proxy
-const API_BASE_URL = "http://localhost:3001/api"
+// Update the API_BASE_URL to use the AWS EC2 instance
+const API_BASE_URL = "http://ec2-54-169-176-135.ap-southeast-1.compute.amazonaws.com:8080"
 
 const LoginModal = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true)
@@ -19,6 +19,7 @@ const LoginModal = ({ onClose }) => {
 
   const navigate = useNavigate()
 
+  // Update the handleSubmit function to use the correct endpoints
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -84,8 +85,8 @@ const LoginModal = ({ onClose }) => {
         }
       }
     } catch (err) {
-      console.error("Auth error:", err)
-      setError("Authentication failed. This might be due to CORS restrictions. Please contact the administrator.")
+      console.error("Auth error:", err.response?.data || err.message || err)
+      setError(err.response?.data?.message || "Authentication failed. Please check your credentials and try again.")
     } finally {
       setLoading(false)
     }
