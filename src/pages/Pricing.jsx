@@ -1,14 +1,57 @@
 "use client"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import "../styles/admin/PricingPlans.css"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Canvas } from "@react-three/fiber"
+import { Environment, OrbitControls } from "@react-three/drei"
+import { Suspense } from "react"
+import { useLocation } from "react-router-dom"
+import Sidebar from "../components/Sidebar"
+import Navbar from "../components/Navbar"
+import Footer from "../components/Footer"
+import LoginModal from "../components/LoginModal"
+import BackgroundScene from "../components/BackgroundScene"
+import "../styles/PricingPage.css"
 
-const Pricing = () => {
-  const [activePlan, setActivePlan] = useState(null)
+function PricingPage({ theme, toggleTheme }) {
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [pricingType, setPricingType] = useState("individual")
+  const location = useLocation()
 
-  // Sample pricing plans data
-  const pricingPlans = [
+  useEffect(() => {
+    // Check URL parameters for pricing type
+    const params = new URLSearchParams(location.search)
+    const type = params.get("type")
+    if (type === "enterprise") {
+      setPricingType("enterprise")
+    } else if (type === "individual") {
+      setPricingType("individual")
+    }
+
+    // Listen for custom event to open login modal
+    const handleOpenLoginModal = () => setShowLoginModal(true)
+    window.addEventListener("open-login-modal", handleOpenLoginModal)
+
+    return () => {
+      window.removeEventListener("open-login-modal", handleOpenLoginModal)
+    }
+  }, [location])
+
+  const toggleLoginModal = () => {
+    setShowLoginModal(!showLoginModal)
+  }
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen)
+  }
+
+  const togglePricingType = () => {
+    setPricingType(pricingType === "individual" ? "enterprise" : "individual")
+  }
+
+  // Individual pricing plans
+  const individualPlans = [
     {
       id: 1,
       name: "Free",
@@ -24,9 +67,7 @@ const Pricing = () => {
         { name: "Email support", included: false },
         { name: "Glossary customization", included: false },
       ],
-      activeUsers: 1250,
-      conversionRate: "N/A",
-      status: "Active",
+      popular: false,
     },
     {
       id: 2,
@@ -44,9 +85,7 @@ const Pricing = () => {
         { name: "Priority email support", included: true },
         { name: "Glossary customization", included: true },
       ],
-      activeUsers: 850,
-      conversionRate: "15%",
-      status: "Active",
+      popular: true,
     },
     {
       id: 3,
@@ -65,10 +104,12 @@ const Pricing = () => {
         { name: "Glossary customization", included: true },
         { name: "API access", included: true },
       ],
-      activeUsers: 420,
-      conversionRate: "8%",
-      status: "Active",
+      popular: false,
     },
+  ]
+
+  // Enterprise pricing plans
+  const enterprisePlans = [
     {
       id: 4,
       name: "Business",
@@ -87,16 +128,14 @@ const Pricing = () => {
         { name: "API access", included: true },
         { name: "Custom integrations", included: true },
       ],
-      activeUsers: 180,
-      conversionRate: "5%",
-      status: "Active",
+      popular: true,
     },
     {
       id: 5,
       name: "Enterprise",
       description: "For media companies and broadcasters",
-      price: 2000,
-      billingCycle: "monthly",
+      price: "Custom",
+      billingCycle: "",
       features: [
         { name: "Unlimited speech processing", included: true },
         { name: "Unlimited storage", included: true },
@@ -111,122 +150,132 @@ const Pricing = () => {
         { name: "On-premise deployment option", included: true },
         { name: "Custom SLAs", included: true },
       ],
-      activeUsers: 45,
-      conversionRate: "2%",
-      status: "Active",
+      popular: false,
     },
   ]
 
-  const handleEditPlan = (planId) => {
-    setActivePlan(planId)
-  }
+  const activePlans = pricingType === "individual" ? individualPlans : enterprisePlans
 
   return (
-    <div className="pricing-plans-container">
-      <div className="pricing-plans-header">
-        <h1>Pricing Plans Management</h1>
-        <motion.button className="add-plan-button" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <i className="fas fa-plus"></i>
-          <span>Add Plan</span>
-        </motion.button>
+    <>
+      <div className="background-container">
+        <Canvas className="background-canvas">
+          <Suspense fallback={null}>
+            <BackgroundScene />
+            <Environment preset="city" />
+            <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
+          </Suspense>
+        </Canvas>
       </div>
 
-      <div className="pricing-plans-grid">
-        {pricingPlans.map((plan) => (
-          <motion.div
-            className={`plan-card ${activePlan === plan.id ? "active" : ""}`}
-            key={plan.id}
-            whileHover={{ y: -5, boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)" }}
-          >
-            <div className="plan-header">
-              <div className="plan-title-section">
-                <h3 className="plan-name">{plan.name}</h3>
-                <span className={`plan-status ${plan.status.toLowerCase()}`}>{plan.status}</span>
+      {/* Always render the Navbar, but conditionally hide it when sidebar is open */}
+      <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+
+      <Sidebar
+        theme={theme}
+        toggleTheme={toggleTheme}
+        isOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+        toggleLoginModal={toggleLoginModal}
+      />
+
+      <main className={`main-content ${sidebarOpen ? "sidebar-open" : ""}`}>
+        <div className="pricing-page">
+          <div className="container">
+            <motion.div
+              className="pricing-page-header"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h1 className="gradient-text">Pricing Plans</h1>
+              <p>Choose the perfect plan for your needs</p>
+
+              <div className="pricing-toggle-container">
+                <span className={pricingType === "individual" ? "active" : ""}>Individual</span>
+                <div className="pricing-toggle" onClick={togglePricingType}>
+                  <div className={`toggle-handle ${pricingType === "enterprise" ? "enterprise" : ""}`}></div>
+                </div>
+                <span className={pricingType === "enterprise" ? "active" : ""}>Enterprise</span>
               </div>
-              <div className="plan-price">
-                ${plan.price}
-                <span className="plan-billing">/{plan.billingCycle}</span>
+            </motion.div>
+
+            <div className="pricing-plans">
+              {activePlans.map((plan, index) => (
+                <motion.div
+                  className={`pricing-plan ${plan.popular ? "popular" : ""}`}
+                  key={plan.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -10, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)" }}
+                >
+                  {plan.popular && <div className="popular-badge">Most Popular</div>}
+                  <div className="plan-header">
+                    <h3>{plan.name}</h3>
+                    <p>{plan.description}</p>
+                  </div>
+                  <div className="plan-price">
+                    {typeof plan.price === "number" ? (
+                      <>
+                        <span className="currency">$</span>
+                        <span className="amount">{plan.price}</span>
+                        {plan.billingCycle && <span className="billing-cycle">/{plan.billingCycle}</span>}
+                      </>
+                    ) : (
+                      <span className="amount">{plan.price}</span>
+                    )}
+                  </div>
+                  <ul className="plan-features">
+                    {plan.features.map((feature, idx) => (
+                      <li key={idx} className={feature.included ? "included" : "excluded"}>
+                        <i className={`fas ${feature.included ? "fa-check" : "fa-times"}`}></i>
+                        {feature.name}
+                      </li>
+                    ))}
+                  </ul>
+                  <button className={`btn ${plan.popular ? "btn-primary" : "btn-secondary"}`}>
+                    {plan.price === 0 ? "Get Started" : plan.price === "Custom" ? "Contact Sales" : "Subscribe Now"}
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="pricing-faq">
+              <h2>Frequently Asked Questions</h2>
+              <div className="faq-grid">
+                <div className="faq-item">
+                  <h3>Can I change plans later?</h3>
+                  <p>
+                    Yes, you can upgrade or downgrade your plan at any time. Changes will be applied to your next
+                    billing cycle.
+                  </p>
+                </div>
+                <div className="faq-item">
+                  <h3>Is there a free trial?</h3>
+                  <p>Yes, all paid plans come with a 14-day free trial. No credit card required to start.</p>
+                </div>
+                <div className="faq-item">
+                  <h3>What payment methods do you accept?</h3>
+                  <p>We accept all major credit cards, PayPal, and bank transfers for annual enterprise plans.</p>
+                </div>
+                <div className="faq-item">
+                  <h3>Can I cancel anytime?</h3>
+                  <p>
+                    Yes, you can cancel your subscription at any time. You'll continue to have access until the end of
+                    your billing period.
+                  </p>
+                </div>
               </div>
-            </div>
-
-            <p className="plan-description">{plan.description}</p>
-
-            <div className="plan-stats">
-              <div className="stat-item">
-                <span className="stat-label">Active Users</span>
-                <span className="stat-value">{plan.activeUsers.toLocaleString()}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Conversion Rate</span>
-                <span className="stat-value">{plan.conversionRate}</span>
-              </div>
-            </div>
-
-            <div className="plan-features">
-              <h4>Features</h4>
-              <ul>
-                {plan.features.slice(0, 5).map((feature, index) => (
-                  <li key={index} className={feature.included ? "included" : "excluded"}>
-                    <i className={`fas ${feature.included ? "fa-check" : "fa-times"}`}></i>
-                    <span>{feature.name}</span>
-                  </li>
-                ))}
-                {plan.features.length > 5 && (
-                  <li className="more-features">
-                    <span>+{plan.features.length - 5} more features</span>
-                  </li>
-                )}
-              </ul>
-            </div>
-
-            <div className="plan-actions">
-              <button className="action-button edit" onClick={() => handleEditPlan(plan.id)}>
-                <i className="fas fa-edit"></i>
-                <span>Edit</span>
-              </button>
-              <button className="action-button duplicate">
-                <i className="fas fa-copy"></i>
-                <span>Duplicate</span>
-              </button>
-              {plan.status === "Active" ? (
-                <button className="action-button deactivate">
-                  <i className="fas fa-toggle-off"></i>
-                  <span>Deactivate</span>
-                </button>
-              ) : (
-                <button className="action-button activate">
-                  <i className="fas fa-toggle-on"></i>
-                  <span>Activate</span>
-                </button>
-              )}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {activePlan && (
-        <div className="edit-plan-overlay">
-          <div className="edit-plan-modal">
-            <div className="modal-header">
-              <h2>Edit Plan: {pricingPlans.find((plan) => plan.id === activePlan)?.name}</h2>
-              <button className="close-modal" onClick={() => setActivePlan(null)}>
-                <i className="fas fa-times"></i>
-              </button>
-            </div>
-            <div className="modal-content">
-              <p>Plan editing form would go here</p>
-            </div>
-            <div className="modal-footer">
-              <button className="cancel-button" onClick={() => setActivePlan(null)}>
-                Cancel
-              </button>
-              <button className="save-button">Save Changes</button>
             </div>
           </div>
         </div>
-      )}
-    </div>
+        <Footer />
+      </main>
+
+      <AnimatePresence>{showLoginModal && <LoginModal onClose={toggleLoginModal} key="login-modal" />}</AnimatePresence>
+    </>
   )
 }
 
-export default Pricing
+export default PricingPage

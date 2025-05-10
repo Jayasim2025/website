@@ -4,25 +4,96 @@ import { motion } from "framer-motion"
 import { useState } from "react"
 import "../styles/LoginModal.css"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
+
+// Update the API_BASE_URL to use the local proxy
+const API_BASE_URL = "http://localhost:3001/api"
 
 const LoginModal = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [name, setName] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Handle login/signup logic here
-    console.log("Form submitted:", { email, password, name })
-    // Navigate to workspace
-    navigate("/workspace")
+    setLoading(true)
+    setError("")
+
+    try {
+      // Create headers with CORS settings
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      }
+
+      if (isLogin) {
+        // Login API call
+        const response = await axios.post(
+          `${API_BASE_URL}/auth/v1/login`,
+          {
+            email,
+            password,
+          },
+          { headers },
+        )
+
+        // Store token in localStorage
+        if (response.data && response.data.token) {
+          localStorage.setItem("auth_token", response.data.token)
+          console.log("Login successful:", response.data)
+          navigate("/workspace")
+        } else {
+          setError("Invalid response from server")
+        }
+      } else {
+        // Signup API call
+        const response = await axios.post(
+          `${API_BASE_URL}/auth/v1/signup`,
+          {
+            email,
+            password,
+            fullName: name,
+          },
+          { headers },
+        )
+
+        console.log("Signup successful:", response.data)
+
+        // Auto login after signup
+        if (response.data && response.data.success) {
+          const loginResponse = await axios.post(
+            `${API_BASE_URL}/auth/v1/login`,
+            {
+              email,
+              password,
+            },
+            { headers },
+          )
+
+          if (loginResponse.data && loginResponse.data.token) {
+            localStorage.setItem("auth_token", loginResponse.data.token)
+            navigate("/workspace")
+          }
+        } else {
+          setError("Account created but couldn't log in automatically")
+        }
+      }
+    } catch (err) {
+      console.error("Auth error:", err)
+      setError("Authentication failed. This might be due to CORS restrictions. Please contact the administrator.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   const toggleForm = () => {
     setIsLogin(!isLogin)
+    setError("")
   }
 
   return (
@@ -52,6 +123,8 @@ const LoginModal = ({ onClose }) => {
           <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>
           <p>{isLogin ? "Sign in to continue to Translatea2z" : "Get started with your free account"}</p>
         </div>
+
+        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="login-form">
           {!isLogin && (
@@ -112,8 +185,9 @@ const LoginModal = ({ onClose }) => {
             className="submit-button"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            disabled={loading}
           >
-            {isLogin ? "Sign In" : "Create Account"}
+            {loading ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
           </motion.button>
 
           <div className="social-login">

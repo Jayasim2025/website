@@ -3,12 +3,21 @@
 import { motion } from "framer-motion"
 import { useInView } from "react-intersection-observer"
 import "../styles/CallToAction.css"
+import { useState } from "react"
 
 const CallToAction = () => {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
   })
+
+  const [email, setEmail] = useState("")
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log("Email submitted:", email)
+    // Add your email submission logic here
+  }
 
   return (
     <section className="cta-section" id="contact" ref={ref}>
@@ -44,17 +53,24 @@ const CallToAction = () => {
             </div>
           </div>
 
-          <motion.div
+          <motion.form
             className="cta-form"
             initial={{ opacity: 0, y: 30 }}
             animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.6, delay: 0.3 }}
+            onSubmit={handleSubmit}
           >
-            <input type="email" placeholder="Enter your email" />
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <motion.button type="submit" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               Get Started Free
             </motion.button>
-          </motion.div>
+          </motion.form>
 
           <p className="privacy-note">
             By signing up, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.

@@ -175,6 +175,39 @@
   margin-left: 4px;
 }
 
+/* Add these styles to ensure the sidebar toggle is always visible */
+.sidebar-toggle-container {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.sidebar-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-toggle.visible {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
 @media (max-width: 768px) {
   .nav-links {
     display: none;
@@ -191,6 +224,17 @@
 
   .login-button {
     padding: 0.5rem 1rem;
+  }
+  /* Ensure the sidebar toggle is visible on mobile */
+  .sidebar-toggle-container {
+    top: 10px;
+    left: 10px;
+  }
+
+  .sidebar-toggle {
+    font-size: 1.2rem;
+    width: 36px;
+    height: 36px;
   }
 }
 

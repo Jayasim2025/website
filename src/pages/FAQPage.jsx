@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Canvas } from "@react-three/fiber"
 import { Environment, OrbitControls } from "@react-three/drei"
 import { Suspense } from "react"
 import Sidebar from "../components/Sidebar"
+import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import LoginModal from "../components/LoginModal"
 import BackgroundScene from "../components/BackgroundScene"
@@ -21,6 +22,16 @@ function FAQPage({ theme, toggleTheme }) {
     email: "",
     question: "",
   })
+
+  useEffect(() => {
+    // Listen for custom event to open login modal
+    const handleOpenLoginModal = () => setShowLoginModal(true)
+    window.addEventListener("open-login-modal", handleOpenLoginModal)
+
+    return () => {
+      window.removeEventListener("open-login-modal", handleOpenLoginModal)
+    }
+  }, [])
 
   const toggleLoginModal = () => {
     setShowLoginModal(!showLoginModal)
@@ -66,6 +77,9 @@ function FAQPage({ theme, toggleTheme }) {
           </Suspense>
         </Canvas>
       </div>
+
+      {/* Always render the Navbar, but conditionally hide it when sidebar is open */}
+      <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
 
       <Sidebar
         theme={theme}

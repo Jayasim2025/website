@@ -48,6 +48,19 @@ function HomePage({ theme, toggleTheme }) {
     }
   }, [location.state])
 
+  // Listen for custom event to open login modal
+  useEffect(() => {
+    const handleOpenLoginModal = () => {
+      setShowLoginModal(true)
+    }
+
+    window.addEventListener("open-login-modal", handleOpenLoginModal)
+
+    return () => {
+      window.removeEventListener("open-login-modal", handleOpenLoginModal)
+    }
+  }, [])
+
   return (
     <>
       <div className="background-container">
@@ -60,7 +73,9 @@ function HomePage({ theme, toggleTheme }) {
         </Canvas>
       </div>
 
-      <Navbar theme={theme} toggleTheme={toggleTheme} />
+      {!sidebarOpen && (
+        <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+      )}
 
       <Sidebar
         theme={theme}

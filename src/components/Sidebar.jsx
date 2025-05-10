@@ -120,13 +120,18 @@ const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }
 
   return (
     <>
-      <motion.div
-        className="sidebar-overlay"
-        variants={overlayVariants}
-        initial="closed"
-        animate={isOpen ? "open" : "closed"}
-        onClick={toggleSidebar}
-      />
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="sidebar-overlay"
+            variants={overlayVariants}
+            initial="closed"
+            animate="open"
+            exit="closed"
+            onClick={toggleSidebar}
+          />
+        )}
+      </AnimatePresence>
 
       <motion.div className="sidebar" variants={sidebarVariants} initial="closed" animate={isOpen ? "open" : "closed"}>
         <div className="sidebar-header">
@@ -168,36 +173,15 @@ const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }
           </nav>
         </div>
 
-        <div className="sidebar-footer">
-          <button className="theme-toggle" onClick={toggleTheme}>
-            <div className="theme-toggle-wrapper">
-              <div className="theme-toggle-icon">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={theme}
-                    initial={{ opacity: 0, rotate: -30 }}
-                    animate={{ opacity: 1, rotate: 0 }}
-                    exit={{ opacity: 0, rotate: 30 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {theme === "light" ? <i className="fas fa-moon"></i> : <i className="fas fa-sun"></i>}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-              <span className="theme-toggle-text">{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
-            </div>
-          </button>
-
-          <button className="login-button" onClick={toggleLoginModal}>
-            <i className="fas fa-user"></i>
-            <span>Log In</span>
-          </button>
-        </div>
+        {/* Removed the sidebar-footer with login and theme toggle buttons */}
       </motion.div>
 
-      <button className="sidebar-toggle" onClick={toggleSidebar}>
-        <i className="fas fa-bars"></i>
-      </button>
+      {/* Only show this button when sidebar is closed and on mobile */}
+      {!isOpen && (
+        <button className="mobile-sidebar-toggle" onClick={toggleSidebar}>
+          <i className="fas fa-bars"></i>
+        </button>
+      )}
     </>
   )
 }

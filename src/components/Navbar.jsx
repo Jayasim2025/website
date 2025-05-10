@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import "../styles/Navbar.css"
 
-const Navbar = ({ theme, toggleTheme, toggleSidebar }) => {
+const Navbar = ({ theme, toggleTheme, toggleSidebar, isSidebarOpen }) => {
   const [scrolled, setScrolled] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +22,32 @@ const Navbar = ({ theme, toggleTheme, toggleSidebar }) => {
       window.removeEventListener("scroll", handleScroll)
     }
   }, [scrolled])
+
+  const handleContactClick = (e) => {
+    e.preventDefault()
+
+    // If we're on the home page, scroll to the contact section
+    if (window.location.pathname === "/") {
+      const contactSection = document.getElementById("contact")
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: "smooth" })
+      }
+    } else {
+      // If we're on another page, navigate to home and then scroll
+      navigate("/", { state: { scrollToSection: "contact" } })
+    }
+  }
+
+  // If sidebar is open, only render the toggle button
+  if (isSidebarOpen) {
+    return (
+      <div className="sidebar-toggle-container">
+        <button className="sidebar-toggle visible" onClick={toggleSidebar} aria-label="Toggle sidebar">
+          <i className="fas fa-bars"></i>
+        </button>
+      </div>
+    )
+  }
 
   return (
     <motion.header
@@ -62,9 +89,9 @@ const Navbar = ({ theme, toggleTheme, toggleSidebar }) => {
             <Link to="/pricing" className="nav-link">
               Pricing
             </Link>
-            <Link to="/#contact" className="nav-link">
+            <a href="#contact" className="nav-link" onClick={handleContactClick}>
               Contact Us
-            </Link>
+            </a>
           </div>
 
           <div className="nav-actions">
@@ -102,15 +129,15 @@ const Navbar = ({ theme, toggleTheme, toggleSidebar }) => {
               </AnimatePresence>
             </motion.button>
 
-            <motion.a
-              href="/login"
+            <motion.button
               className="login-button"
               whileHover={{ scale: 1.05, boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)" }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => window.dispatchEvent(new CustomEvent("open-login-modal"))}
             >
               Log In
               <i className="fas fa-chevron-right"></i>
-            </motion.a>
+            </motion.button>
           </div>
         </div>
       </div>
