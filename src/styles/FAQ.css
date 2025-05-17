@@ -1,0 +1,119 @@
+.faq-section {
+  padding: 6rem 0;
+  background-color: var(--background-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.faq-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: radial-gradient(circle at 80% 20%, rgba(0, 112, 243, 0.05) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.faq-container {
+  margin-top: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.faq-item {
+  background-color: var(--card-background);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: all var(--transition-speed) var(--transition-function);
+}
+
+.faq-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-hover-shadow);
+}
+
+.faq-item.open {
+  box-shadow: var(--card-hover-shadow);
+  border-left: 4px solid var(--primary-color);
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1.5rem;
+  text-align: left;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+  background-color: var(--card-background);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-speed) var(--transition-function);
+}
+
+.faq-question:hover {
+  background-color: var(--primary-light);
+}
+
+.faq-question svg {
+  transition: transform var(--transition-speed) var(--transition-function);
+  color: var(--text-secondary);
+}
+
+.faq-item.open .faq-question {
+  color: var(--primary-color);
+}
+
+.faq-answer {
+  overflow: hidden;
+}
+
+.faq-answer-content {
+  padding: 0 1.5rem 1.5rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.support-cta {
+  margin-top: 3rem;
+  text-align: center;
+  background-color: var(--card-background);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.support-cta p {
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.support-cta .btn {
+  padding: 0.75rem 2rem;
+}
+
+@media (max-width: 768px) {
+  .faq-question {
+    font-size: 1rem;
+    padding: 1.25rem;
+  }
+
+  .faq-answer-content {
+    padding: 0 1.25rem 1.25rem;
+  }
+}

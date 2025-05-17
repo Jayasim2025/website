@@ -1,0 +1,325 @@
+.feedback-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.feedback-header {
+  margin-bottom: 2rem;
+}
+
+.feedback-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feedback-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.search-container {
+  flex: 1;
+  position: relative;
+}
+
+.search-container i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+.search-container input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-secondary);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  transition: all var(--transition-speed) var(--transition-function);
+}
+
+.search-container input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.filter-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.filter-group select {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-secondary);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  transition: all var(--transition-speed) var(--transition-function);
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.feedback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.feedback-card {
+  background-color: var(--card-background);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  transition: all var(--transition-speed) var(--transition-function);
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.feedback-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.feedback-type,
+.feedback-status,
+.feedback-priority {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.feedback-type.bug-report {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.feedback-type.feature-request {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.feedback-type.general-feedback {
+  background-color: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+.feedback-status.open {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.feedback-status.in-progress {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.feedback-status.under-review {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.feedback-status.planned {
+  background-color: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+.feedback-status.closed {
+  background-color: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+.feedback-priority.priority-high {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.feedback-priority.priority-medium {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.feedback-priority.priority-low {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.feedback-date {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.feedback-subject {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.feedback-message {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.feedback-user {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.assigned-to {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.assigned-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.assigned-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  transition: all var(--transition-speed) var(--transition-function);
+  background-color: var(--background-secondary);
+}
+
+.action-button.reply {
+  color: var(--primary-color);
+}
+
+.action-button.assign {
+  color: #3b82f6;
+}
+
+.action-button.close {
+  color: #ef4444;
+}
+
+.action-button.reopen {
+  color: #10b981;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--background-secondary);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  transition: all var(--transition-speed) var(--transition-function);
+}
+
+.pagination-button:hover {
+  background-color: var(--primary-light);
+}
+
+.pagination-button.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.pagination-ellipsis {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .feedback-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .feedback-user {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .assigned-to {
+    align-items: flex-start;
+  }
+
+  .feedback-actions {
+    flex-wrap: wrap;
+  }
+}

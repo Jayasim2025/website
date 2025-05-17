@@ -1,0 +1,229 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap");
+
+:root {
+  /* Colors - Updated to gradient purple theme */
+  --primary-color: #8a2be2;
+  --primary-hover: #7126c0;
+  --primary-light: rgba(138, 43, 226, 0.1);
+  --primary-gradient: linear-gradient(135deg, #6e3dc8 0%, #8a2be2 50%, #a64dff 100%);
+  --primary-gradient-hover: linear-gradient(135deg, #5e2db8 0%, #7a1bd2 50%, #9643ef 100%);
+  --primary-gradient-soft: linear-gradient(
+    135deg,
+    rgba(110, 61, 200, 0.1) 0%,
+    rgba(138, 43, 226, 0.1) 50%,
+    rgba(166, 77, 255, 0.1) 100%
+  );
+
+  --secondary-gradient: linear-gradient(135deg, #4a3b8a 0%, #6e3dc8 100%);
+  --accent-gradient: linear-gradient(135deg, #a64dff 0%, #c78fff 100%);
+
+  --background-gradient: linear-gradient(135deg, #1e1433 0%, #2d1a4a 100%);
+  --card-gradient: linear-gradient(135deg, #2d1a4a 0%, #3a2063 100%);
+  --sidebar-gradient: linear-gradient(180deg, #2d1a4a 0%, #1e1433 100%);
+
+  --secondary-color: #f5f5f5;
+  --text-color: #f5f5f5;
+  --text-secondary: #bbb;
+  --background-color: #1e1433;
+  --background-secondary: #2d1a4a;
+  --border-color: #3a2063;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #3b82f6;
+
+  --card-background: #2d1a4a;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --glow-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+
+  /* Typography */
+  --font-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+  --font-secondary: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
+
+  /* Transitions */
+  --transition-speed: 0.3s;
+  --transition-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Animations */
+  --animation-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --animation-smooth: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Add these CSS variables to your existing theme variables in index.css */
+  --sidebar-hover: rgba(138, 43, 226, 0.2);
+}
+
+[data-theme="light"] {
+  --primary-color: #8a2be2;
+  --primary-hover: #7126c0;
+  --primary-light: rgba(138, 43, 226, 0.1);
+  --primary-gradient: linear-gradient(135deg, #6e3dc8 0%, #8a2be2 50%, #a64dff 100%);
+  --primary-gradient-hover: linear-gradient(135deg, #5e2db8 0%, #7a1bd2 50%, #9643ef 100%);
+  --primary-gradient-soft: linear-gradient(
+    135deg,
+    rgba(110, 61, 200, 0.1) 0%,
+    rgba(138, 43, 226, 0.1) 50%,
+    rgba(166, 77, 255, 0.1) 100%
+  );
+
+  --secondary-gradient: linear-gradient(135deg, #e9e4f8 0%, #d8c8ff 100%);
+  --accent-gradient: linear-gradient(135deg, #a64dff 0%, #c78fff 100%);
+
+  --background-gradient: linear-gradient(135deg, #f8f7fc 0%, #f0ebff 100%);
+  --card-gradient: linear-gradient(135deg, #ffffff 0%, #f8f5ff 100%);
+  --sidebar-gradient: linear-gradient(180deg, #ffffff 0%, #f8f5ff 100%);
+
+  --secondary-color: #f5f5f5;
+  --text-color: #2d1a4a;
+  --text-secondary: #6e3dc8;
+  --background-color: #f8f7fc;
+  --background-secondary: #f0ebff;
+  --border-color: #e0d5ff;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #3b82f6;
+
+  --card-background: #ffffff;
+  --card-shadow: 0 4px 6px rgba(138, 43, 226, 0.08);
+  --glow-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+
+  /* ... existing variables ... */
+  --sidebar-hover: rgba(138, 43, 226, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-primary);
+  line-height: 1.6;
+  color: var(--text-color);
+  background: var(--background-gradient);
+  transition: background-color var(--transition-speed) var(--transition-function), color var(--transition-speed)
+    var(--transition-function);
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-secondary);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-speed) var(--transition-function);
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.section-header p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.placeholder-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  background: var(--background-gradient);
+}
+
+.placeholder-page h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.placeholder-page p {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+  }
+
+  .section-header p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+}
