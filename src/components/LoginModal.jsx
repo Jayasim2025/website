@@ -28,8 +28,8 @@ const LoginModal = ({ onClose }) => {
     try {
       // Create headers with CORS settings
       const headers = {
-        "Content-Type": "application/json",
-        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/json"
+    
       }
 
       if (isLogin) {
