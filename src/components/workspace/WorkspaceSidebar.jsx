@@ -11,9 +11,7 @@ const WorkspaceSidebar = ({ isOpen, toggleSidebar }) => {
   const [workspaceDropdownOpen, setWorkspaceDropdownOpen] = useState(false)
 
   const menuItems = [
-    { id: "home", label: "Home", icon: "home", path: "/workspace" },
-    { id: "projects", label: "Projects", icon: "folder", path: "/workspace/projects" },
-    { id: "settings", label: "Settings", icon: "cog", path: "/workspace/settings" },
+    { id: "dashboard", label: "Dashboard", icon: "tachometer-alt", path: "/workspace" },
     { id: "members", label: "Members", icon: "users", path: "/workspace/members" },
     { id: "billing", label: "Billing", icon: "credit-card", path: "/workspace/billing" },
     { id: "integrations", label: "Integrations", icon: "plug", path: "/workspace/integrations" },
@@ -127,7 +125,7 @@ const WorkspaceSidebar = ({ isOpen, toggleSidebar }) => {
                 <NavLink
                   to={item.path}
                   className={({ isActive }) => (isActive ? "active" : "")}
-                  end={item.id === "home"}
+                  end={item.id === "dashboard"}
                 >
                   <i className={`fas fa-${item.icon}`}></i>
                   <span>{item.label}</span>

@@ -46,14 +46,18 @@ const WorkspaceUserMenu = ({ closeUserMenu, theme, toggleTheme }) => {
             <i className="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
           </button>
+          <button className="user-menu-item" onClick={() => { navigate("/workspace/user-dashboard"); closeUserMenu(); }}>
+            <i className="fas fa-chart-bar"></i>
+            <span>User Dashboard</span>
+          </button>
           <a href="#" className="user-menu-item">
             <i className="fas fa-bell"></i>
             <span>Notifications</span>
           </a>
-          <a href="#" className="user-menu-item">
+          <button className="user-menu-item" onClick={() => { navigate("/workspace/user-settings"); closeUserMenu(); }}>
             <i className="fas fa-cog"></i>
             <span>Account Settings</span>
-          </a>
+          </button>
           <a href="#" className="user-menu-item">
             <i className="fas fa-shield-alt"></i>
             <span>Security Settings</span>

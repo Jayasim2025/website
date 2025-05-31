@@ -8,12 +8,12 @@ import IntegrationsPage from "./pages/IntegrationsPage"
 import FAQPage from "./pages/FAQPage"
 import WorkspaceLayout from "./components/workspace/WorkspaceLayout"
 import Dashboard from "./components/workspace/Dashboard"
-import Projects from "./components/workspace/Projects"
-import Settings from "./components/workspace/Settings"
 import Members from "./components/workspace/Members"
 import Billing from "./components/workspace/Billing"
 import WorkspaceIntegrations from "./components/workspace/Integrations"
 import UserDashboard from "./components/workspace/dashboard/UserDashboard"
+import Editor from "./components/workspace/Editor"
+import UserSettings from "./components/workspace/UserSettings"
 
 // Admin components
 import AdminLayout from "./admin/AdminLayout"
@@ -161,11 +161,11 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Dashboard /> },
-      { path: "projects", element: <Projects /> },
-      { path: "settings", element: <Settings /> },
+      { path: "editor/:fileId?", element: <Editor /> },
       { path: "members", element: <Members /> },
       { path: "billing", element: <Billing /> },
       { path: "integrations", element: <WorkspaceIntegrations /> },
+      { path: "settings", element: <UserSettings /> },
       { path: "dashboard", element: <UserDashboard /> },
     ],
   },
@@ -194,7 +194,7 @@ const router = createBrowserRouter([
       { path: "pricing", element: <Pricing /> },
       { path: "analytics", element: <AdminAnalytics /> },
       { path: "feedback", element: <Feedback /> },
-      { path: "settings", element: <Settings /> },
+      { path: "settings", element: <UserSettings /> },
       { path: "help", element: <AdminHelp /> },
     ],
   },

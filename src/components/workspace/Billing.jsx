@@ -7,8 +7,8 @@ const Billing = () => {
   // Sample plan data
   const plans = [
     {
-      id: "premium",
-      name: "Supertranslate Premium",
+      id: "pro",
+      name: "Pro",
       price: "$20.00/month",
       features: [
         "Up to 20 hours of speech processing",
@@ -21,7 +21,7 @@ const Billing = () => {
     },
     {
       id: "super",
-      name: "Supertranslate Super",
+      name: "Super",
       price: "$60.00/month",
       features: [
         "Up to 50 hours of speech processing",
@@ -34,7 +34,7 @@ const Billing = () => {
     },
     {
       id: "business",
-      name: "Supertranslate Business",
+      name: "Business",
       price: "$200.00/month",
       features: [
         "Up to 200 hours of speech processing",
