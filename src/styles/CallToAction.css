@@ -144,24 +144,54 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* Add these styles to fix the grey backgrounds in light mode */
+/* Light mode styles for better visibility */
 [data-theme="light"] .cta-section {
-  background-color: #ffffff;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
 [data-theme="light"] .cta-content {
-  background-color: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .cta-content h2 {
+  color: #1a202c;
+}
+
+[data-theme="light"] .cta-content p {
+  color: #4a5568;
+}
+
+[data-theme="light"] .feature {
+  color: #2d3748;
+}
+
+[data-theme="light"] .feature i {
+  color: #a855f7;
 }
 
 [data-theme="light"] .cta-form input {
   background-color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: #333;
+  border: 2px solid #e2e8f0;
+  color: #2d3748;
+}
+
+[data-theme="light"] .cta-form input::placeholder {
+  color: #a0aec0;
+}
+
+[data-theme="light"] .cta-form input:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+[data-theme="light"] .privacy-note {
+  color: #718096;
+}
+
+[data-theme="light"] .privacy-note a {
+  color: #a855f7;
 }
 
 @media (max-width: 992px) {

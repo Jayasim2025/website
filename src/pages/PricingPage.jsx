@@ -6,7 +6,7 @@ import { Canvas } from "@react-three/fiber"
 import { Environment, OrbitControls } from "@react-three/drei"
 import { Suspense } from "react"
 import { useLocation } from "react-router-dom"
-import Sidebar from "../components/Sidebar"
+import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import LoginModal from "../components/LoginModal"
 import BackgroundScene from "../components/BackgroundScene"
@@ -14,7 +14,6 @@ import "../styles/PricingPage.css"
 
 function PricingPage({ theme, toggleTheme }) {
   const [showLoginModal, setShowLoginModal] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [pricingType, setPricingType] = useState("individual")
   const location = useLocation()
 
@@ -31,10 +30,6 @@ function PricingPage({ theme, toggleTheme }) {
 
   const toggleLoginModal = () => {
     setShowLoginModal(!showLoginModal)
-  }
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
   }
 
   const togglePricingType = () => {
@@ -159,15 +154,9 @@ function PricingPage({ theme, toggleTheme }) {
         </Canvas>
       </div>
 
-      <Sidebar
-        theme={theme}
-        toggleTheme={toggleTheme}
-        isOpen={sidebarOpen}
-        toggleSidebar={toggleSidebar}
-        toggleLoginModal={toggleLoginModal}
-      />
+      <Navbar theme={theme} toggleTheme={toggleTheme} toggleLoginModal={toggleLoginModal} />
 
-      <main className={`main-content ${sidebarOpen ? "sidebar-open" : ""}`}>
+      <main className="main-content">
         <div className="pricing-page">
           <div className="container">
             <motion.div

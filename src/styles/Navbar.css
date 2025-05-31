@@ -32,6 +32,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  height: 100%;
 }
 
 .sidebar-toggle {
@@ -46,10 +47,12 @@
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
+  margin: 0;
+  padding: 0;
 }
 
 .sidebar-toggle:hover {
-  background-color: var(--primary-light);
+  background-color: rgba(168, 85, 247, 0.1);
   color: var(--primary-color);
 }
 
@@ -74,6 +77,7 @@
   border-radius: 8px;
   font-weight: bold;
   box-shadow: var(--glow-shadow);
+  font-size: 1.2rem;
 }
 
 .logo-text {
