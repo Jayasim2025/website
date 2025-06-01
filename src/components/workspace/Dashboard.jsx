@@ -4,46 +4,36 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import "../../styles/workspace/Dashboard.css"
-import FolderModal from "./FolderModal"
-import LanguageSelectionModal from "./LanguageSelectionModal"
-import FileUploadModal from "./FileUploadModal"
-import FileViewer from "./FileViewer"
+
 
 const Dashboard = () => {
+  const [selectedLanguage, setSelectedLanguage] = useState("en")
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
-  const [draggedFile, setDraggedFile] = useState(null)
-  const [showFolderModal, setShowFolderModal] = useState(false)
-  const [showLanguageModal, setShowLanguageModal] = useState(false)
-  const [showUploadModal, setShowUploadModal] = useState(false)
-  const [folders, setFolders] = useState([])
-  const [currentFolder, setCurrentFolder] = useState(null)
-  const [files, setFiles] = useState({})
-  const [selectedFile, setSelectedFile] = useState(null)
-  const [showFileViewer, setShowFileViewer] = useState(false)
+  const [projects, setProjects] = useState([])
   const navigate = useNavigate()
 
-  // Load folders from localStorage on component mount
-  useEffect(() => {
-    const savedFolders = localStorage.getItem("folders")
-    if (savedFolders) {
-      setFolders(JSON.parse(savedFolders))
-    }
+  const languages = [
+    { code: "en", name: "English (US)", flag: "🇺🇸" },
+    { code: "de", name: "German (Standard)", flag: "🇩🇪" },
+    { code: "es", name: "Spanish (Castilian)", flag: "🇪🇸" },
+    { code: "hi", name: "Hindi (Standard)", flag: "🇮🇳" },
+    { code: "fr", name: "French (Standard)", flag: "🇫🇷" },
+    { code: "it", name: "Italian (Standard)", flag: "🇮🇹" },
+    { code: "ja", name: "Japanese (Standard)", flag: "🇯🇵" },
+    { code: "ko", name: "Korean (Standard)", flag: "🇰🇷" },
+    { code: "pt", name: "Portuguese (European)", flag: "🇵🇹" },
+    { code: "ru", name: "Russian (Standard)", flag: "🇷🇺" },
+    { code: "zh", name: "Chinese (Mandarin)", flag: "🇨🇳" },
+  ]
 
-    const savedFiles = localStorage.getItem("files")
-    if (savedFiles) {
-      setFiles(JSON.parse(savedFiles))
+  // Load projects from localStorage
+  useEffect(() => {
+    const savedProjects = localStorage.getItem("translationProjects")
+    if (savedProjects) {
+      setProjects(JSON.parse(savedProjects))
     }
   }, [])
-
-  // Save folders to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem("folders", JSON.stringify(folders))
-  }, [folders])
-
-  // Save files to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem("files", JSON.stringify(files))
-  }, [files])
 
   const handleDragOver = (e) => {
     e.preventDefault()
@@ -57,295 +47,205 @@ const Dashboard = () => {
   const handleDrop = (e) => {
     e.preventDefault()
     setIsDragging(false)
-
-    // Handle file drop
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setDraggedFile(e.dataTransfer.files[0])
-      // In a real app, you would upload the file here
+    const files = e.dataTransfer.files
+    if (files.length > 0) {
+      handleFileUpload(files[0])
     }
   }
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setDraggedFile(e.target.files[0])
-      // In a real app, you would upload the file here
+  const handleFileSelect = (e) => {
+    const files = e.target.files
+    if (files.length > 0) {
+      handleFileUpload(files[0])
     }
   }
 
-  // Update the startGeneration function to handle a single language selection
-  const startGeneration = () => {
-    if (currentFolder) {
-      setShowLanguageModal(true)
-    } else {
-      // If no folder is selected, show a message or create a default folder
-      setShowFolderModal(true)
+  const handleFileUpload = (file) => {
+    // Validate file type
+    if (!file.type.includes("audio") && !file.type.includes("video")) {
+      alert("Please upload an audio or video file")
+      return
     }
-  }
 
-  // Update the handleLanguageSelected function to handle a single language
-  const handleLanguageSelected = (languages) => {
-    setShowLanguageModal(false)
-    setShowUploadModal(true)
-    // Store selected language for later use
-    localStorage.setItem("selectedLanguages", JSON.stringify(languages))
-  }
-
-  const handleFileUploaded = (file) => {
-    setShowUploadModal(false)
-
-    if (currentFolder) {
-      // Add file to the current folder
-      const newFiles = { ...files }
-      if (!newFiles[currentFolder.id]) {
-        newFiles[currentFolder.id] = []
-      }
-
-      const newFile = {
-        id: Date.now().toString(),
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        uploadedAt: new Date().toISOString(),
-        status: "completed",
-        languages: JSON.parse(localStorage.getItem("selectedLanguages") || "[]"),
-      }
-
-      newFiles[currentFolder.id] = [...newFiles[currentFolder.id], newFile]
-      setFiles(newFiles)
-    }
-  }
-
-  const openFile = (file) => {
-    setSelectedFile(file)
-    setShowFileViewer(true)
-  }
-
-  const closeFileViewer = () => {
-    setShowFileViewer(false)
-    setSelectedFile(null)
-  }
-
-  const goBackToRoot = () => {
-    setCurrentFolder(null)
-  }
-
-  const openFolder = (folder) => {
-    setCurrentFolder(folder)
-  }
-
-  const createFolder = (folderName) => {
-    const newFolder = {
+    // Create new project
+    const newProject = {
       id: Date.now().toString(),
-      name: folderName,
-      createdAt: new Date().toISOString(),
+      name: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
+      duration: "Processing...", // Will be updated after processing
+      aiGeneration: "PROCESSING",
+      date: new Date().toLocaleString(),
+      status: "processing",
+      file: file,
+      language: selectedLanguage
     }
-    setFolders([...folders, newFolder])
+
+    // Add to projects
+    const updatedProjects = [...projects, newProject]
+    setProjects(updatedProjects)
+    localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
+
+    // Simulate processing
+    setTimeout(() => {
+      const processed = updatedProjects.map(p => 
+        p.id === newProject.id 
+          ? { ...p, aiGeneration: "SUCCESS", status: "completed", duration: "02:35" }
+          : p
+      )
+      setProjects(processed)
+      localStorage.setItem("translationProjects", JSON.stringify(processed))
+    }, 3000)
   }
+
+  const openEditor = (project) => {
+    // Store current project in localStorage for editor
+    localStorage.setItem("currentProject", JSON.stringify(project))
+    navigate("/workspace/editor")
+  }
+
+  const selectedLang = languages.find(lang => lang.code === selectedLanguage)
 
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h1>Home</h1>
-        <p>Upload audio or video files to instantly generate speech-to-text transcriptions.</p>
+        <div className="org-info">
+          <span className="org-label">ORGANIZATION</span>
+          <h1>Team Translatea2z</h1>
+          <div className="org-badges">
+            <span className="badge admin">ADMIN</span>
+            <span className="credits">Credits: 106</span>
+            <span className="view-teams">View Teams</span>
+            <button className="org-settings">
+              <i className="fas fa-cog"></i> View Organization Settings
+            </button>
+          </div>
+        </div>
+        <div className="org-date">Created 8 months ago</div>
       </div>
 
-      <div className="dashboard-content">
-        <div className="files-header">
-          <div className="files-title">
-            {currentFolder ? (
-              <div className="breadcrumb">
-                <span className="breadcrumb-item clickable" onClick={goBackToRoot}>
-                  <i className="fas fa-folder"></i>
-                  <span>All Files</span>
-                </span>
-                <i className="fas fa-chevron-right breadcrumb-separator"></i>
-                <span className="breadcrumb-item current">
-                  <i className="fas fa-folder-open"></i>
-                  <span>{currentFolder.name}</span>
-                </span>
-              </div>
-            ) : (
-              <>
-                <i className="fas fa-folder"></i>
-                <span>All Files</span>
-              </>
-            )}
-          </div>
-          <div className="files-actions">
-            <motion.button
-              className="new-folder-button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowFolderModal(true)}
+      <div className="upload-section">
+        <div className="language-selection">
+          <h2>Choose Output Language</h2>
+          <p>Choose the language you want to transcribe your audio into. If you choose the same language as the audio language then the transcription will be in the same language as the audio. Else, the transcription will be automatically translated into the language you choose.</p>
+          
+          <div className="language-dropdown">
+            <button 
+              className="language-selector"
+              onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
             >
-              <i className="fas fa-folder-plus"></i>
-              <span>New Folder</span>
-            </motion.button>
-            <motion.button
-              className="start-generation-button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={startGeneration}
-            >
-              <i className="fas fa-bolt"></i>
-              <span>Start Generation</span>
-            </motion.button>
+              <span className="selected-language">
+                <span className="flag">{selectedLang?.flag}</span>
+                <span className="name">{selectedLang?.name}</span>
+              </span>
+              <i className={`fas fa-chevron-down ${isLanguageDropdownOpen ? 'open' : ''}`}></i>
+            </button>
+
+            <AnimatePresence>
+              {isLanguageDropdownOpen && (
+                <motion.div 
+                  className="language-options"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {languages.map((language) => (
+                    <button
+                      key={language.code}
+                      className={`language-option ${selectedLanguage === language.code ? 'selected' : ''}`}
+                      onClick={() => {
+                        setSelectedLanguage(language.code)
+                        setIsLanguageDropdownOpen(false)
+                      }}
+                    >
+                      <span className="flag">{language.flag}</span>
+                      <span className="name">{language.name}</span>
+                      {selectedLanguage === language.code && <i className="fas fa-check"></i>}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
-        {!currentFolder && folders.length === 0 && !isDragging && (
-          <div
-            className={`upload-area ${isDragging ? "dragging" : ""}`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            <div className="upload-content">
-              <div className="upload-icon">
-                <i className="fas fa-file-upload"></i>
-              </div>
-              <h2>Start transcribing your media</h2>
-              <p>Upload an audio or video file to instantly generate transcriptions</p>
-
-              <div className="upload-actions">
-                <motion.button
-                  className="upload-button"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowFolderModal(true)}
-                >
-                  <i className="fas fa-folder-plus"></i>
-                  <span>New Folder</span>
-                </motion.button>
-                <motion.button
-                  className="generation-button"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={startGeneration}
-                >
-                  <i className="fas fa-bolt"></i>
-                  <span>Start Generation</span>
-                </motion.button>
-              </div>
-            </div>
+        <div 
+          className={`upload-area ${isDragging ? 'dragging' : ''}`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => document.getElementById('file-input').click()}
+        >
+          <div className="upload-icon">
+            <i className="fas fa-cloud-upload-alt"></i>
           </div>
-        )}
+          <h3>Click to upload video or audio files</h3>
+          <p className="supported-formats">MP4, MOV, AVI, WMV, FLV, MKV, WEBM, MP3, M4A, WAV, AAC</p>
+          <p className="upload-tip">Pro tip: Use audio files for quicker conversion. Max length: 120 minutes. Max size: 1.5 GB</p>
+          
+          <input
+            id="file-input"
+            type="file"
+            accept="audio/*,video/*"
+            onChange={handleFileSelect}
+            style={{ display: 'none' }}
+          />
+        </div>
+      </div>
 
-        {!currentFolder && folders.length > 0 && (
-          <div className="folders-grid">
-            {folders.map((folder) => (
-              <motion.div
-                key={folder.id}
-                className="folder-item"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => openFolder(folder)}
-              >
-                <div className="folder-icon">
-                  <i className="fas fa-folder"></i>
-                </div>
-                <div className="folder-details">
-                  <span className="folder-name">{folder.name}</span>
-                  <div className="folder-meta">
-                    <span className="folder-count">{files[folder.id] ? files[folder.id].length : 0} items</span>
-                    <span className="folder-date">{new Date(folder.createdAt).toLocaleDateString()} ago</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+      <div className="projects-section">
+        <div className="projects-header">
+          <h2>Projects</h2>
+          <p>A list of all the translations in your workspace</p>
+        </div>
+
+        <div className="projects-table">
+          <div className="table-header">
+            <div className="col-name">Name</div>
+            <div className="col-duration">Duration(s)</div>
+            <div className="col-ai">AI Generation</div>
+            <div className="col-date">Date</div>
+            <div className="col-status">Project Status</div>
+            <div className="col-edit">Edit</div>
           </div>
-        )}
 
-        {currentFolder && (
-          <div className="folder-content">
-            {!files[currentFolder.id] || files[currentFolder.id].length === 0 ? (
-              <div className="empty-folder">
-                <div className="empty-folder-icon">
-                  <i className="fas fa-folder-open"></i>
-                </div>
-                <h3>This folder is empty</h3>
-                <p>Upload media files to generate transcriptions in this folder</p>
-                <div className="empty-folder-actions">
-                  <motion.button
-                    className="new-folder-button"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setShowFolderModal(true)}
-                  >
-                    <i className="fas fa-folder-plus"></i>
-                    <span>New Folder</span>
-                  </motion.button>
-                  <motion.button
-                    className="back-button"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={goBackToRoot}
-                  >
-                    <i className="fas fa-arrow-left"></i>
-                    <span>Back to Directory</span>
-                  </motion.button>
-                  <motion.button
-                    className="generation-button"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={startGeneration}
-                  >
-                    <i className="fas fa-bolt"></i>
-                    <span>Start Generation</span>
-                  </motion.button>
-                </div>
+          <div className="table-body">
+            {projects.length === 0 ? (
+              <div className="empty-state">
+                <p>No projects yet. Upload your first audio or video file to get started!</p>
               </div>
             ) : (
-              <div className="files-grid">
-                {files[currentFolder.id].map((file) => (
-                  <motion.div
-                    key={file.id}
-                    className="file-item"
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => openFile(file)}
-                  >
-                    <div className="file-icon">
-                      <i className={file.type.includes("audio") ? "fas fa-file-audio" : "fas fa-file-video"}></i>
-                    </div>
-                    <div className="file-details">
-                      <span className="file-name">{file.name}</span>
-                      <div className="file-meta">
-                        <span className="file-size">{(file.size / (1024 * 1024)).toFixed(2)} MB</span>
-                        <span className="file-date">{new Date(file.uploadedAt).toLocaleDateString()}</span>
-                      </div>
-                      <div className="file-status">
-                        <span className={`status-badge ${file.status}`}>{file.status}</span>
-                        <div className="file-actions">
-                          <button className="action-button edit">
-                            <i className="fas fa-edit"></i>
-                          </button>
-                          <button className="action-button download">
-                            <i className="fas fa-download"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+              projects.map((project) => (
+                <div key={project.id} className="table-row">
+                  <div className="col-name">
+                    <span className="project-name">{project.name}</span>
+                  </div>
+                  <div className="col-duration">{project.duration}</div>
+                  <div className="col-ai">
+                    <span className={`status-badge ${project.aiGeneration.toLowerCase()}`}>
+                      {project.aiGeneration}
+                    </span>
+                  </div>
+                  <div className="col-date">{project.date}</div>
+                  <div className="col-status">
+                    <span className={`project-status ${project.status}`}>
+                      <i className="fas fa-circle"></i>
+                      {project.status === 'completed' ? 'Draft' : 'Processing'}
+                    </span>
+                  </div>
+                  <div className="col-edit">
+                    <button 
+                      className="edit-button"
+                      onClick={() => openEditor(project)}
+                      disabled={project.status === 'processing'}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </div>
+              ))
             )}
           </div>
-        )}
-
-        <AnimatePresence>
-          {showFolderModal && <FolderModal onClose={() => setShowFolderModal(false)} onCreateFolder={createFolder} />}
-          {showLanguageModal && (
-            <LanguageSelectionModal
-              onClose={() => setShowLanguageModal(false)}
-              onLanguageSelected={handleLanguageSelected}
-            />
-          )}
-          {showUploadModal && (
-            <FileUploadModal onClose={() => setShowUploadModal(false)} onFileUploaded={handleFileUploaded} />
-          )}
-          {showFileViewer && selectedFile && <FileViewer file={selectedFile} onClose={closeFileViewer} />}
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   )
