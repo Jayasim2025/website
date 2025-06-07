@@ -89,6 +89,7 @@ const Dashboard = () => {
     }
   }
 
+  // Enhanced file upload with comprehensive metadata for backend API
   const handleFileUpload = async (file) => {
     // Validate file type
     if (!file.type.includes("audio") && !file.type.includes("video")) {
@@ -99,37 +100,108 @@ const Dashboard = () => {
     setIsLoading(true)
 
     try {
-      // In production, upload to backend API
-      // const formData = new FormData()
-      // formData.append('file', file)
-      // formData.append('language', selectedLanguage)
-      //
-      // const response = await fetch('/api/upload', {
-      //   method: 'POST',
-      //   body: formData
-      // })
-      // const result = await response.json()
+      // Extract comprehensive file metadata for backend API
+      const fileMetadata = await extractFileMetadata(file)
 
-      // Create new project (mock data for now)
+      // Prepare comprehensive data for backend API integration
+      const uploadData = {
+        // File Information
+        file: file,
+        fileName: file.name,
+        fullFileName: file.name,
+        fileSize: file.size,
+        fileSizeFormatted: formatFileSize(file.size),
+        fileType: file.type,
+
+        // Media Information
+        isVideo: file.type.includes("video"),
+        isAudio: file.type.includes("audio"),
+        duration: fileMetadata.duration,
+        durationFormatted: formatDuration(fileMetadata.duration),
+
+        // Project Information
+        language: selectedLanguage,
+        languageName: languages.find((l) => l.code === selectedLanguage)?.name,
+
+        // Folder and Organization
+        folderName: `project_${Date.now()}`,
+        projectId: `proj_${Date.now()}`,
+
+        // Timestamps
+        uploadedAt: new Date().toISOString(),
+        createdAt: Date.now(),
+
+        // Additional metadata for backend processing
+        metadata: {
+          videoLength: fileMetadata.duration,
+          audioVideoFile: file,
+          folderName: `uploads/${Date.now()}`,
+          fullFileName: file.name,
+          sizeOfFile: file.size,
+          language: selectedLanguage,
+          // Additional technical details
+          bitrate: fileMetadata.bitrate || null,
+          resolution: fileMetadata.resolution || null,
+          frameRate: fileMetadata.frameRate || null,
+          audioChannels: fileMetadata.audioChannels || null,
+          sampleRate: fileMetadata.sampleRate || null,
+        },
+      }
+
+      // Backend API Integration Point
+      // This is where the backend team will integrate their API
+      const backendResponse = await uploadToBackend(uploadData)
+
+      // Create new project with comprehensive data
       const newProject = {
-        id: Date.now().toString(),
+        id: uploadData.projectId,
         name: file.name.replace(/\.[^/.]+$/, ""),
-        duration: "Processing...",
+        duration: uploadData.durationFormatted,
         aiGeneration: "PROCESSING",
         date: new Date().toLocaleString(),
         status: "processing",
-        file: file,
+
+        // File metadata for editor
+        fileData: {
+          file: file,
+          fileName: uploadData.fileName,
+          fileSize: uploadData.fileSize,
+          fileSizeFormatted: uploadData.fileSizeFormatted,
+          fileType: file.type,
+          isVideo: uploadData.isVideo,
+          isAudio: uploadData.isAudio,
+          duration: fileMetadata.duration,
+          durationSeconds: fileMetadata.duration,
+        },
+
+        // Language and processing info
         language: selectedLanguage,
+        languageName: uploadData.languageName,
+
+        // Backend response data
+        backendData: backendResponse,
+
+        // Metadata for backend integration
+        uploadMetadata: uploadData.metadata,
       }
 
       const updatedProjects = [...projects, newProject]
       setProjects(updatedProjects)
       localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
 
-      // Simulate processing
+      // Simulate processing with realistic timing
       setTimeout(() => {
         const processed = updatedProjects.map((p) =>
-          p.id === newProject.id ? { ...p, aiGeneration: "SUCCESS", status: "completed", duration: "23:55" } : p,
+          p.id === newProject.id
+            ? {
+                ...p,
+                aiGeneration: "SUCCESS",
+                status: "completed",
+                // Simulate backend response with subtitles
+                subtitlesGenerated: true,
+                subtitlesCount: 15, // This will come from backend
+              }
+            : p,
         )
         setProjects(processed)
         localStorage.setItem("translationProjects", JSON.stringify(processed))
@@ -142,10 +214,123 @@ const Dashboard = () => {
     }
   }
 
+  // Extract comprehensive file metadata
+  const extractFileMetadata = (file) => {
+    return new Promise((resolve) => {
+      const video = document.createElement(file.type.includes("video") ? "video" : "audio")
+      const url = URL.createObjectURL(file)
+
+      video.addEventListener("loadedmetadata", () => {
+        const metadata = {
+          duration: video.duration || 0,
+          videoWidth: video.videoWidth || null,
+          videoHeight: video.videoHeight || null,
+          resolution: video.videoWidth ? `${video.videoWidth}x${video.videoHeight}` : null,
+        }
+
+        URL.revokeObjectURL(url)
+        resolve(metadata)
+      })
+
+      video.addEventListener("error", () => {
+        URL.revokeObjectURL(url)
+        resolve({ duration: 0 })
+      })
+
+      video.src = url
+    })
+  }
+
+  // Backend API integration function
+  const uploadToBackend = async (uploadData) => {
+    try {
+      // This is where backend team will integrate their API
+      const formData = new FormData()
+
+      // Add file
+      formData.append("file", uploadData.file)
+
+      // Add metadata as JSON
+      formData.append(
+        "metadata",
+        JSON.stringify({
+          videoLength: uploadData.metadata.videoLength,
+          folderName: uploadData.metadata.folderName,
+          fullFileName: uploadData.metadata.fullFileName,
+          sizeOfFile: uploadData.metadata.sizeOfFile,
+          language: uploadData.metadata.language,
+          fileType: uploadData.fileType,
+          isVideo: uploadData.isVideo,
+          isAudio: uploadData.isAudio,
+          projectId: uploadData.projectId,
+          uploadedAt: uploadData.uploadedAt,
+        }),
+      )
+
+      // Backend API call
+      // const response = await fetch('/api/upload-media', {
+      //   method: 'POST',
+      //   body: formData,
+      //   headers: {
+      //     'Authorization': `Bearer ${getAuthToken()}`,
+      //   }
+      // })
+      //
+      // if (!response.ok) {
+      //   throw new Error(`Upload failed: ${response.statusText}`)
+      // }
+      //
+      // const result = await response.json()
+      // return result
+
+      // Mock response for development
+      return {
+        success: true,
+        projectId: uploadData.projectId,
+        processingId: `proc_${Date.now()}`,
+        estimatedProcessingTime: Math.ceil(uploadData.metadata.videoLength / 60) * 30, // 30 seconds per minute
+        message: "File uploaded successfully and processing started",
+      }
+    } catch (error) {
+      console.error("Backend upload error:", error)
+      throw error
+    }
+  }
+
+  // Utility functions
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
+
+  const formatDuration = (seconds) => {
+    if (!seconds || seconds === 0) return "0:00"
+    const hrs = Math.floor(seconds / 3600)
+    const mins = Math.floor((seconds % 3600) / 60)
+    const secs = Math.floor(seconds % 60)
+
+    if (hrs > 0) {
+      return `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
+    }
+    return `${mins}:${secs.toString().padStart(2, "0")}`
+  }
+
   const openEditor = (project) => {
     if (project.status === "processing") return
 
-    localStorage.setItem("currentProject", JSON.stringify(project))
+    // Store comprehensive project data for editor
+    const editorData = {
+      ...project,
+      // Ensure all necessary data is available for editor
+      fileMetadata: project.fileData,
+      uploadMetadata: project.uploadMetadata,
+      backendData: project.backendData,
+    }
+
+    localStorage.setItem("currentProject", JSON.stringify(editorData))
     navigate("/workspace/editor")
   }
 
@@ -153,8 +338,13 @@ const Dashboard = () => {
     if (!confirm("Are you sure you want to delete this project?")) return
 
     try {
-      // API call to delete project
-      // await fetch(`/api/projects/${projectId}`, { method: 'DELETE' })
+      // API call to delete project and associated files
+      // await fetch(`/api/projects/${projectId}`, {
+      //   method: 'DELETE',
+      //   headers: {
+      //     'Authorization': `Bearer ${getAuthToken()}`,
+      //   }
+      // })
 
       const updatedProjects = projects.filter((p) => p.id !== projectId)
       setProjects(updatedProjects)
@@ -304,6 +494,12 @@ const Dashboard = () => {
                         <span className="project-name" title={project.name}>
                           {project.name.length > 35 ? `${project.name.substring(0, 35)}...` : project.name}
                         </span>
+                        <div className="project-meta">
+                          <span className="file-type">{project.fileData?.isVideo ? "Video" : "Audio"}</span>
+                          {project.fileData?.fileSizeFormatted && (
+                            <span className="file-size">{project.fileData.fileSizeFormatted}</span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="col-duration">
