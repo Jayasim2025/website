@@ -27,14 +27,15 @@ const Editor = () => {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [isUndoRedoAction, setIsUndoRedoAction] = useState(false)
 
-  // Waveform and zoom
+  // Enhanced waveform interaction states
   const [zoomLevel, setZoomLevel] = useState(100) // 10-500%
   const [selectedSubtitleId, setSelectedSubtitleId] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
-  const [dragStartX, setDragStartX] = useState(0)
-  const [dragStartTime, setDragStartTime] = useState(0)
   const [isResizing, setIsResizing] = useState(false)
   const [resizeHandle, setResizeHandle] = useState(null) // 'left' or 'right'
+  const [dragStartX, setDragStartX] = useState(0)
+  const [dragStartTime, setDragStartTime] = useState(0)
+  const [hoveredHandle, setHoveredHandle] = useState(null)
 
   // Dialog states
   const [showAddSpeakerDialog, setShowAddSpeakerDialog] = useState(false)
@@ -51,7 +52,7 @@ const Editor = () => {
     includeSpeakerNames: true,
     maxCharacters: 82,
     maxLines: 3,
-    minDuration: 0.5,
+    minDuration: 0.1, // Very small minimum for precise editing
     maxDuration: 5,
     fontSize: 16,
     fontFamily: "Arial",
@@ -117,7 +118,6 @@ const Editor = () => {
       ]
 
       // Generate 15 sample subtitles for demonstration
-      // In production, this will come from backend API response
       const sampleSubtitles = generateSampleSubtitles(projectData.fileData?.durationSeconds || 176)
 
       setSpeakers(sampleSpeakers)
@@ -133,15 +133,12 @@ const Editor = () => {
       }
       setHistory([initialState])
       setHistoryIndex(0)
-
-      // Backend API integration point for loading subtitles
-      // await loadSubtitlesFromBackend(projectData.id)
     } catch (error) {
       console.error("Error loading project data:", error)
     }
   }
 
-  // Generate 15 sample subtitles distributed across the duration
+  // Generate sample subtitles distributed across the duration
   const generateSampleSubtitles = (totalDuration) => {
     const subtitleCount = 15
     const avgDuration = totalDuration / subtitleCount
@@ -181,26 +178,6 @@ const Editor = () => {
         duration: (endSeconds - startSeconds).toFixed(1),
       }
     })
-  }
-
-  // Backend API integration for loading subtitles
-  const loadSubtitlesFromBackend = async (projectId) => {
-    try {
-      // This will be integrated by backend team
-      // const response = await fetch(`/api/projects/${projectId}/subtitles`, {
-      //   headers: {
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   }
-      // })
-      //
-      // if (response.ok) {
-      //   const data = await response.json()
-      //   setSubtitles(data.subtitles)
-      //   setSpeakers(data.speakers)
-      // }
-    } catch (error) {
-      console.error("Error loading subtitles from backend:", error)
-    }
   }
 
   // History management functions
@@ -302,7 +279,6 @@ const Editor = () => {
     if (currentSubtitleIndex > 0) {
       handleSeek(subtitles[currentSubtitleIndex - 1].startSeconds)
     } else if (currentSubtitleIndex === -1 && subtitles.length > 0) {
-      // If not in any subtitle, go to the last one before current time
       const previousSubtitle = subtitles.reverse().find((sub) => sub.endSeconds < currentTime)
       if (previousSubtitle) {
         handleSeek(previousSubtitle.startSeconds)
@@ -318,7 +294,6 @@ const Editor = () => {
     if (currentSubtitleIndex !== -1 && currentSubtitleIndex < subtitles.length - 1) {
       handleSeek(subtitles[currentSubtitleIndex + 1].startSeconds)
     } else if (currentSubtitleIndex === -1 && subtitles.length > 0) {
-      // If not in any subtitle, go to the next one after current time
       const nextSubtitle = subtitles.find((sub) => sub.startSeconds > currentTime)
       if (nextSubtitle) {
         handleSeek(nextSubtitle.startSeconds)
@@ -351,127 +326,203 @@ const Editor = () => {
     handleSeek(duration)
   }
 
-  // Enhanced drag and drop with resizing capability
-  const handleSubtitleMouseDown = (e, subtitleId, handle = null) => {
-    e.preventDefault()
-    setSelectedSubtitleId(subtitleId)
-    setDragStartX(e.clientX)
-    setDragStartTime(currentTime)
+  // Convert pixel position to time
+  const getTimeFromPosition = useCallback(
+    (clientX) => {
+      if (!waveformRef.current) return 0
 
-    if (handle) {
-      setIsResizing(true)
-      setResizeHandle(handle)
-    } else {
-      setIsDragging(true)
-    }
+      const rect = waveformRef.current.getBoundingClientRect()
+      const relativeX = clientX - rect.left
+      const scrollLeft = waveformRef.current.scrollLeft
 
-    // Add global mouse event listeners
-    document.addEventListener("mousemove", handleSubtitleMouseMove)
-    document.addEventListener("mouseup", handleSubtitleMouseUp)
-  }
+      // Calculate the total width of the timeline
+      const totalWidth = rect.width * (zoomLevel / 100)
 
+      // Calculate the actual position considering scroll
+      const actualX = relativeX + scrollLeft
+
+      // Convert to time
+      const timeRatio = actualX / totalWidth
+      const time = timeRatio * duration
+
+      return Math.max(0, Math.min(duration, time))
+    },
+    [duration, zoomLevel],
+  )
+
+  // Handle mouse down on subtitle blocks
+  const handleSubtitleMouseDown = useCallback(
+    (e, subtitleId, handle = null) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      const subtitle = subtitles.find((sub) => sub.id === subtitleId)
+      if (!subtitle) return
+
+      setSelectedSubtitleId(subtitleId)
+      setDragStartX(e.clientX)
+      setDragStartTime(getTimeFromPosition(e.clientX))
+
+      if (handle) {
+        setIsResizing(true)
+        setResizeHandle(handle)
+        console.log(`Starting resize on ${handle} handle for subtitle ${subtitleId}`)
+      } else {
+        setIsDragging(true)
+        console.log(`Starting drag for subtitle ${subtitleId}`)
+      }
+
+      // Add global mouse event listeners
+      const handleMouseMove = (moveEvent) => {
+        handleSubtitleMouseMove(moveEvent, subtitle)
+      }
+
+      const handleMouseUp = () => {
+        handleSubtitleMouseUp()
+        document.removeEventListener("mousemove", handleMouseMove)
+        document.removeEventListener("mouseup", handleMouseUp)
+      }
+
+      document.addEventListener("mousemove", handleMouseMove)
+      document.addEventListener("mouseup", handleMouseUp)
+
+      // Prevent text selection during drag
+      document.body.style.userSelect = "none"
+    },
+    [subtitles, getTimeFromPosition],
+  )
+
+  // Handle mouse move during drag/resize
   const handleSubtitleMouseMove = useCallback(
-    (e) => {
-      if ((!isDragging && !isResizing) || !selectedSubtitleId || !waveformRef.current) return
+    (e, originalSubtitle) => {
+      if ((!isDragging && !isResizing) || !selectedSubtitleId) return
 
-      const deltaX = e.clientX - dragStartX
-      const waveformWidth = waveformRef.current.offsetWidth
-      const sensitivity = 0.3
-      const timePerPixel = (duration / waveformWidth) * sensitivity
-      const timeDelta = deltaX * timePerPixel
+      const currentMouseTime = getTimeFromPosition(e.clientX)
 
       if (isResizing) {
-        // Handle resizing
+        console.log(`Resizing ${resizeHandle} handle to time: ${currentMouseTime}`)
+
         const updatedSubtitles = subtitles.map((sub) => {
           if (sub.id === selectedSubtitleId) {
+            let newStartSeconds = sub.startSeconds
+            let newEndSeconds = sub.endSeconds
+
             if (resizeHandle === "left") {
-              const newStartSeconds = Math.max(0, sub.startSeconds + timeDelta)
-              const newEndSeconds = Math.max(newStartSeconds + 0.5, sub.endSeconds)
-              return {
-                ...sub,
-                startSeconds: newStartSeconds,
-                endSeconds: newEndSeconds,
-                startTime: formatSecondsToTime(newStartSeconds),
-                endTime: formatSecondsToTime(newEndSeconds),
-                duration: (newEndSeconds - newStartSeconds).toFixed(1),
+              // Resize from left - change start time
+              newStartSeconds = currentMouseTime
+
+              // Ensure minimum duration
+              if (newEndSeconds - newStartSeconds < settings.minDuration) {
+                newStartSeconds = newEndSeconds - settings.minDuration
               }
+
+              // Don't go below 0
+              newStartSeconds = Math.max(0, newStartSeconds)
             } else if (resizeHandle === "right") {
-              const newEndSeconds = Math.min(duration, Math.max(sub.startSeconds + 0.5, sub.endSeconds + timeDelta))
-              return {
-                ...sub,
-                endSeconds: newEndSeconds,
-                endTime: formatSecondsToTime(newEndSeconds),
-                duration: (newEndSeconds - sub.startSeconds).toFixed(1),
+              // Resize from right - change end time
+              newEndSeconds = currentMouseTime
+
+              // Ensure minimum duration
+              if (newEndSeconds - newStartSeconds < settings.minDuration) {
+                newEndSeconds = newStartSeconds + settings.minDuration
               }
+
+              // Don't exceed total duration
+              newEndSeconds = Math.min(duration, newEndSeconds)
             }
-          }
-          return sub
-        })
-        setSubtitles(updatedSubtitles)
-      } else if (isDragging) {
-        // Handle dragging
-        const updatedSubtitles = subtitles.map((sub) => {
-          if (sub.id === selectedSubtitleId) {
-            const newStartSeconds = Math.max(0, sub.startSeconds + timeDelta)
-            const newEndSeconds = Math.max(newStartSeconds + 1, sub.endSeconds + timeDelta)
-            const constrainedEndSeconds = Math.min(duration, newEndSeconds)
 
             return {
               ...sub,
               startSeconds: newStartSeconds,
-              endSeconds: constrainedEndSeconds,
+              endSeconds: newEndSeconds,
               startTime: formatSecondsToTime(newStartSeconds),
-              endTime: formatSecondsToTime(constrainedEndSeconds),
-              duration: (constrainedEndSeconds - newStartSeconds).toFixed(1),
+              endTime: formatSecondsToTime(newEndSeconds),
+              duration: (newEndSeconds - newStartSeconds).toFixed(1),
             }
           }
           return sub
         })
+
+        setSubtitles(updatedSubtitles)
+      } else if (isDragging) {
+        // Handle dragging - move the entire block
+        const timeDelta = currentMouseTime - dragStartTime
+        const subtitleDuration = originalSubtitle.endSeconds - originalSubtitle.startSeconds
+
+        let newStartSeconds = originalSubtitle.startSeconds + timeDelta
+        let newEndSeconds = originalSubtitle.endSeconds + timeDelta
+
+        // Keep within bounds
+        if (newStartSeconds < 0) {
+          newStartSeconds = 0
+          newEndSeconds = subtitleDuration
+        }
+        if (newEndSeconds > duration) {
+          newEndSeconds = duration
+          newStartSeconds = duration - subtitleDuration
+        }
+
+        const updatedSubtitles = subtitles.map((sub) => {
+          if (sub.id === selectedSubtitleId) {
+            return {
+              ...sub,
+              startSeconds: newStartSeconds,
+              endSeconds: newEndSeconds,
+              startTime: formatSecondsToTime(newStartSeconds),
+              endTime: formatSecondsToTime(newEndSeconds),
+              duration: (newEndSeconds - newStartSeconds).toFixed(1),
+            }
+          }
+          return sub
+        })
+
         setSubtitles(updatedSubtitles)
       }
 
       setHasUnsavedChanges(true)
     },
-    [isDragging, isResizing, selectedSubtitleId, dragStartX, duration, subtitles, resizeHandle],
+    [
+      isDragging,
+      isResizing,
+      selectedSubtitleId,
+      dragStartTime,
+      subtitles,
+      resizeHandle,
+      settings.minDuration,
+      duration,
+      getTimeFromPosition,
+    ],
   )
 
+  // Handle mouse up
   const handleSubtitleMouseUp = useCallback(() => {
     if ((isDragging || isResizing) && selectedSubtitleId) {
-      const action = isResizing ? `Resize subtitle ${selectedSubtitleId}` : `Move subtitle ${selectedSubtitleId}`
+      const action = isResizing
+        ? `Resize subtitle ${selectedSubtitleId} (${resizeHandle})`
+        : `Move subtitle ${selectedSubtitleId}`
       saveToHistory(action)
-
-      // Backend API call to update subtitle timing
-      // updateSubtitleTiming(selectedSubtitleId, updatedTiming)
+      console.log(`Completed: ${action}`)
     }
 
+    // Reset all drag states
     setIsDragging(false)
     setIsResizing(false)
-    setSelectedSubtitleId(null)
     setResizeHandle(null)
     setDragStartX(0)
     setDragStartTime(0)
 
-    // Remove global mouse event listeners
-    document.removeEventListener("mousemove", handleSubtitleMouseMove)
-    document.removeEventListener("mouseup", handleSubtitleMouseUp)
-  }, [isDragging, isResizing, selectedSubtitleId, saveToHistory])
+    // Restore text selection
+    document.body.style.userSelect = ""
+  }, [isDragging, isResizing, selectedSubtitleId, resizeHandle, saveToHistory])
 
-  // Backend API integration for subtitle timing updates
-  const updateSubtitleTiming = async (subtitleId, timing) => {
-    try {
-      // Backend integration point
-      // await fetch(`/api/subtitles/${subtitleId}/timing`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify(timing)
-      // })
-    } catch (error) {
-      console.error("Error updating subtitle timing:", error)
-    }
-  }
+  // Handle mouse events for resize handles
+  const handleHandleMouseEnter = useCallback((handle) => {
+    setHoveredHandle(handle)
+  }, [])
+
+  const handleHandleMouseLeave = useCallback(() => {
+    setHoveredHandle(null)
+  }, [])
 
   const getSpeakerName = (speakerId) => {
     const speaker = speakers.find((s) => s.id === speakerId)
@@ -485,12 +536,10 @@ const Editor = () => {
 
   const handleExport = async (format) => {
     try {
-      // Apply settings to export
       const exportData = {
         subtitles: subtitles.map((sub) => ({
           ...sub,
           text: settings.includeSpeakerNames ? `${getSpeakerName(sub.speakerId)}: ${sub.text}` : sub.text,
-          // Apply character limit
           text:
             sub.text.length > settings.maxCharacters ? sub.text.substring(0, settings.maxCharacters) + "..." : sub.text,
         })),
@@ -499,16 +548,6 @@ const Editor = () => {
         projectId: project.id,
       }
 
-      // Backend API call for export
-      // const response = await fetch('/api/export', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify(exportData)
-      // })
-
       console.log(`Exporting as ${format} with settings:`, exportData)
       setShowExportMenu(false)
     } catch (error) {
@@ -516,36 +555,47 @@ const Editor = () => {
     }
   }
 
-  const handleSubtitleEdit = async (id, newText) => {
-    // Apply character limit from settings
+  const handleSelectSubtitle = (id) => {
+    setSelectedSubtitleId(id)
+
+    const subtitle = subtitles.find((sub) => sub.id === id)
+    if (subtitle) {
+      const waveformContainer = waveformRef.current
+      if (waveformContainer) {
+        const leftPercent = (subtitle.startSeconds / duration) * 100 * (zoomLevel / 100)
+        const scrollPosition = (leftPercent / 100) * waveformContainer.scrollWidth
+        waveformContainer.scrollLeft = scrollPosition - waveformContainer.clientWidth / 3
+      }
+    }
+  }
+
+  const handleSubtitleEdit = async (id, newText, newTiming = null) => {
     const limitedText = newText.length > settings.maxCharacters ? newText.substring(0, settings.maxCharacters) : newText
 
-    const updatedSubtitles = subtitles.map((sub) =>
-      sub.id === id
-        ? {
-            ...sub,
-            text: limitedText,
-            characters: limitedText.length,
-          }
-        : sub,
-    )
+    const updatedSubtitles = subtitles.map((sub) => {
+      if (sub.id === id) {
+        const updatedSub = {
+          ...sub,
+          text: limitedText,
+          characters: limitedText.length,
+        }
+
+        if (newTiming) {
+          const { startSeconds, endSeconds } = newTiming
+          updatedSub.startSeconds = startSeconds
+          updatedSub.endSeconds = endSeconds
+          updatedSub.startTime = formatSecondsToTime(startSeconds)
+          updatedSub.endTime = formatSecondsToTime(endSeconds)
+          updatedSub.duration = (endSeconds - startSeconds).toFixed(1)
+        }
+
+        return updatedSub
+      }
+      return sub
+    })
 
     setSubtitles(updatedSubtitles)
     saveToHistory(`Edit subtitle ${id}`, updatedSubtitles)
-
-    // Backend API call to save subtitle changes
-    try {
-      // await fetch(`/api/subtitles/${id}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify({ text: limitedText, settings })
-      // })
-    } catch (error) {
-      console.error("Save error:", error)
-    }
   }
 
   const splitSubtitle = async (id, type) => {
@@ -557,7 +607,6 @@ const Editor = () => {
       const index = newSubtitles.findIndex((s) => s.id === id)
 
       if (type === "word") {
-        // Split at the middle word
         const words = subtitle.text.split(" ")
         const midPoint = Math.ceil(words.length / 2)
         const firstHalf = words.slice(0, midPoint).join(" ")
@@ -584,7 +633,6 @@ const Editor = () => {
           duration: (subtitle.endSeconds - midTime).toFixed(1),
         })
       } else if (type === "half") {
-        // Split text in half
         const midPoint = Math.ceil(subtitle.text.length / 2)
         const firstHalf = subtitle.text.substring(0, midPoint)
         const secondHalf = subtitle.text.substring(midPoint)
@@ -613,16 +661,6 @@ const Editor = () => {
 
       setSubtitles(newSubtitles)
       saveToHistory(`Split subtitle ${id} by ${type}`, newSubtitles)
-
-      // Backend API call to split subtitle
-      // await fetch(`/api/subtitles/${id}/split`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify({ type, newSubtitles })
-      // })
     } catch (error) {
       console.error("Split error:", error)
     }
@@ -652,16 +690,6 @@ const Editor = () => {
 
       setSubtitles(newSubtitles)
       saveToHistory(`Merge subtitle ${id} with above`, newSubtitles)
-
-      // Backend API call to merge subtitles
-      // await fetch(`/api/subtitles/${id}/merge`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify({ newSubtitles })
-      // })
     } catch (error) {
       console.error("Merge error:", error)
     }
@@ -676,21 +704,6 @@ const Editor = () => {
 
   const handleSaveChanges = async () => {
     try {
-      // Backend API call to save all changes
-      // await fetch(`/api/projects/${project.id}/save`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify({
-      //     subtitles,
-      //     speakers,
-      //     settings,
-      //     timestamp: Date.now()
-      //   })
-      // })
-
       setHasUnsavedChanges(false)
       console.log("All changes saved successfully")
     } catch (error) {
@@ -704,23 +717,8 @@ const Editor = () => {
 
   const confirmMarkComplete = async () => {
     try {
-      // Backend API call to mark project as complete
-      // await fetch(`/api/projects/${project.id}/complete`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify({
-      //     subtitles,
-      //     speakers,
-      //     settings,
-      //     completedAt: new Date().toISOString()
-      //   })
-      // })
-
       setShowMarkCompleteDialog(false)
-      navigate("/workspace") // Navigate to dashboard
+      navigate("/workspace")
     } catch (error) {
       console.error("Complete error:", error)
     }
@@ -742,16 +740,6 @@ const Editor = () => {
       saveToHistory("Add speaker", subtitles, newSpeakers)
       setNewSpeakerName("")
       setShowAddSpeakerDialog(false)
-
-      // Backend API call to add speaker
-      // await fetch('/api/speakers', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify(newSpeaker)
-      // })
     } catch (error) {
       console.error("Add speaker error:", error)
     }
@@ -770,16 +758,6 @@ const Editor = () => {
       setNewSpeakerName("")
       setEditingSpeaker(null)
       setShowEditSpeakerDialog(false)
-
-      // Backend API call to update speaker
-      // await fetch(`/api/speakers/${editingSpeaker.id}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify({ name: newSpeakerName.trim() })
-      // })
     } catch (error) {
       console.error("Edit speaker error:", error)
     }
@@ -799,16 +777,6 @@ const Editor = () => {
       setSelectedSpeaker("")
       setChangingSubtitleId(null)
       setShowChangeSpeakerDialog(false)
-
-      // Backend API call to update subtitle speaker
-      // await fetch(`/api/subtitles/${changingSubtitleId}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify({ speakerId })
-      // })
     } catch (error) {
       console.error("Change speaker error:", error)
     }
@@ -823,7 +791,6 @@ const Editor = () => {
       setSettings(tempSettings)
       saveToHistory("Apply settings", subtitles, speakers, tempSettings)
 
-      // Apply settings to all subtitles
       const updatedSubtitles = subtitles.map((subtitle) => ({
         ...subtitle,
         text:
@@ -834,17 +801,6 @@ const Editor = () => {
       }))
 
       setSubtitles(updatedSubtitles)
-
-      // Backend API call to save settings
-      // await fetch(`/api/projects/${project.id}/settings`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   },
-      //   body: JSON.stringify(tempSettings)
-      // })
-
       console.log("Settings applied successfully")
     } catch (error) {
       console.error("Apply settings error:", error)
@@ -876,7 +832,6 @@ const Editor = () => {
     return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
-  // Waveform functions
   const handleZoomChange = (newZoom) => {
     setZoomLevel(Math.max(10, Math.min(500, newZoom)))
   }
@@ -1003,21 +958,48 @@ const Editor = () => {
             <div className="subtitles-section">
               <div className="subtitles-list">
                 {subtitles.map((subtitle, index) => (
-                  <div key={subtitle.id} className="subtitle-entry">
+                  <div
+                    key={subtitle.id}
+                    id={`subtitle-${subtitle.id}`}
+                    className={`subtitle-entry ${selectedSubtitleId === subtitle.id ? "selected-subtitle" : ""}`}
+                    onClick={() => handleSelectSubtitle(subtitle.id)}
+                  >
                     <div className="subtitle-header">
                       <div className="subtitle-number">
-                        ({subtitle.id}/{subtitles.length}) <i className="fas fa-play"></i>
+                        ({subtitle.id}/{subtitles.length})
+                        <i
+                          className="fas fa-play"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleSeek(subtitle.startSeconds)
+                          }}
+                        ></i>
                       </div>
                       <div className="subtitle-actions">
-                        <button className="action-btn" onClick={() => splitSubtitle(subtitle.id, "word")}>
+                        <button
+                          className="action-btn"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            splitSubtitle(subtitle.id, "word")
+                          }}
+                        >
                           <i className="fas fa-cut"></i> Split at word
                         </button>
-                        <button className="action-btn" onClick={() => splitSubtitle(subtitle.id, "half")}>
+                        <button
+                          className="action-btn"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            splitSubtitle(subtitle.id, "half")
+                          }}
+                        >
                           <i className="fas fa-cut"></i> Split into half
                         </button>
                         <button
                           className="action-btn"
-                          onClick={() => mergeWithAbove(subtitle.id)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            mergeWithAbove(subtitle.id)
+                          }}
                           disabled={index === 0}
                         >
                           <i className="fas fa-arrow-up"></i> Merge with above
@@ -1032,7 +1014,10 @@ const Editor = () => {
                         </div>
                         <button
                           className="speaker-label clickable"
-                          onClick={() => openChangeSpeakerDialog(subtitle.id, subtitle.speakerId)}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openChangeSpeakerDialog(subtitle.id, subtitle.speakerId)
+                          }}
                         >
                           {getSpeakerName(subtitle.speakerId)}
                         </button>
@@ -1043,6 +1028,7 @@ const Editor = () => {
                           className="subtitle-textarea"
                           value={subtitle.text}
                           onChange={(e) => handleSubtitleEdit(subtitle.id, e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
                           placeholder="Enter subtitle text..."
                           maxLength={settings.maxCharacters}
                         />
@@ -1338,7 +1324,6 @@ const Editor = () => {
                         >
                           <option value={12}>12px</option>
                           <option value={14}>14px</option>
-                          <option value={16}>16px</option>
                           <option value={18}>18px</option>
                           <option value={20}>20px</option>
                         </select>
@@ -1363,6 +1348,7 @@ const Editor = () => {
                           onChange={(e) => handleTempSettingsChange("minDuration", Number.parseFloat(e.target.value))}
                           className="setting-select"
                         >
+                          <option value={0.1}>0.1 second</option>
                           <option value={0.5}>0.5 second</option>
                           <option value={1}>1 second</option>
                           <option value={2}>2 seconds</option>
@@ -1503,58 +1489,94 @@ const Editor = () => {
         </div>
       </div>
 
-      {/* Enhanced Waveform Timeline with Resizing */}
+      {/* Enhanced Waveform Timeline with Drag & Drop */}
       <div className="waveform-container" ref={waveformRef}>
-        <div className="timeline-markers" style={{ transform: `scaleX(${zoomLevel / 100})` }}>
-          {Array.from({ length: Math.ceil((duration * (zoomLevel / 100)) / 5) }, (_, i) => (
-            <div key={i} className="timeline-marker">
-              <div className="marker-tick"></div>
-              <div className="marker-label">{formatTimeShort((i * 5) / (zoomLevel / 100))}</div>
-            </div>
-          ))}
+        <div className="timeline-markers" style={{ width: `${zoomLevel}%` }}>
+          {Array.from({ length: Math.ceil((duration * zoomLevel) / 500) + 1 }, (_, i) => {
+            const timeStep = 500 / zoomLevel // seconds per marker
+            const time = i * timeStep
+            if (time > duration) return null
+
+            return (
+              <div key={i} className="timeline-marker" style={{ left: `${(time / duration) * 100}%` }}>
+                <div className="marker-tick"></div>
+                <div className="marker-label">{formatTimeShort(time)}</div>
+              </div>
+            )
+          })}
         </div>
-        <div className="waveform-content">
+        <div className="waveform-content" style={{ width: `${zoomLevel}%` }}>
           {subtitles.map((subtitle) => {
-            const leftPercent = (subtitle.startSeconds / duration) * 100 * (zoomLevel / 100)
-            const widthPercent = ((subtitle.endSeconds - subtitle.startSeconds) / duration) * 100 * (zoomLevel / 100)
+            const leftPercent = (subtitle.startSeconds / duration) * 100
+            const widthPercent = ((subtitle.endSeconds - subtitle.startSeconds) / duration) * 100
+            const isSelected = selectedSubtitleId === subtitle.id
 
             return (
               <div
                 key={subtitle.id}
-                className={`waveform-block ${selectedSubtitleId === subtitle.id ? "selected" : ""}`}
+                className={`waveform-block ${isSelected ? "selected" : ""} ${isDragging && isSelected ? "dragging" : ""} ${isResizing && isSelected ? "resizing" : ""}`}
                 style={{
                   left: `${leftPercent}%`,
-                  width: `${Math.max(widthPercent, 2)}%`,
+                  width: `${Math.max(widthPercent, 0.5)}%`,
                   cursor: isDragging ? "grabbing" : "grab",
                   borderColor: getSpeakerColor(subtitle.speakerId),
+                  backgroundColor: isSelected
+                    ? `${getSpeakerColor(subtitle.speakerId)}60`
+                    : `${getSpeakerColor(subtitle.speakerId)}30`,
                 }}
                 onMouseDown={(e) => handleSubtitleMouseDown(e, subtitle.id)}
-                onClick={() => handleSeek(subtitle.startSeconds)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (!isDragging && !isResizing) {
+                    handleSeek(subtitle.startSeconds)
+                    setSelectedSubtitleId(subtitle.id)
+
+                    const subtitleElement = document.getElementById(`subtitle-${subtitle.id}`)
+                    if (subtitleElement) {
+                      subtitleElement.scrollIntoView({ behavior: "smooth", block: "center" })
+                    }
+                  }
+                }}
               >
-                <div className="block-text">{subtitle.text}</div>
-                <div className="block-handles">
-                  <div
-                    className="handle-left"
-                    onMouseDown={(e) => {
-                      e.stopPropagation()
-                      handleSubtitleMouseDown(e, subtitle.id, "left")
-                    }}
-                  ></div>
-                  <div
-                    className="handle-right"
-                    onMouseDown={(e) => {
-                      e.stopPropagation()
-                      handleSubtitleMouseDown(e, subtitle.id, "right")
-                    }}
-                  ></div>
+                <div className="block-content">
+                  <div className="block-text">{subtitle.text}</div>
+                  <div className="block-time">
+                    {formatTimeShort(subtitle.startSeconds)} - {formatTimeShort(subtitle.endSeconds)}
+                  </div>
+                </div>
+
+                {/* Enhanced Resize Handles */}
+                <div
+                  className={`resize-handle resize-handle-left ${hoveredHandle === "left" ? "hovered" : ""} ${isSelected ? "visible" : ""}`}
+                  onMouseDown={(e) => {
+                    e.stopPropagation()
+                    handleSubtitleMouseDown(e, subtitle.id, "left")
+                  }}
+                  onMouseEnter={() => handleHandleMouseEnter("left")}
+                  onMouseLeave={handleHandleMouseLeave}
+                  style={{ cursor: "ew-resize" }}
+                  title="Drag to resize from left"
+                >
+                  <div className="handle-indicator"></div>
+                </div>
+
+                <div
+                  className={`resize-handle resize-handle-right ${hoveredHandle === "right" ? "hovered" : ""} ${isSelected ? "visible" : ""}`}
+                  onMouseDown={(e) => {
+                    e.stopPropagation()
+                    handleSubtitleMouseDown(e, subtitle.id, "right")
+                  }}
+                  onMouseEnter={() => handleHandleMouseEnter("right")}
+                  onMouseLeave={handleHandleMouseLeave}
+                  style={{ cursor: "ew-resize" }}
+                  title="Drag to resize from right"
+                >
+                  <div className="handle-indicator"></div>
                 </div>
               </div>
             )
           })}
-          <div
-            className="timeline-cursor"
-            style={{ left: `${(currentTime / duration) * 100 * (zoomLevel / 100)}%` }}
-          ></div>
+          <div className="timeline-cursor" style={{ left: `${(currentTime / duration) * 100}%` }}></div>
         </div>
       </div>
 
