@@ -51,9 +51,9 @@ const Editor = () => {
   const [settings, setSettings] = useState({
     includeSpeakerNames: true,
     maxCharacters: 82,
-    maxLines: 3,
-    minDuration: 0.1, // Very small minimum for precise editing
-    maxDuration: 5,
+    maxLines: 2,
+    minDuration: 1.0,
+    maxDuration: 6.0,
     fontSize: 16,
     fontFamily: "Arial",
     textColor: "#ffffff",
@@ -211,6 +211,7 @@ const Editor = () => {
       setSubtitles(prevState.subtitles)
       setSpeakers(prevState.speakers)
       setSettings(prevState.settings)
+      setTempSettings(prevState.settings) // Update temp settings too
       setHistoryIndex(historyIndex - 1)
       setHasUnsavedChanges(true)
       setTimeout(() => setIsUndoRedoAction(false), 100)
@@ -224,6 +225,7 @@ const Editor = () => {
       setSubtitles(nextState.subtitles)
       setSpeakers(nextState.speakers)
       setSettings(nextState.settings)
+      setTempSettings(nextState.settings) // Update temp settings too
       setHistoryIndex(historyIndex + 1)
       setHasUnsavedChanges(true)
       setTimeout(() => setIsUndoRedoAction(false), 100)
@@ -427,6 +429,11 @@ const Editor = () => {
                 newEndSeconds = newStartSeconds + settings.minDuration
               }
 
+              // Ensure maximum duration
+              if (newEndSeconds - newStartSeconds > settings.maxDuration) {
+                newEndSeconds = newStartSeconds + settings.maxDuration
+              }
+
               // Don't exceed total duration
               newEndSeconds = Math.min(duration, newEndSeconds)
             }
@@ -489,6 +496,7 @@ const Editor = () => {
       subtitles,
       resizeHandle,
       settings.minDuration,
+      settings.maxDuration,
       duration,
       getTimeFromPosition,
     ],
@@ -537,12 +545,20 @@ const Editor = () => {
   const handleExport = async (format) => {
     try {
       const exportData = {
-        subtitles: subtitles.map((sub) => ({
-          ...sub,
-          text: settings.includeSpeakerNames ? `${getSpeakerName(sub.speakerId)}: ${sub.text}` : sub.text,
-          text:
-            sub.text.length > settings.maxCharacters ? sub.text.substring(0, settings.maxCharacters) + "..." : sub.text,
-        })),
+        subtitles: subtitles.map((sub) => {
+          // Process text with speaker names if needed
+          let processedText = settings.includeSpeakerNames ? `${getSpeakerName(sub.speakerId)}: ${sub.text}` : sub.text
+
+          // Then apply character limit
+          if (processedText.length > settings.maxCharacters) {
+            processedText = processedText.substring(0, settings.maxCharacters) + "..."
+          }
+
+          return {
+            ...sub,
+            text: processedText,
+          }
+        }),
         settings,
         format,
         projectId: project.id,
@@ -791,6 +807,7 @@ const Editor = () => {
       setSettings(tempSettings)
       saveToHistory("Apply settings", subtitles, speakers, tempSettings)
 
+      // Apply character limit to existing subtitles
       const updatedSubtitles = subtitles.map((subtitle) => ({
         ...subtitle,
         text:
@@ -1168,79 +1185,43 @@ const Editor = () => {
           </div>
         )}
 
-        {/* Enhanced Speakers Tab */}
+        {/* Simplified Speakers Tab */}
         {activeTab === "speakers" && (
-          <div className="speakers-tab">
-            <div className="speakers-header">
-              <div className="header-content">
-                <h2>Speaker Management</h2>
-                <p className="speakers-description">
-                  Manage speakers for your subtitle project. Changes will affect all subtitles.
-                </p>
-              </div>
-              <button className="add-speaker-btn" onClick={() => setShowAddSpeakerDialog(true)}>
-                <i className="fas fa-plus"></i>
-                Add New Speaker
-              </button>
-            </div>
+          <div className="speakers-tab-simple">
+            <div className="speakers-content">
+              <h2>Speakers</h2>
 
-            <div className="speakers-grid">
-              {speakers.map((speaker, index) => (
-                <div key={speaker.id} className="speaker-card">
-                  <div className="speaker-card-header">
-                    <div className="speaker-avatar" style={{ backgroundColor: speaker.color }}>
-                      <span className="speaker-initial">{speaker.name.charAt(0).toUpperCase()}</span>
-                    </div>
-                    <div className="speaker-info">
-                      <h3 className="speaker-name">{speaker.name}</h3>
-                      <p className="speaker-stats">
-                        {subtitles.filter((s) => s.speakerId === speaker.id).length} subtitles assigned
-                      </p>
-                    </div>
-                    <button className="edit-speaker-btn" onClick={() => openEditSpeakerDialog(speaker)}>
+              <div className="speakers-list-simple">
+                {speakers.map((speaker, index) => (
+                  <div key={speaker.id} className="speaker-item-simple">
+                    <span className="speaker-number">{index + 1}.</span>
+                    <span className="speaker-name">{speaker.name}</span>
+                    <button
+                      className="speaker-edit-btn-simple"
+                      onClick={() => openEditSpeakerDialog(speaker)}
+                      title="Edit speaker"
+                    >
                       <i className="fas fa-edit"></i>
                     </button>
                   </div>
+                ))}
+              </div>
 
-                  <div className="speaker-card-body">
-                    <div className="speaker-color-indicator">
-                      <span className="color-label">Color:</span>
-                      <div className="color-swatch" style={{ backgroundColor: speaker.color }}></div>
-                    </div>
-
-                    <div className="speaker-usage-bar">
-                      <div className="usage-label">Usage in project</div>
-                      <div className="usage-progress">
-                        <div
-                          className="usage-fill"
-                          style={{
-                            width: `${(subtitles.filter((s) => s.speakerId === speaker.id).length / subtitles.length) * 100}%`,
-                            backgroundColor: speaker.color,
-                          }}
-                        ></div>
-                      </div>
-                      <div className="usage-percentage">
-                        {Math.round(
-                          (subtitles.filter((s) => s.speakerId === speaker.id).length / subtitles.length) * 100,
-                        )}
-                        %
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <button className="add-speaker-btn-simple" onClick={() => setShowAddSpeakerDialog(true)}>
+                Add Speaker
+              </button>
             </div>
           </div>
         )}
 
-        {/* Enhanced Settings Tab */}
+        {/* Simplified Settings Tab */}
         {activeTab === "settings" && (
-          <div className="settings-tab">
+          <div className="settings-tab-simple">
             <div className="settings-header">
               <div className="header-content">
-                <h2>Subtitle Settings</h2>
+                <h2>Settings</h2>
                 <p className="settings-description">
-                  Configure how your subtitles are generated, formatted, and exported.
+                  Configure subtitle formatting, timing, and export preferences for your project.
                 </p>
               </div>
               <button className="apply-settings-btn" onClick={handleApplySettings}>
@@ -1252,10 +1233,12 @@ const Editor = () => {
             <div className="settings-content">
               <div className="settings-row">
                 <div className="settings-column">
+                  {/* General Settings Card */}
                   <div className="settings-card">
                     <div className="card-header">
                       <h3>
-                        <i className="fas fa-toggle-on"></i> Display Options
+                        <i className="fas fa-cog"></i>
+                        General Settings
                       </h3>
                     </div>
                     <div className="card-body">
@@ -1268,25 +1251,25 @@ const Editor = () => {
                           />
                           <span className="toggle-slider"></span>
                           <div className="toggle-content">
-                            <span className="toggle-title">Include Speaker Names</span>
-                            <span className="toggle-description">
-                              Add speaker names before subtitle text in exports
-                            </span>
+                            <div className="toggle-title">Include Speaker Names</div>
+                            <div className="toggle-description">Add speaker names to subtitle text when exporting</div>
                           </div>
                         </label>
                       </div>
                     </div>
                   </div>
 
+                  {/* Subtitle Guidelines Card */}
                   <div className="settings-card">
                     <div className="card-header">
                       <h3>
-                        <i className="fas fa-ruler"></i> Text Formatting
+                        <i className="fas fa-align-left"></i>
+                        Subtitle Guidelines
                       </h3>
                     </div>
                     <div className="card-body">
                       <div className="setting-item">
-                        <label className="setting-label">Maximum Characters per Subtitle</label>
+                        <label className="setting-label">Max characters per subtitle</label>
                         <select
                           value={tempSettings.maxCharacters}
                           onChange={(e) => handleTempSettingsChange("maxCharacters", Number.parseInt(e.target.value))}
@@ -1298,11 +1281,11 @@ const Editor = () => {
                           <option value={82}>82 characters</option>
                           <option value={100}>100 characters</option>
                         </select>
-                        <span className="setting-help">Limits text length per subtitle section</span>
+                        <div className="setting-help">Recommended: 42-82 characters for optimal readability</div>
                       </div>
 
                       <div className="setting-item">
-                        <label className="setting-label">Maximum Lines per Subtitle</label>
+                        <label className="setting-label">Max lines per subtitle</label>
                         <select
                           value={tempSettings.maxLines}
                           onChange={(e) => handleTempSettingsChange("maxLines", Number.parseInt(e.target.value))}
@@ -1312,110 +1295,76 @@ const Editor = () => {
                           <option value={2}>2 lines</option>
                           <option value={3}>3 lines</option>
                         </select>
-                        <span className="setting-help">Maximum lines for subtitle display</span>
+                        <div className="setting-help">Most platforms support 1-2 lines maximum</div>
                       </div>
 
                       <div className="setting-item">
-                        <label className="setting-label">Font Size</label>
-                        <select
-                          value={tempSettings.fontSize}
-                          onChange={(e) => handleTempSettingsChange("fontSize", Number.parseInt(e.target.value))}
-                          className="setting-select"
-                        >
-                          <option value={12}>12px</option>
-                          <option value={14}>14px</option>
-                          <option value={18}>18px</option>
-                          <option value={20}>20px</option>
-                        </select>
-                        <span className="setting-help">Font size for subtitle text</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="settings-column">
-                  <div className="settings-card">
-                    <div className="card-header">
-                      <h3>
-                        <i className="fas fa-clock"></i> Timing Controls
-                      </h3>
-                    </div>
-                    <div className="card-body">
-                      <div className="setting-item">
-                        <label className="setting-label">Minimum Duration (seconds)</label>
+                        <label className="setting-label">Min duration (seconds)</label>
                         <select
                           value={tempSettings.minDuration}
                           onChange={(e) => handleTempSettingsChange("minDuration", Number.parseFloat(e.target.value))}
                           className="setting-select"
                         >
-                          <option value={0.1}>0.1 second</option>
-                          <option value={0.5}>0.5 second</option>
+                          <option value={0.5}>0.5 seconds</option>
                           <option value={1}>1 second</option>
+                          <option value={1.5}>1.5 seconds</option>
                           <option value={2}>2 seconds</option>
                         </select>
-                        <span className="setting-help">Minimum time each subtitle must be shown</span>
+                        <div className="setting-help">Minimum time a subtitle should be displayed</div>
                       </div>
 
                       <div className="setting-item">
-                        <label className="setting-label">Maximum Duration (seconds)</label>
+                        <label className="setting-label">Max duration (seconds)</label>
                         <select
                           value={tempSettings.maxDuration}
                           onChange={(e) => handleTempSettingsChange("maxDuration", Number.parseFloat(e.target.value))}
                           className="setting-select"
                         >
                           <option value={3}>3 seconds</option>
+                          <option value={4}>4 seconds</option>
                           <option value={5}>5 seconds</option>
                           <option value={6}>6 seconds</option>
                           <option value={8}>8 seconds</option>
+                          <option value={10}>10 seconds</option>
                         </select>
-                        <span className="setting-help">Maximum time each subtitle can be shown</span>
+                        <div className="setting-help">Maximum time a subtitle should be displayed</div>
                       </div>
                     </div>
                   </div>
+                </div>
 
+                <div className="settings-column">
+                  {/* Preview Card */}
                   <div className="settings-card">
                     <div className="card-header">
                       <h3>
-                        <i className="fas fa-eye"></i> Live Preview
+                        <i className="fas fa-eye"></i>
+                        Preview
                       </h3>
                     </div>
                     <div className="card-body">
                       <div className="preview-container">
-                        <div
-                          className="preview-subtitle"
-                          style={{
-                            fontSize: `${tempSettings.fontSize}px`,
-                            fontFamily: tempSettings.fontFamily,
-                            color: tempSettings.textColor,
-                            backgroundColor: tempSettings.backgroundColor,
-                            textAlign: tempSettings.textAlign,
-                          }}
-                        >
-                          {tempSettings.includeSpeakerNames && (
-                            <span className="preview-speaker" style={{ color: getSpeakerColor(0) }}>
-                              {getSpeakerName(0)}:{" "}
-                            </span>
-                          )}
+                        <div className="preview-subtitle">
                           <span className="preview-text">
-                            {subtitles[0]?.text.substring(0, tempSettings.maxCharacters) || "Sample subtitle text"}
-                            {subtitles[0]?.text.length > tempSettings.maxCharacters && "..."}
+                            {tempSettings.includeSpeakerNames && <span className="preview-speaker">Speaker 1: </span>}
+                            This is a sample subtitle text that shows how your settings will look when applied to the
+                            actual subtitles.
                           </span>
                         </div>
-
                         <div className="preview-stats">
                           <div className="stat-item">
-                            <span className="stat-label">Characters:</span>
-                            <span className="stat-value">
-                              {
-                                (subtitles[0]?.text.substring(0, tempSettings.maxCharacters) || "Sample subtitle text")
-                                  .length
-                              }
-                              /{tempSettings.maxCharacters}
-                            </span>
+                            <span className="stat-label">Max Chars:</span>
+                            <span className="stat-value">{tempSettings.maxCharacters}</span>
                           </div>
                           <div className="stat-item">
-                            <span className="stat-label">Lines:</span>
-                            <span className="stat-value">1/{tempSettings.maxLines}</span>
+                            <span className="stat-label">Max Lines:</span>
+                            <span className="stat-value">{tempSettings.maxLines}</span>
+                          </div>
+                          <div className="stat-item">
+                            <span className="stat-label">Duration:</span>
+                            <span className="stat-value">
+                              {tempSettings.minDuration}s - {tempSettings.maxDuration}s
+                            </span>
                           </div>
                         </div>
                       </div>

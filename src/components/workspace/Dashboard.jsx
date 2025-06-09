@@ -148,6 +148,72 @@ const Dashboard = () => {
         },
       }
 
+      // Log extracted data for backend integration verification
+      console.log(
+        "%c Backend API Integration Data",
+        "background: #0a2463; color: white; padding: 4px; border-radius: 4px; font-weight: bold;",
+      )
+      console.log({
+        // File Information
+        fileName: uploadData.fileName,
+        fullFileName: uploadData.fullFileName,
+        fileSize: uploadData.fileSize,
+        fileSizeFormatted: uploadData.fileSizeFormatted,
+        fileType: uploadData.fileType,
+
+        // Media Information
+        isVideo: uploadData.isVideo,
+        isAudio: uploadData.isAudio,
+        duration: fileMetadata.duration,
+        durationFormatted: uploadData.durationFormatted,
+
+        // Project Information
+        language: uploadData.language,
+        languageName: uploadData.languageName,
+
+        // Folder and Organization
+        folderName: uploadData.folderName,
+        projectId: uploadData.projectId,
+
+        // Timestamps
+        uploadedAt: uploadData.uploadedAt,
+
+        // Additional metadata for backend processing
+        metadata: uploadData.metadata,
+      })
+
+      // Create a formatted log string for easy copying
+      const formattedLog = `
+    Backend API Integration Data:
+    ----------------------------
+    File Information:
+      - File Name: ${uploadData.fileName}
+      - Full File Name: ${uploadData.fullFileName}
+      - File Size: ${uploadData.fileSize} bytes (${uploadData.fileSizeFormatted})
+      - File Type: ${uploadData.fileType}
+      - Media Type: ${uploadData.isVideo ? "Video" : "Audio"}
+    
+    Media Information:
+      - Duration: ${fileMetadata.duration} seconds (${uploadData.durationFormatted})
+      ${fileMetadata.resolution ? `- Resolution: ${fileMetadata.resolution}` : ""}
+    
+    Project Information:
+      - Language: ${uploadData.language} (${uploadData.languageName})
+      - Project ID: ${uploadData.projectId}
+      - Folder Name: ${uploadData.folderName}
+    
+    Timestamp:
+      - Uploaded At: ${uploadData.uploadedAt}
+    `
+
+      console.log(formattedLog)
+
+      // Add a visual separator in the console
+      console.log(
+        "%c End of Backend Integration Data",
+        "background: #0a2463; color: white; padding: 4px; border-radius: 4px; font-weight: bold;",
+      )
+
       // Backend API Integration Point
       // This is where the backend team will integrate their API
       const backendResponse = await uploadToBackend(uploadData)
@@ -167,7 +233,7 @@ const Dashboard = () => {
           fileName: uploadData.fileName,
           fileSize: uploadData.fileSize,
           fileSizeFormatted: uploadData.fileSizeFormatted,
-          fileType: file.type,
+          fileType: uploadData.fileType,
           isVideo: uploadData.isVideo,
           isAudio: uploadData.isAudio,
           duration: fileMetadata.duration,
@@ -265,6 +331,33 @@ const Dashboard = () => {
           projectId: uploadData.projectId,
           uploadedAt: uploadData.uploadedAt,
         }),
+      )
+
+      // Log the actual data being sent to the backend
+      console.log(
+        "%c Data Being Sent to Backend API",
+        "background: #3E92CC; color: white; padding: 4px; border-radius: 4px; font-weight: bold;",
+      )
+      console.log("File being uploaded:", uploadData.file)
+      console.log("Metadata being sent:", {
+        videoLength: uploadData.metadata.videoLength,
+        folderName: uploadData.metadata.folderName,
+        fullFileName: uploadData.metadata.fullFileName,
+        sizeOfFile: uploadData.metadata.sizeOfFile,
+        language: uploadData.metadata.language,
+        fileType: uploadData.fileType,
+        isVideo: uploadData.isVideo,
+        isAudio: uploadData.isAudio,
+        projectId: uploadData.projectId,
+        uploadedAt: uploadData.uploadedAt,
+      })
+
+      // Log the API endpoint that would be called in production
+      console.log("API Endpoint (in production):", "/api/upload-media")
+      console.log("Request Method:", "POST")
+      console.log(
+        "%c End of Backend API Request Data",
+        "background: #3E92CC; color: white; padding: 4px; border-radius: 4px; font-weight: bold;",
       )
 
       // Backend API call

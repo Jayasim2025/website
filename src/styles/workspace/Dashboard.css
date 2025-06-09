@@ -614,3 +614,63 @@
     font-size: 2rem;
   }
 }
+/* Backend Integration Testing Tools */
+.backend-integration-tools {
+  margin-top: 20px;
+  border: 1px dashed #3e92cc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: rgba(62, 146, 204, 0.05);
+}
+
+.backend-integration-tools summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #3e92cc;
+  padding: 5px;
+  user-select: none;
+}
+
+.backend-integration-tools summary:hover {
+  color: #0a2463;
+}
+
+.developer-tools-content {
+  padding: 10px;
+  margin-top: 10px;
+  background-color: rgba(10, 36, 99, 0.05);
+  border-radius: 6px;
+}
+
+.developer-tools-content h4 {
+  margin-top: 0;
+  color: #0a2463;
+}
+
+.developer-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.dev-button {
+  background-color: #3e92cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.dev-button:hover {
+  background-color: #0a2463;
+}
+
+/* Make developer tools only visible in development environments */
+@media (production) {
+  .backend-integration-tools {
+    display: none;
+  }
+}
