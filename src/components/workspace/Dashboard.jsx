@@ -4,10 +4,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import "../../styles/workspace/Dashboard.css"
-// import FolderModal from "./FolderModal"
-// import LanguageSelectionModal from "./LanguageSelectionModal"
-// import FileUploadModal from "./FileUploadModal"
-// import FileViewer from "./FileViewer"
+
 
 const Dashboard = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en")
