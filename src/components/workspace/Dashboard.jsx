@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useNavigate } from "react-router-dom"
+import { useCreditSystem } from "./CreditSystem"
 import "../../styles/workspace/Dashboard.css"
 
 const Dashboard = () => {
@@ -11,9 +12,32 @@ const Dashboard = () => {
   const [isDragging, setIsDragging] = useState(false)
   const [projects, setProjects] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
+  const [showTeamsDialog, setShowTeamsDialog] = useState(false)
+  const [showCreateTeamDialog, setShowCreateTeamDialog] = useState(false)
+  const [newTeamName, setNewTeamName] = useState("")
 
+  // Initialize teams with only workspace name
+  const [teams, setTeams] = useState(() => {
+    const savedTeams = localStorage.getItem("organizationTeams")
+    if (savedTeams) {
+      return JSON.parse(savedTeams)
+    }
+    return [
+      {
+        id: 0,
+        name: "Team Translatea2z",
+        createdOn: "8 months ago",
+        isWorkspace: true,
+      },
+    ]
+  })
+
+  const navigate = useNavigate()
   const [theme, setTheme] = useState("dark")
+
+  // Credit system integration
+  const { currentPlan, credits, planInfo, upgradePlan, deductCredits, canProcess } = useCreditSystem()
+  const [showUpgradeOptions, setShowUpgradeOptions] = useState(false)
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "dark"
@@ -42,19 +66,13 @@ const Dashboard = () => {
     { code: "zh", name: "Chinese (Mandarin)", flag: "🇨🇳" },
   ]
 
-  // Load projects from API or localStorage
+  // Load projects from localStorage
   useEffect(() => {
     loadProjects()
   }, [])
 
   const loadProjects = async () => {
     try {
-      // In production, this would be an API call
-      // const response = await fetch('/api/projects')
-      // const data = await response.json()
-      // setProjects(data)
-
-      // For now, load from localStorage
       const savedProjects = localStorage.getItem("translationProjects")
       if (savedProjects) {
         setProjects(JSON.parse(savedProjects))
@@ -89,9 +107,8 @@ const Dashboard = () => {
     }
   }
 
-  // Enhanced file upload with comprehensive metadata for backend API
+  // Enhanced file upload with credit system integration
   const handleFileUpload = async (file) => {
-    // Validate file type
     if (!file.type.includes("audio") && !file.type.includes("video")) {
       alert("Please upload an audio or video file")
       return
@@ -100,38 +117,43 @@ const Dashboard = () => {
     setIsLoading(true)
 
     try {
-      // Extract comprehensive file metadata for backend API
       const fileMetadata = await extractFileMetadata(file)
+      const durationMinutes = fileMetadata.duration / 60
+      const fileType = file.type.includes("video") ? "video" : "audio"
 
-      // Prepare comprehensive data for backend API integration
+      if (!canProcess(fileType, durationMinutes)) {
+        const cost = Math.ceil(planInfo.processingCost[fileType] * durationMinutes)
+        alert(`Insufficient credits! You need ${cost} credits but only have ${credits}. Please upgrade your plan.`)
+        setIsLoading(false)
+        return
+      }
+
+      const deductionResult = deductCredits(fileType, durationMinutes)
+      if (!deductionResult.success) {
+        alert(`Credit deduction failed. Please try again.`)
+        setIsLoading(false)
+        return
+      }
+
       const uploadData = {
-        // File Information
         file: file,
         fileName: file.name,
         fullFileName: file.name,
         fileSize: file.size,
         fileSizeFormatted: formatFileSize(file.size),
         fileType: file.type,
-
-        // Media Information
         isVideo: file.type.includes("video"),
         isAudio: file.type.includes("audio"),
         duration: fileMetadata.duration,
         durationFormatted: formatDuration(fileMetadata.duration),
-
-        // Project Information
         language: selectedLanguage,
         languageName: languages.find((l) => l.code === selectedLanguage)?.name,
-
-        // Folder and Organization
         folderName: `project_${Date.now()}`,
         projectId: `proj_${Date.now()}`,
-
-        // Timestamps
         uploadedAt: new Date().toISOString(),
         createdAt: Date.now(),
-
-        // Additional metadata for backend processing
+        creditsDeducted: deductionResult.cost,
+        remainingCredits: credits - deductionResult.cost,
         metadata: {
           videoLength: fileMetadata.duration,
           audioVideoFile: file,
@@ -139,7 +161,6 @@ const Dashboard = () => {
           fullFileName: file.name,
           sizeOfFile: file.size,
           language: selectedLanguage,
-          // Additional technical details
           bitrate: fileMetadata.bitrate || null,
           resolution: fileMetadata.resolution || null,
           frameRate: fileMetadata.frameRate || null,
@@ -148,77 +169,10 @@ const Dashboard = () => {
         },
       }
 
-      // Log extracted data for backend integration verification
-      console.log(
-        "%c Backend API Integration Data",
-        "background: #0a2463; color: white; padding: 4px; border-radius: 4px; font-weight: bold;",
-      )
-      console.log({
-        // File Information
-        fileName: uploadData.fileName,
-        fullFileName: uploadData.fullFileName,
-        fileSize: uploadData.fileSize,
-        fileSizeFormatted: uploadData.fileSizeFormatted,
-        fileType: uploadData.fileType,
+      console.log("Backend API Integration Data:", uploadData)
 
-        // Media Information
-        isVideo: uploadData.isVideo,
-        isAudio: uploadData.isAudio,
-        duration: fileMetadata.duration,
-        durationFormatted: uploadData.durationFormatted,
-
-        // Project Information
-        language: uploadData.language,
-        languageName: uploadData.languageName,
-
-        // Folder and Organization
-        folderName: uploadData.folderName,
-        projectId: uploadData.projectId,
-
-        // Timestamps
-        uploadedAt: uploadData.uploadedAt,
-
-        // Additional metadata for backend processing
-        metadata: uploadData.metadata,
-      })
-
-      // Create a formatted log string for easy copying
-      const formattedLog = `
-    Backend API Integration Data:
-    ----------------------------
-    File Information:
-      - File Name: ${uploadData.fileName}
-      - Full File Name: ${uploadData.fullFileName}
-      - File Size: ${uploadData.fileSize} bytes (${uploadData.fileSizeFormatted})
-      - File Type: ${uploadData.fileType}
-      - Media Type: ${uploadData.isVideo ? "Video" : "Audio"}
-    
-    Media Information:
-      - Duration: ${fileMetadata.duration} seconds (${uploadData.durationFormatted})
-      ${fileMetadata.resolution ? `- Resolution: ${fileMetadata.resolution}` : ""}
-    
-    Project Information:
-      - Language: ${uploadData.language} (${uploadData.languageName})
-      - Project ID: ${uploadData.projectId}
-      - Folder Name: ${uploadData.folderName}
-    
-    Timestamp:
-      - Uploaded At: ${uploadData.uploadedAt}
-    `
-
-      console.log(formattedLog)
-
-      // Add a visual separator in the console
-      console.log(
-        "%c End of Backend Integration Data",
-        "background: #0a2463; color: white; padding: 4px; border-radius: 4px; font-weight: bold;",
-      )
-
-      // Backend API Integration Point
-      // This is where the backend team will integrate their API
       const backendResponse = await uploadToBackend(uploadData)
 
-      // Create new project with comprehensive data
       const newProject = {
         id: uploadData.projectId,
         name: file.name.replace(/\.[^/.]+$/, ""),
@@ -226,8 +180,6 @@ const Dashboard = () => {
         aiGeneration: "PROCESSING",
         date: new Date().toLocaleString(),
         status: "processing",
-
-        // File metadata for editor
         fileData: {
           file: file,
           fileName: uploadData.fileName,
@@ -239,15 +191,10 @@ const Dashboard = () => {
           duration: fileMetadata.duration,
           durationSeconds: fileMetadata.duration,
         },
-
-        // Language and processing info
         language: selectedLanguage,
         languageName: uploadData.languageName,
-
-        // Backend response data
+        creditsUsed: uploadData.creditsDeducted,
         backendData: backendResponse,
-
-        // Metadata for backend integration
         uploadMetadata: uploadData.metadata,
       }
 
@@ -255,7 +202,6 @@ const Dashboard = () => {
       setProjects(updatedProjects)
       localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
 
-      // Simulate processing with realistic timing
       setTimeout(() => {
         const processed = updatedProjects.map((p) =>
           p.id === newProject.id
@@ -263,9 +209,8 @@ const Dashboard = () => {
                 ...p,
                 aiGeneration: "SUCCESS",
                 status: "completed",
-                // Simulate backend response with subtitles
                 subtitlesGenerated: true,
-                subtitlesCount: 15, // This will come from backend
+                subtitlesCount: 15,
               }
             : p,
         )
@@ -280,7 +225,6 @@ const Dashboard = () => {
     }
   }
 
-  // Extract comprehensive file metadata
   const extractFileMetadata = (file) => {
     return new Promise((resolve) => {
       const video = document.createElement(file.type.includes("video") ? "video" : "audio")
@@ -307,16 +251,10 @@ const Dashboard = () => {
     })
   }
 
-  // Backend API integration function
   const uploadToBackend = async (uploadData) => {
     try {
-      // This is where backend team will integrate their API
       const formData = new FormData()
-
-      // Add file
       formData.append("file", uploadData.file)
-
-      // Add metadata as JSON
       formData.append(
         "metadata",
         JSON.stringify({
@@ -330,59 +268,24 @@ const Dashboard = () => {
           isAudio: uploadData.isAudio,
           projectId: uploadData.projectId,
           uploadedAt: uploadData.uploadedAt,
+          creditsDeducted: uploadData.creditsDeducted,
+          remainingCredits: uploadData.remainingCredits,
         }),
       )
 
-      // Log the actual data being sent to the backend
-      console.log(
-        "%c Data Being Sent to Backend API",
-        "background: #3E92CC; color: white; padding: 4px; border-radius: 4px; font-weight: bold;",
-      )
-      console.log("File being uploaded:", uploadData.file)
-      console.log("Metadata being sent:", {
-        videoLength: uploadData.metadata.videoLength,
-        folderName: uploadData.metadata.folderName,
-        fullFileName: uploadData.metadata.fullFileName,
-        sizeOfFile: uploadData.metadata.sizeOfFile,
-        language: uploadData.metadata.language,
-        fileType: uploadData.fileType,
-        isVideo: uploadData.isVideo,
-        isAudio: uploadData.isAudio,
-        projectId: uploadData.projectId,
-        uploadedAt: uploadData.uploadedAt,
+      console.log("Data Being Sent to Backend API:", {
+        file: uploadData.file,
+        metadata: uploadData.metadata,
       })
 
-      // Log the API endpoint that would be called in production
-      console.log("API Endpoint (in production):", "/api/upload-media")
-      console.log("Request Method:", "POST")
-      console.log(
-        "%c End of Backend API Request Data",
-        "background: #3E92CC; color: white; padding: 4px; border-radius: 4px; font-weight: bold;",
-      )
-
-      // Backend API call
-      // const response = await fetch('/api/upload-media', {
-      //   method: 'POST',
-      //   body: formData,
-      //   headers: {
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   }
-      // })
-      //
-      // if (!response.ok) {
-      //   throw new Error(`Upload failed: ${response.statusText}`)
-      // }
-      //
-      // const result = await response.json()
-      // return result
-
-      // Mock response for development
       return {
         success: true,
         projectId: uploadData.projectId,
         processingId: `proc_${Date.now()}`,
-        estimatedProcessingTime: Math.ceil(uploadData.metadata.videoLength / 60) * 30, // 30 seconds per minute
+        estimatedProcessingTime: Math.ceil(uploadData.metadata.videoLength / 60) * 30,
         message: "File uploaded successfully and processing started",
+        creditsDeducted: uploadData.creditsDeducted,
+        remainingCredits: uploadData.remainingCredits,
       }
     } catch (error) {
       console.error("Backend upload error:", error)
@@ -390,7 +293,6 @@ const Dashboard = () => {
     }
   }
 
-  // Utility functions
   const formatFileSize = (bytes) => {
     if (bytes === 0) return "0 Bytes"
     const k = 1024
@@ -414,10 +316,8 @@ const Dashboard = () => {
   const openEditor = (project) => {
     if (project.status === "processing") return
 
-    // Store comprehensive project data for editor
     const editorData = {
       ...project,
-      // Ensure all necessary data is available for editor
       fileMetadata: project.fileData,
       uploadMetadata: project.uploadMetadata,
       backendData: project.backendData,
@@ -431,19 +331,42 @@ const Dashboard = () => {
     if (!confirm("Are you sure you want to delete this project?")) return
 
     try {
-      // API call to delete project and associated files
-      // await fetch(`/api/projects/${projectId}`, {
-      //   method: 'DELETE',
-      //   headers: {
-      //     'Authorization': `Bearer ${getAuthToken()}`,
-      //   }
-      // })
-
       const updatedProjects = projects.filter((p) => p.id !== projectId)
       setProjects(updatedProjects)
       localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
     } catch (error) {
       console.error("Delete error:", error)
+    }
+  }
+
+  const handleUpgradePlan = (planType) => {
+    upgradePlan(planType)
+    setShowUpgradeOptions(false)
+  }
+
+  const getCreditUsagePercentage = () => {
+    return ((planInfo.monthlyCredits - credits) / planInfo.monthlyCredits) * 100
+  }
+
+  // Team management functions
+  const handleCreateTeam = () => {
+    if (newTeamName.trim()) {
+      const newTeam = {
+        id: Date.now(),
+        name: newTeamName.trim(),
+        createdOn: new Date().toLocaleDateString(),
+        isWorkspace: false,
+      }
+
+      const updatedTeams = [...teams, newTeam]
+      setTeams(updatedTeams)
+      setNewTeamName("")
+      setShowCreateTeamDialog(false)
+
+      // Save to localStorage
+      localStorage.setItem("organizationTeams", JSON.stringify(updatedTeams))
+
+      alert(`Team "${newTeam.name}" created successfully!`)
     }
   }
 
@@ -457,15 +380,72 @@ const Dashboard = () => {
           <h1>Team Translatea2z</h1>
           <div className="org-badges">
             <span className="badge admin">ADMIN</span>
-            <span className="credits">Credits: 106</span>
-            <span className="view-teams">View Teams</span>
-            <button className="org-settings">
+            <span className="credits">Credits: {credits.toLocaleString()}</span>
+            <button className="view-teams" onClick={() => setShowTeamsDialog(true)}>
+              View Teams
+            </button>
+            <button className="org-settings" onClick={() => navigate("/workspace/organization")}>
               <i className="fas fa-cog"></i> View Organization Settings
             </button>
           </div>
         </div>
         <div className="org-date">Created 8 months ago</div>
       </div>
+
+      {/* Credit System Display */}
+      <div className="credits-section">
+        <div className="credits-display">
+          <div className="credits-info">
+            <span className="credits-label">Available Credits</span>
+            <span className="credits-amount">{credits.toLocaleString()}</span>
+            <span className="credits-plan">({planInfo.name} Plan)</span>
+          </div>
+          <div className="credits-progress">
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${getCreditUsagePercentage()}%` }}></div>
+            </div>
+            <span className="progress-text">{Math.round(getCreditUsagePercentage())}% used this month</span>
+          </div>
+        </div>
+
+        {currentPlan === "free" && (
+          <button className="upgrade-btn" onClick={() => setShowUpgradeOptions(!showUpgradeOptions)}>
+            <i className="fas fa-arrow-up"></i>
+            Upgrade Plan
+          </button>
+        )}
+      </div>
+
+      {/* Upgrade Options */}
+      <AnimatePresence>
+        {showUpgradeOptions && (
+          <motion.div
+            className="upgrade-options"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <h3>Choose Your Plan</h3>
+            <div className="plan-options">
+              <div className="plan-option" onClick={() => handleUpgradePlan("pro")}>
+                <h4>Pro Plan</h4>
+                <p>2,000 credits/month</p>
+                <span className="plan-price">$20/month</span>
+              </div>
+              <div className="plan-option" onClick={() => handleUpgradePlan("super")}>
+                <h4>Super Plan</h4>
+                <p>5,000 credits/month</p>
+                <span className="plan-price">$60/month</span>
+              </div>
+              <div className="plan-option" onClick={() => handleUpgradePlan("business")}>
+                <h4>Business Plan</h4>
+                <p>15,000 credits/month</p>
+                <span className="plan-price">$200/month</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="upload-section">
         <div className="language-selection">
@@ -537,6 +517,12 @@ const Dashboard = () => {
               <p className="upload-tip">
                 Pro tip: Use audio files for quicker conversion. Max length: 120 minutes. Max size: 1.5 GB
               </p>
+              <div className="credit-info">
+                <p className="credit-cost">
+                  Processing cost: {planInfo.processingCost.video} credits/min (video), {planInfo.processingCost.audio}{" "}
+                  credits/min (audio)
+                </p>
+              </div>
             </>
           )}
 
@@ -566,13 +552,14 @@ const Dashboard = () => {
                 <th className="col-ai">AI Generation</th>
                 <th className="col-date">Date</th>
                 <th className="col-status">Project Status</th>
+                <th className="col-credits">Credits Used</th>
                 <th className="col-edit">Edit</th>
               </tr>
             </thead>
             <tbody>
               {projects.length === 0 ? (
                 <tr className="empty-row">
-                  <td colSpan="6" className="empty-state">
+                  <td colSpan="7" className="empty-state">
                     <div className="empty-content">
                       <i className="fas fa-folder-open"></i>
                       <p>No projects yet. Upload your first audio or video file to get started!</p>
@@ -612,6 +599,9 @@ const Dashboard = () => {
                         <span className="status-text">{project.status === "completed" ? "Draft" : "Processing"}</span>
                       </div>
                     </td>
+                    <td className="col-credits">
+                      <span className="credits-used">{project.creditsUsed || 0}</span>
+                    </td>
                     <td className="col-edit">
                       <div className="edit-actions">
                         <button
@@ -638,6 +628,119 @@ const Dashboard = () => {
           </table>
         </div>
       </div>
+
+      {/* View Teams Dialog */}
+      <AnimatePresence>
+        {showTeamsDialog && (
+          <motion.div
+            className="dialog-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowTeamsDialog(false)}
+          >
+            <motion.div
+              className="teams-dialog"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="dialog-header">
+                <h3>Organization Teams</h3>
+                <button className="dialog-close" onClick={() => setShowTeamsDialog(false)}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+
+              <div className="teams-content">
+                <div className="teams-table">
+                  <div className="teams-table-header">
+                    <div className="teams-header-cell">Row</div>
+                    <div className="teams-header-cell">Team Name</div>
+                    <div className="teams-header-cell">View Team</div>
+                    <div className="teams-header-cell">Created On</div>
+                  </div>
+
+                  <div className="teams-table-body">
+                    {teams.map((team, index) => (
+                      <div key={team.id} className="teams-table-row">
+                        <div className="teams-cell">{index + 1}</div>
+                        <div className="teams-cell">
+                          {team.name}
+                          {team.isWorkspace && <span className="workspace-badge">Workspace</span>}
+                        </div>
+                        <div className="teams-cell">
+                          <button className="view-team-btn">View</button>
+                        </div>
+                        <div className="teams-cell">{team.createdOn}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="teams-actions">
+                  <button className="create-team-btn" onClick={() => setShowCreateTeamDialog(true)}>
+                    <i className="fas fa-users"></i>
+                    Create Team
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Create Team Dialog */}
+      <AnimatePresence>
+        {showCreateTeamDialog && (
+          <motion.div
+            className="dialog-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowCreateTeamDialog(false)}
+          >
+            <motion.div
+              className="create-team-dialog"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="dialog-header">
+                <h3>Create New Team</h3>
+                <button className="dialog-close" onClick={() => setShowCreateTeamDialog(false)}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+
+              <div className="dialog-content">
+                <p>Enter a name for your new team.</p>
+                <div className="form-group">
+                  <label>Team Name</label>
+                  <input
+                    type="text"
+                    value={newTeamName}
+                    onChange={(e) => setNewTeamName(e.target.value)}
+                    placeholder="Enter team name"
+                    className="team-name-input"
+                  />
+                </div>
+              </div>
+
+              <div className="dialog-actions">
+                <button className="cancel-btn" onClick={() => setShowCreateTeamDialog(false)}>
+                  Cancel
+                </button>
+                <button className="create-btn" onClick={handleCreateTeam}>
+                  Create Team
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

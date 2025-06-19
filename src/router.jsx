@@ -14,6 +14,7 @@ import WorkspaceIntegrations from "./components/workspace/Integrations"
 import UserDashboard from "./components/workspace/dashboard/UserDashboard"
 import Editor from "./components/workspace/Editor"
 import UserSettings from "./components/workspace/UserSettings"
+import OrganizationSettings from "./components/workspace/OrganizationSettings"
 
 // Admin components
 import AdminLayout from "./admin/AdminLayout"
@@ -167,6 +168,7 @@ const router = createBrowserRouter([
       { path: "integrations", element: <WorkspaceIntegrations /> },
       { path: "settings", element: <UserSettings /> },
       { path: "dashboard", element: <UserDashboard /> },
+      { path: "organization", element: <OrganizationSettings /> },
     ],
   },
   {
