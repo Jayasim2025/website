@@ -10,12 +10,16 @@ const Editor = () => {
   const [subtitles, setSubtitles] = useState([])
   const [speakers, setSpeakers] = useState([])
   const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(176) // Will be set from project data
+  const [duration, setDuration] = useState(60) // Default 1 minute for demo
   const [isPlaying, setIsPlaying] = useState(false)
   const [showExportMenu, setShowExportMenu] = useState(false)
   const [volume, setVolume] = useState(70)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [activeTab, setActiveTab] = useState("content")
+
+  // Backend Integration Structure - Word-level data
+  const [wordLevelData, setWordLevelData] = useState([])
+  const [isLoadingWords, setIsLoadingWords] = useState(false)
 
   // Media player states
   const [mediaUrl, setMediaUrl] = useState(null)
@@ -28,11 +32,11 @@ const Editor = () => {
   const [isUndoRedoAction, setIsUndoRedoAction] = useState(false)
 
   // Enhanced waveform interaction states
-  const [zoomLevel, setZoomLevel] = useState(100) // 10-500%
+  const [zoomLevel, setZoomLevel] = useState(100)
   const [selectedSubtitleId, setSelectedSubtitleId] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
-  const [resizeHandle, setResizeHandle] = useState(null) // 'left' or 'right'
+  const [resizeHandle, setResizeHandle] = useState(null)
   const [dragStartX, setDragStartX] = useState(0)
   const [dragStartTime, setDragStartTime] = useState(0)
   const [hoveredHandle, setHoveredHandle] = useState(null)
@@ -84,7 +88,7 @@ const Editor = () => {
   }, [])
 
   useEffect(() => {
-    // Load current project from localStorage or API
+    // Load current project from localStorage
     const currentProject = localStorage.getItem("currentProject")
     if (currentProject) {
       const projectData = JSON.parse(currentProject)
@@ -95,13 +99,199 @@ const Editor = () => {
     }
   }, [navigate])
 
+  // Backend Integration Point - Fetch word-level data
+  const fetchWordLevelDataFromBackend = async (projectId) => {
+    try {
+      setIsLoadingWords(true)
+
+      // Backend team will replace this with actual API call
+      console.log("🔗 Backend Integration Point: Fetch word-level data")
+      console.log("📡 Expected API endpoint: GET /api/project/{projectId}/words")
+      console.log(
+        "📋 Expected response format: { words: [{ word: string, startTime: number, endTime: number, confidence: number }] }",
+      )
+      console.log("🆔 Project ID:", projectId)
+
+      // For demo purposes, return sample word data
+      const demoWords = generateDemoWordData()
+      setWordLevelData(demoWords)
+      return demoWords
+    } catch (error) {
+      console.error("Error fetching word-level data:", error)
+      return []
+    } finally {
+      setIsLoadingWords(false)
+    }
+  }
+
+  // Generate demo word-level data based on project duration
+  const generateDemoWordData = () => {
+    const sampleWords = [
+      "Did",
+      "you",
+      "know",
+      "that",
+      "Tupac's",
+      "mother",
+      "Afeni",
+      "Shakur",
+      "was",
+      "an",
+      "active",
+      "member",
+      "of",
+      "the",
+      "Black",
+      "Panther",
+      "Party",
+      "and",
+      "named",
+      "him",
+      "after",
+      "Tupac",
+      "Amaru",
+      "the",
+      "second",
+      "an",
+      "eighteenth",
+      "century",
+      "politician",
+      "from",
+      "Peru",
+      "Additionally",
+      "Tupac",
+      "studied",
+      "poetry",
+      "and",
+      "literature",
+      "extensively",
+      "during",
+      "his",
+      "time",
+      "in",
+      "the",
+      "Baltimore",
+      "School",
+      "for",
+      "the",
+      "Arts",
+      "and",
+      "developed",
+      "a",
+      "deep",
+      "appreciation",
+      "for",
+      "Shakespeare",
+      "and",
+      "other",
+      "classical",
+      "writers",
+    ]
+
+    const words = []
+    const wordsPerSecond = 2.5
+    const totalWords = Math.floor(duration * wordsPerSecond)
+
+    for (let i = 0; i < totalWords; i++) {
+      const word = sampleWords[i % sampleWords.length]
+      const startTime = i / wordsPerSecond
+      const endTime = startTime + (0.3 + Math.random() * 0.2)
+
+      words.push({
+        id: i + 1,
+        word: word,
+        startTime: startTime,
+        endTime: Math.min(endTime, duration),
+        confidence: 0.9 + Math.random() * 0.1,
+      })
+    }
+
+    return words
+  }
+
+  // Group words into subtitles based on timing and settings
+  const groupWordsIntoSubtitles = (words) => {
+    if (!words || words.length === 0) return []
+
+    const subtitles = []
+    let currentSubtitle = {
+      id: 1,
+      words: [],
+      startTime: 0,
+      endTime: 0,
+      speakerId: 0,
+    }
+
+    let currentCharCount = 0
+    const maxChars = settings.maxCharacters
+    const maxDuration = settings.maxDuration
+
+    words.forEach((word, index) => {
+      const wordLength = word.word.length + 1
+
+      const wouldExceedChars = currentCharCount + wordLength > maxChars
+      const wouldExceedDuration =
+        currentSubtitle.words.length > 0 && word.endTime - currentSubtitle.startTime > maxDuration
+
+      if ((wouldExceedChars || wouldExceedDuration) && currentSubtitle.words.length > 0) {
+        const text = currentSubtitle.words.map((w) => w.word).join(" ")
+        subtitles.push({
+          id: currentSubtitle.id,
+          startTime: formatSecondsToTime(currentSubtitle.startTime),
+          endTime: formatSecondsToTime(currentSubtitle.endTime),
+          startSeconds: currentSubtitle.startTime,
+          endSeconds: currentSubtitle.endTime,
+          speakerId: currentSubtitle.speakerId,
+          text: text,
+          characters: text.length,
+          duration: (currentSubtitle.endTime - currentSubtitle.startTime).toFixed(1),
+          words: [...currentSubtitle.words],
+        })
+
+        currentSubtitle = {
+          id: subtitles.length + 1,
+          words: [],
+          startTime: word.startTime,
+          endTime: word.endTime,
+          speakerId: Math.floor(Math.random() * 3),
+        }
+        currentCharCount = 0
+      }
+
+      if (currentSubtitle.words.length === 0) {
+        currentSubtitle.startTime = word.startTime
+      }
+      currentSubtitle.endTime = word.endTime
+      currentSubtitle.words.push(word)
+      currentCharCount += wordLength
+    })
+
+    if (currentSubtitle.words.length > 0) {
+      const text = currentSubtitle.words.map((w) => w.word).join(" ")
+      subtitles.push({
+        id: currentSubtitle.id,
+        startTime: formatSecondsToTime(currentSubtitle.startTime),
+        endTime: formatSecondsToTime(currentSubtitle.endTime),
+        startSeconds: currentSubtitle.startTime,
+        endSeconds: currentSubtitle.endTime,
+        speakerId: currentSubtitle.speakerId,
+        text: text,
+        characters: text.length,
+        duration: (currentSubtitle.endTime - currentSubtitle.startTime).toFixed(1),
+        words: [...currentSubtitle.words],
+      })
+    }
+
+    return subtitles
+  }
+
   const loadProjectData = async (projectData) => {
     try {
       // Set media information from project data
       if (projectData.fileData) {
         setIsVideo(projectData.fileData.isVideo)
         setIsAudio(projectData.fileData.isAudio)
-        setDuration(projectData.fileData.durationSeconds || 176)
+        setDuration(projectData.fileData.durationSeconds || 60)
 
         // Create media URL for playback
         if (projectData.fileData.file) {
@@ -117,15 +307,18 @@ const Editor = () => {
         { id: 2, name: "Interviewer", color: "#f59e0b" },
       ]
 
-      // Generate 15 sample subtitles for demonstration
-      const sampleSubtitles = generateSampleSubtitles(projectData.fileData?.durationSeconds || 176)
-
       setSpeakers(sampleSpeakers)
-      setSubtitles(sampleSubtitles)
+
+      // Fetch word-level data (Backend Integration Point)
+      const words = await fetchWordLevelDataFromBackend(projectData.id)
+
+      // Group words into subtitles
+      const generatedSubtitles = groupWordsIntoSubtitles(words)
+      setSubtitles(generatedSubtitles)
 
       // Initialize history with current state
       const initialState = {
-        subtitles: sampleSubtitles,
+        subtitles: generatedSubtitles,
         speakers: sampleSpeakers,
         settings: settings,
         timestamp: Date.now(),
@@ -136,48 +329,6 @@ const Editor = () => {
     } catch (error) {
       console.error("Error loading project data:", error)
     }
-  }
-
-  // Generate sample subtitles distributed across the duration
-  const generateSampleSubtitles = (totalDuration) => {
-    const subtitleCount = 15
-    const avgDuration = totalDuration / subtitleCount
-
-    const sampleTexts = [
-      "Did you know that Tupac's mother, Afeni Shakur, was an active member of the Black Panther",
-      "Party and named him after Tupac Amaru the second, an eighteenth century politician",
-      "from Peru? Additionally, Tupac studied poetry and literature extensively during his",
-      "time in the Baltimore School for the Arts and",
-      "developed a deep appreciation for Shakespeare and other classical writers.",
-      "This literary background heavily influenced his later rap lyrics and",
-      "contributed to the depth and complexity of his musical compositions.",
-      "Tupac's ability to blend street wisdom with intellectual discourse",
-      "made him one of the most respected and influential artists of his generation.",
-      "His songs often addressed social issues, inequality, and the struggles",
-      "of urban life, resonating with millions of listeners worldwide.",
-      "Beyond music, Tupac was also an accomplished actor, appearing in several films",
-      "that showcased his dramatic range and natural charisma on screen.",
-      "His legacy continues to inspire new generations of artists and activists",
-      "who seek to use their platforms for social change and awareness.",
-    ]
-
-    return Array.from({ length: subtitleCount }, (_, index) => {
-      const startSeconds = Math.floor(index * avgDuration)
-      const endSeconds = Math.floor((index + 1) * avgDuration)
-      const text = sampleTexts[index] || `Subtitle ${index + 1} content goes here.`
-
-      return {
-        id: index + 1,
-        startTime: formatSecondsToTime(startSeconds),
-        endTime: formatSecondsToTime(endSeconds),
-        startSeconds: startSeconds,
-        endSeconds: endSeconds,
-        speakerId: index % 3, // Rotate between speakers
-        text: text,
-        characters: text.length,
-        duration: (endSeconds - startSeconds).toFixed(1),
-      }
-    })
   }
 
   // History management functions
@@ -196,7 +347,7 @@ const Editor = () => {
       setHistory((prev) => {
         const newHistory = prev.slice(0, historyIndex + 1)
         newHistory.push(newState)
-        return newHistory.slice(-50) // Keep last 50 states
+        return newHistory.slice(-50)
       })
       setHistoryIndex((prev) => Math.min(prev + 1, 49))
       setHasUnsavedChanges(true)
@@ -211,7 +362,7 @@ const Editor = () => {
       setSubtitles(prevState.subtitles)
       setSpeakers(prevState.speakers)
       setSettings(prevState.settings)
-      setTempSettings(prevState.settings) // Update temp settings too
+      setTempSettings(prevState.settings)
       setHistoryIndex(historyIndex - 1)
       setHasUnsavedChanges(true)
       setTimeout(() => setIsUndoRedoAction(false), 100)
@@ -225,7 +376,7 @@ const Editor = () => {
       setSubtitles(nextState.subtitles)
       setSpeakers(nextState.speakers)
       setSettings(nextState.settings)
-      setTempSettings(nextState.settings) // Update temp settings too
+      setTempSettings(nextState.settings)
       setHistoryIndex(historyIndex + 1)
       setHasUnsavedChanges(true)
       setTimeout(() => setIsUndoRedoAction(false), 100)
@@ -337,13 +488,8 @@ const Editor = () => {
       const relativeX = clientX - rect.left
       const scrollLeft = waveformRef.current.scrollLeft
 
-      // Calculate the total width of the timeline
       const totalWidth = rect.width * (zoomLevel / 100)
-
-      // Calculate the actual position considering scroll
       const actualX = relativeX + scrollLeft
-
-      // Convert to time
       const timeRatio = actualX / totalWidth
       const time = timeRatio * duration
 
@@ -365,16 +511,15 @@ const Editor = () => {
       setDragStartX(e.clientX)
       setDragStartTime(getTimeFromPosition(e.clientX))
 
-      if (handle) {
+      if (handle === "left" || handle === "right") {
+        // Only allow resizing at start and end
         setIsResizing(true)
         setResizeHandle(handle)
-        console.log(`Starting resize on ${handle} handle for subtitle ${subtitleId}`)
       } else {
+        // Allow dragging only if not near edges
         setIsDragging(true)
-        console.log(`Starting drag for subtitle ${subtitleId}`)
       }
 
-      // Add global mouse event listeners
       const handleMouseMove = (moveEvent) => {
         handleSubtitleMouseMove(moveEvent, subtitle)
       }
@@ -387,8 +532,6 @@ const Editor = () => {
 
       document.addEventListener("mousemove", handleMouseMove)
       document.addEventListener("mouseup", handleMouseUp)
-
-      // Prevent text selection during drag
       document.body.style.userSelect = "none"
     },
     [subtitles, getTimeFromPosition],
@@ -402,39 +545,25 @@ const Editor = () => {
       const currentMouseTime = getTimeFromPosition(e.clientX)
 
       if (isResizing) {
-        console.log(`Resizing ${resizeHandle} handle to time: ${currentMouseTime}`)
-
         const updatedSubtitles = subtitles.map((sub) => {
           if (sub.id === selectedSubtitleId) {
             let newStartSeconds = sub.startSeconds
             let newEndSeconds = sub.endSeconds
 
             if (resizeHandle === "left") {
-              // Resize from left - change start time
               newStartSeconds = currentMouseTime
-
-              // Ensure minimum duration
               if (newEndSeconds - newStartSeconds < settings.minDuration) {
                 newStartSeconds = newEndSeconds - settings.minDuration
               }
-
-              // Don't go below 0
               newStartSeconds = Math.max(0, newStartSeconds)
             } else if (resizeHandle === "right") {
-              // Resize from right - change end time
               newEndSeconds = currentMouseTime
-
-              // Ensure minimum duration
               if (newEndSeconds - newStartSeconds < settings.minDuration) {
                 newEndSeconds = newStartSeconds + settings.minDuration
               }
-
-              // Ensure maximum duration
               if (newEndSeconds - newStartSeconds > settings.maxDuration) {
                 newEndSeconds = newStartSeconds + settings.maxDuration
               }
-
-              // Don't exceed total duration
               newEndSeconds = Math.min(duration, newEndSeconds)
             }
 
@@ -452,14 +581,12 @@ const Editor = () => {
 
         setSubtitles(updatedSubtitles)
       } else if (isDragging) {
-        // Handle dragging - move the entire block
         const timeDelta = currentMouseTime - dragStartTime
         const subtitleDuration = originalSubtitle.endSeconds - originalSubtitle.startSeconds
 
         let newStartSeconds = originalSubtitle.startSeconds + timeDelta
         let newEndSeconds = originalSubtitle.endSeconds + timeDelta
 
-        // Keep within bounds
         if (newStartSeconds < 0) {
           newStartSeconds = 0
           newEndSeconds = subtitleDuration
@@ -509,21 +636,16 @@ const Editor = () => {
         ? `Resize subtitle ${selectedSubtitleId} (${resizeHandle})`
         : `Move subtitle ${selectedSubtitleId}`
       saveToHistory(action)
-      console.log(`Completed: ${action}`)
     }
 
-    // Reset all drag states
     setIsDragging(false)
     setIsResizing(false)
     setResizeHandle(null)
     setDragStartX(0)
     setDragStartTime(0)
-
-    // Restore text selection
     document.body.style.userSelect = ""
   }, [isDragging, isResizing, selectedSubtitleId, resizeHandle, saveToHistory])
 
-  // Handle mouse events for resize handles
   const handleHandleMouseEnter = useCallback((handle) => {
     setHoveredHandle(handle)
   }, [])
@@ -542,14 +664,13 @@ const Editor = () => {
     return speaker ? speaker.color : "#3b82f6"
   }
 
+  // Backend Integration Point - Export functionality
   const handleExport = async (format) => {
     try {
       const exportData = {
         subtitles: subtitles.map((sub) => {
-          // Process text with speaker names if needed
           let processedText = settings.includeSpeakerNames ? `${getSpeakerName(sub.speakerId)}: ${sub.text}` : sub.text
 
-          // Then apply character limit
           if (processedText.length > settings.maxCharacters) {
             processedText = processedText.substring(0, settings.maxCharacters) + "..."
           }
@@ -564,7 +685,22 @@ const Editor = () => {
         projectId: project.id,
       }
 
-      console.log(`Exporting as ${format} with settings:`, exportData)
+      console.log("🔗 Backend Integration Point: Export subtitles")
+      console.log("📡 Expected API endpoint: POST /api/export")
+      console.log("📋 Export data ready for backend:", exportData)
+
+      // Backend team will implement actual export API call here
+      // For demo, simulate download
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `subtitles_${project.name}_${format}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
       setShowExportMenu(false)
     } catch (error) {
       console.error("Export error:", error)
@@ -804,21 +940,42 @@ const Editor = () => {
 
   const handleApplySettings = async () => {
     try {
+      // First update the settings state
       setSettings(tempSettings)
-      saveToHistory("Apply settings", subtitles, speakers, tempSettings)
 
-      // Apply character limit to existing subtitles
-      const updatedSubtitles = subtitles.map((subtitle) => ({
-        ...subtitle,
-        text:
-          subtitle.text.length > tempSettings.maxCharacters
-            ? subtitle.text.substring(0, tempSettings.maxCharacters)
-            : subtitle.text,
-        characters: Math.min(subtitle.text.length, tempSettings.maxCharacters),
-      }))
+      // Apply character limits to existing subtitles immediately
+      const updatedSubtitles = subtitles.map((subtitle) => {
+        let newText = subtitle.text
+
+        // Apply character limit
+        if (newText.length > tempSettings.maxCharacters) {
+          newText = newText.substring(0, tempSettings.maxCharacters)
+        }
+
+        // Apply duration limits
+        let newDuration = subtitle.endSeconds - subtitle.startSeconds
+        if (newDuration < tempSettings.minDuration) {
+          newDuration = tempSettings.minDuration
+        } else if (newDuration > tempSettings.maxDuration) {
+          newDuration = tempSettings.maxDuration
+        }
+
+        const newEndSeconds = subtitle.startSeconds + newDuration
+
+        return {
+          ...subtitle,
+          text: newText,
+          characters: newText.length,
+          endSeconds: Math.min(newEndSeconds, duration),
+          endTime: formatSecondsToTime(Math.min(newEndSeconds, duration)),
+          duration: newDuration.toFixed(1),
+        }
+      })
 
       setSubtitles(updatedSubtitles)
-      console.log("Settings applied successfully")
+      saveToHistory("Apply settings", updatedSubtitles, speakers, tempSettings)
+
+      console.log("Settings applied successfully - subtitles updated!")
     } catch (error) {
       console.error("Apply settings error:", error)
     }
@@ -875,8 +1032,13 @@ const Editor = () => {
     <div className="editor-container">
       {/* Header */}
       <header className="editor-header">
-        <div className="video-title">
-          {project.name.length > 30 ? `${project.name.substring(0, 30)}...` : project.name}
+        <div className="header-left">
+          <button className="back-button" onClick={() => navigate("/workspace")} title="Back to Workspace">
+            <i className="fas fa-arrow-left"></i>
+          </button>
+          <div className="video-title">
+            {project.name.length > 30 ? `${project.name.substring(0, 30)}...` : project.name}
+          </div>
         </div>
         <div className="header-controls">
           <div className="saved-status">
@@ -974,6 +1136,12 @@ const Editor = () => {
             {/* Left Side - Subtitles */}
             <div className="subtitles-section">
               <div className="subtitles-list">
+                {isLoadingWords && (
+                  <div className="loading-indicator">
+                    <i className="fas fa-spinner fa-spin"></i>
+                    Loading word-level data from backend...
+                  </div>
+                )}
                 {subtitles.map((subtitle, index) => (
                   <div
                     key={subtitle.id}
@@ -1177,7 +1345,8 @@ const Editor = () => {
                 <div className="media-placeholder">
                   <div className="placeholder-content">
                     <i className="fas fa-file-audio"></i>
-                    <p>Media player will appear here</p>
+                    <p>Demo Media Player</p>
+                    <small>Backend team will integrate actual media playback</small>
                   </div>
                 </div>
               )}
@@ -1221,7 +1390,8 @@ const Editor = () => {
               <div className="header-content">
                 <h2>Settings</h2>
                 <p className="settings-description">
-                  Configure subtitle formatting, timing, and export preferences for your project.
+                  Configure subtitle formatting, timing, and export preferences. Changes will be applied to all
+                  subtitles.
                 </p>
               </div>
               <button className="apply-settings-btn" onClick={handleApplySettings}>
@@ -1231,143 +1401,102 @@ const Editor = () => {
             </div>
 
             <div className="settings-content">
-              <div className="settings-row">
-                <div className="settings-column">
-                  {/* General Settings Card */}
-                  <div className="settings-card">
-                    <div className="card-header">
-                      <h3>
-                        <i className="fas fa-cog"></i>
-                        General Settings
-                      </h3>
-                    </div>
-                    <div className="card-body">
-                      <div className="setting-item">
-                        <label className="toggle-label">
-                          <input
-                            type="checkbox"
-                            checked={tempSettings.includeSpeakerNames}
-                            onChange={(e) => handleTempSettingsChange("includeSpeakerNames", e.target.checked)}
-                          />
-                          <span className="toggle-slider"></span>
-                          <div className="toggle-content">
-                            <div className="toggle-title">Include Speaker Names</div>
-                            <div className="toggle-description">Add speaker names to subtitle text when exporting</div>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
+              <div className="settings-single-column">
+                {/* General Settings Card */}
+                <div className="settings-card">
+                  <div className="card-header">
+                    <h3>
+                      <i className="fas fa-cog"></i>
+                      General Settings
+                    </h3>
                   </div>
-
-                  {/* Subtitle Guidelines Card */}
-                  <div className="settings-card">
-                    <div className="card-header">
-                      <h3>
-                        <i className="fas fa-align-left"></i>
-                        Subtitle Guidelines
-                      </h3>
-                    </div>
-                    <div className="card-body">
-                      <div className="setting-item">
-                        <label className="setting-label">Max characters per subtitle</label>
-                        <select
-                          value={tempSettings.maxCharacters}
-                          onChange={(e) => handleTempSettingsChange("maxCharacters", Number.parseInt(e.target.value))}
-                          className="setting-select"
-                        >
-                          <option value={42}>42 characters</option>
-                          <option value={64}>64 characters</option>
-                          <option value={74}>74 characters</option>
-                          <option value={82}>82 characters</option>
-                          <option value={100}>100 characters</option>
-                        </select>
-                        <div className="setting-help">Recommended: 42-82 characters for optimal readability</div>
-                      </div>
-
-                      <div className="setting-item">
-                        <label className="setting-label">Max lines per subtitle</label>
-                        <select
-                          value={tempSettings.maxLines}
-                          onChange={(e) => handleTempSettingsChange("maxLines", Number.parseInt(e.target.value))}
-                          className="setting-select"
-                        >
-                          <option value={1}>1 line</option>
-                          <option value={2}>2 lines</option>
-                          <option value={3}>3 lines</option>
-                        </select>
-                        <div className="setting-help">Most platforms support 1-2 lines maximum</div>
-                      </div>
-
-                      <div className="setting-item">
-                        <label className="setting-label">Min duration (seconds)</label>
-                        <select
-                          value={tempSettings.minDuration}
-                          onChange={(e) => handleTempSettingsChange("minDuration", Number.parseFloat(e.target.value))}
-                          className="setting-select"
-                        >
-                          <option value={0.5}>0.5 seconds</option>
-                          <option value={1}>1 second</option>
-                          <option value={1.5}>1.5 seconds</option>
-                          <option value={2}>2 seconds</option>
-                        </select>
-                        <div className="setting-help">Minimum time a subtitle should be displayed</div>
-                      </div>
-
-                      <div className="setting-item">
-                        <label className="setting-label">Max duration (seconds)</label>
-                        <select
-                          value={tempSettings.maxDuration}
-                          onChange={(e) => handleTempSettingsChange("maxDuration", Number.parseFloat(e.target.value))}
-                          className="setting-select"
-                        >
-                          <option value={3}>3 seconds</option>
-                          <option value={4}>4 seconds</option>
-                          <option value={5}>5 seconds</option>
-                          <option value={6}>6 seconds</option>
-                          <option value={8}>8 seconds</option>
-                          <option value={10}>10 seconds</option>
-                        </select>
-                        <div className="setting-help">Maximum time a subtitle should be displayed</div>
-                      </div>
+                  <div className="card-body">
+                    <div className="setting-item">
+                      <label className="toggle-label">
+                        <input
+                          type="checkbox"
+                          checked={tempSettings.includeSpeakerNames}
+                          onChange={(e) => handleTempSettingsChange("includeSpeakerNames", e.target.checked)}
+                        />
+                        <span className="toggle-slider"></span>
+                        <div className="toggle-content">
+                          <div className="toggle-title">Include Speaker Names</div>
+                          <div className="toggle-description">Add speaker names to subtitle text when exporting</div>
+                        </div>
+                      </label>
                     </div>
                   </div>
                 </div>
 
-                <div className="settings-column">
-                  {/* Preview Card */}
-                  <div className="settings-card">
-                    <div className="card-header">
-                      <h3>
-                        <i className="fas fa-eye"></i>
-                        Preview
-                      </h3>
+                {/* Subtitle Guidelines Card */}
+                <div className="settings-card">
+                  <div className="card-header">
+                    <h3>
+                      <i className="fas fa-align-left"></i>
+                      Subtitle Guidelines
+                    </h3>
+                  </div>
+                  <div className="card-body">
+                    <div className="setting-item">
+                      <label className="setting-label">Max characters per subtitle</label>
+                      <select
+                        value={tempSettings.maxCharacters}
+                        onChange={(e) => handleTempSettingsChange("maxCharacters", Number.parseInt(e.target.value))}
+                        className="setting-select"
+                      >
+                        <option value={42}>42 characters</option>
+                        <option value={64}>64 characters</option>
+                        <option value={74}>74 characters</option>
+                        <option value={82}>82 characters</option>
+                        <option value={100}>100 characters</option>
+                      </select>
+                      <div className="setting-help">Recommended: 42-82 characters for optimal readability</div>
                     </div>
-                    <div className="card-body">
-                      <div className="preview-container">
-                        <div className="preview-subtitle">
-                          <span className="preview-text">
-                            {tempSettings.includeSpeakerNames && <span className="preview-speaker">Speaker 1: </span>}
-                            This is a sample subtitle text that shows how your settings will look when applied to the
-                            actual subtitles.
-                          </span>
-                        </div>
-                        <div className="preview-stats">
-                          <div className="stat-item">
-                            <span className="stat-label">Max Chars:</span>
-                            <span className="stat-value">{tempSettings.maxCharacters}</span>
-                          </div>
-                          <div className="stat-item">
-                            <span className="stat-label">Max Lines:</span>
-                            <span className="stat-value">{tempSettings.maxLines}</span>
-                          </div>
-                          <div className="stat-item">
-                            <span className="stat-label">Duration:</span>
-                            <span className="stat-value">
-                              {tempSettings.minDuration}s - {tempSettings.maxDuration}s
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+
+                    <div className="setting-item">
+                      <label className="setting-label">Max lines per subtitle</label>
+                      <select
+                        value={tempSettings.maxLines}
+                        onChange={(e) => handleTempSettingsChange("maxLines", Number.parseInt(e.target.value))}
+                        className="setting-select"
+                      >
+                        <option value={1}>1 line</option>
+                        <option value={2}>2 lines</option>
+                        <option value={3}>3 lines</option>
+                      </select>
+                      <div className="setting-help">Most platforms support 1-2 lines maximum</div>
+                    </div>
+
+                    <div className="setting-item">
+                      <label className="setting-label">Min duration (seconds)</label>
+                      <select
+                        value={tempSettings.minDuration}
+                        onChange={(e) => handleTempSettingsChange("minDuration", Number.parseFloat(e.target.value))}
+                        className="setting-select"
+                      >
+                        <option value={0.5}>0.5 seconds</option>
+                        <option value={1}>1 second</option>
+                        <option value={1.5}>1.5 seconds</option>
+                        <option value={2}>2 seconds</option>
+                      </select>
+                      <div className="setting-help">Minimum time a subtitle should be displayed</div>
+                    </div>
+
+                    <div className="setting-item">
+                      <label className="setting-label">Max duration (seconds)</label>
+                      <select
+                        value={tempSettings.maxDuration}
+                        onChange={(e) => handleTempSettingsChange("maxDuration", Number.parseFloat(e.target.value))}
+                        className="setting-select"
+                      >
+                        <option value={3}>3 seconds</option>
+                        <option value={4}>4 seconds</option>
+                        <option value={5}>5 seconds</option>
+                        <option value={6}>6 seconds</option>
+                        <option value={8}>8 seconds</option>
+                        <option value={10}>10 seconds</option>
+                      </select>
+                      <div className="setting-help">Maximum time a subtitle should be displayed</div>
                     </div>
                   </div>
                 </div>
@@ -1438,11 +1567,11 @@ const Editor = () => {
         </div>
       </div>
 
-      {/* Enhanced Waveform Timeline with Drag & Drop */}
+      {/* Enhanced Waveform Timeline with Professional Drag & Drop */}
       <div className="waveform-container" ref={waveformRef}>
         <div className="timeline-markers" style={{ width: `${zoomLevel}%` }}>
           {Array.from({ length: Math.ceil((duration * zoomLevel) / 500) + 1 }, (_, i) => {
-            const timeStep = 500 / zoomLevel // seconds per marker
+            const timeStep = 500 / zoomLevel
             const time = i * timeStep
             if (time > duration) return null
 
@@ -1466,72 +1595,91 @@ const Editor = () => {
                 className={`waveform-block ${isSelected ? "selected" : ""} ${isDragging && isSelected ? "dragging" : ""} ${isResizing && isSelected ? "resizing" : ""}`}
                 style={{
                   left: `${leftPercent}%`,
-                  width: `${Math.max(widthPercent, 0.5)}%`,
+                  width: `${Math.max(widthPercent, 0.8)}%`,
                   cursor: isDragging ? "grabbing" : "grab",
                   borderColor: getSpeakerColor(subtitle.speakerId),
                   backgroundColor: isSelected
                     ? `${getSpeakerColor(subtitle.speakerId)}60`
                     : `${getSpeakerColor(subtitle.speakerId)}30`,
                 }}
-                onMouseDown={(e) => handleSubtitleMouseDown(e, subtitle.id)}
+                onMouseDown={(e) => {
+                  // Only allow dragging if not clicking on resize handles
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const clickX = e.clientX - rect.left
+                  const isNearStart = clickX < 12
+                  const isNearEnd = clickX > rect.width - 12
+
+                  if (!isNearStart && !isNearEnd) {
+                    handleSubtitleMouseDown(e, subtitle.id)
+                  }
+                }}
                 onClick={(e) => {
                   e.stopPropagation()
                   if (!isDragging && !isResizing) {
                     handleSeek(subtitle.startSeconds)
                     setSelectedSubtitleId(subtitle.id)
-
-                    const subtitleElement = document.getElementById(`subtitle-${subtitle.id}`)
-                    if (subtitleElement) {
-                      subtitleElement.scrollIntoView({ behavior: "smooth", block: "center" })
-                    }
                   }
                 }}
               >
-                <div className="block-content">
-                  <div className="block-text">{subtitle.text}</div>
-                  <div className="block-time">
-                    {formatTimeShort(subtitle.startSeconds)} - {formatTimeShort(subtitle.endSeconds)}
-                  </div>
-                </div>
-
-                {/* Enhanced Resize Handles */}
+                {/* Left resize handle - only at start */}
                 <div
-                  className={`resize-handle resize-handle-left ${hoveredHandle === "left" ? "hovered" : ""} ${isSelected ? "visible" : ""}`}
+                  className={`resize-handle resize-handle-left ${hoveredHandle === `${subtitle.id}-left` ? "hovered" : ""}`}
                   onMouseDown={(e) => {
                     e.stopPropagation()
                     handleSubtitleMouseDown(e, subtitle.id, "left")
                   }}
-                  onMouseEnter={() => handleHandleMouseEnter("left")}
+                  onMouseEnter={() => handleHandleMouseEnter(`${subtitle.id}-left`)}
                   onMouseLeave={handleHandleMouseLeave}
                   style={{ cursor: "ew-resize" }}
-                  title="Drag to resize from left"
                 >
                   <div className="handle-indicator"></div>
                 </div>
 
+                {/* Block content */}
+                <div className="block-content">
+                  <div className="block-text">
+                    {subtitle.text.length > 25 ? `${subtitle.text.substring(0, 25)}...` : subtitle.text}
+                  </div>
+                  <div className="block-info">
+                    <span className="block-speaker">{getSpeakerName(subtitle.speakerId)}</span>
+                    <span className="block-duration">{subtitle.duration}s</span>
+                  </div>
+                </div>
+
+                {/* Right resize handle - only at end */}
                 <div
-                  className={`resize-handle resize-handle-right ${hoveredHandle === "right" ? "hovered" : ""} ${isSelected ? "visible" : ""}`}
+                  className={`resize-handle resize-handle-right ${hoveredHandle === `${subtitle.id}-right` ? "hovered" : ""}`}
                   onMouseDown={(e) => {
                     e.stopPropagation()
                     handleSubtitleMouseDown(e, subtitle.id, "right")
                   }}
-                  onMouseEnter={() => handleHandleMouseEnter("right")}
+                  onMouseEnter={() => handleHandleMouseEnter(`${subtitle.id}-right`)}
                   onMouseLeave={handleHandleMouseLeave}
                   style={{ cursor: "ew-resize" }}
-                  title="Drag to resize from right"
                 >
                   <div className="handle-indicator"></div>
                 </div>
               </div>
             )
           })}
-          <div className="timeline-cursor" style={{ left: `${(currentTime / duration) * 100}%` }}></div>
+
+          {/* Current time indicator */}
+          <div
+            className="current-time-indicator"
+            style={{
+              left: `${(currentTime / duration) * 100}%`,
+            }}
+          >
+            <div className="time-line"></div>
+            <div className="time-handle">
+              <div className="time-tooltip">{formatTimeShort(currentTime)}</div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Dialogs */}
       <AnimatePresence>
-        {/* Add Speaker Dialog */}
         {showAddSpeakerDialog && (
           <motion.div
             className="dialog-overlay"
@@ -1548,26 +1696,26 @@ const Editor = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="dialog-header">
-                <h3>Add Speaker</h3>
+                <h3>Add New Speaker</h3>
                 <button className="dialog-close" onClick={() => setShowAddSpeakerDialog(false)}>
                   <i className="fas fa-times"></i>
                 </button>
               </div>
-              <div className="dialog-content">
-                <p>Add a new speaker for the subtitle.</p>
-                <div className="form-group">
-                  <label>New Speaker Name</label>
-                  <input
-                    type="text"
-                    value={newSpeakerName}
-                    onChange={(e) => setNewSpeakerName(e.target.value)}
-                    placeholder="Enter speaker name"
-                    onKeyPress={(e) => e.key === "Enter" && handleAddSpeaker()}
-                  />
-                </div>
+              <div className="dialog-body">
+                <input
+                  type="text"
+                  placeholder="Enter speaker name"
+                  value={newSpeakerName}
+                  onChange={(e) => setNewSpeakerName(e.target.value)}
+                  className="dialog-input"
+                  autoFocus
+                />
               </div>
-              <div className="dialog-actions">
-                <button className="btn-primary" onClick={handleAddSpeaker}>
+              <div className="dialog-footer">
+                <button className="dialog-btn secondary" onClick={() => setShowAddSpeakerDialog(false)}>
+                  Cancel
+                </button>
+                <button className="dialog-btn primary" onClick={handleAddSpeaker} disabled={!newSpeakerName.trim()}>
                   Add Speaker
                 </button>
               </div>
@@ -1575,7 +1723,6 @@ const Editor = () => {
           </motion.div>
         )}
 
-        {/* Edit Speaker Dialog */}
         {showEditSpeakerDialog && (
           <motion.div
             className="dialog-overlay"
@@ -1597,29 +1744,28 @@ const Editor = () => {
                   <i className="fas fa-times"></i>
                 </button>
               </div>
-              <div className="dialog-content">
-                <p>Update a speaker's name for the subtitle.</p>
-                <div className="form-group">
-                  <label>New Speaker Name</label>
-                  <input
-                    type="text"
-                    value={newSpeakerName}
-                    onChange={(e) => setNewSpeakerName(e.target.value)}
-                    placeholder="Enter speaker name"
-                    onKeyPress={(e) => e.key === "Enter" && handleEditSpeaker()}
-                  />
-                </div>
+              <div className="dialog-body">
+                <input
+                  type="text"
+                  placeholder="Enter speaker name"
+                  value={newSpeakerName}
+                  onChange={(e) => setNewSpeakerName(e.target.value)}
+                  className="dialog-input"
+                  autoFocus
+                />
               </div>
-              <div className="dialog-actions">
-                <button className="btn-primary" onClick={handleEditSpeaker}>
-                  Update Speaker
+              <div className="dialog-footer">
+                <button className="dialog-btn secondary" onClick={() => setShowEditSpeakerDialog(false)}>
+                  Cancel
+                </button>
+                <button className="dialog-btn primary" onClick={handleEditSpeaker} disabled={!newSpeakerName.trim()}>
+                  Save Changes
                 </button>
               </div>
             </motion.div>
           </motion.div>
         )}
 
-        {/* Change Speaker Dialog */}
         {showChangeSpeakerDialog && (
           <motion.div
             className="dialog-overlay"
@@ -1641,29 +1787,32 @@ const Editor = () => {
                   <i className="fas fa-times"></i>
                 </button>
               </div>
-              <div className="dialog-content">
-                <p>Change the speaker for the subtitle.</p>
-                <div className="form-group">
-                  <label>Select Speaker</label>
-                  <select value={selectedSpeaker} onChange={(e) => setSelectedSpeaker(e.target.value)}>
-                    {speakers.map((speaker) => (
-                      <option key={speaker.id} value={speaker.id}>
-                        {speaker.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div className="dialog-body">
+                <select
+                  value={selectedSpeaker}
+                  onChange={(e) => setSelectedSpeaker(e.target.value)}
+                  className="dialog-select"
+                  autoFocus
+                >
+                  {speakers.map((speaker) => (
+                    <option key={speaker.id} value={speaker.id}>
+                      {speaker.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="dialog-actions">
-                <button className="btn-primary" onClick={handleChangeSpeaker}>
-                  Confirm Change
+              <div className="dialog-footer">
+                <button className="dialog-btn secondary" onClick={() => setShowChangeSpeakerDialog(false)}>
+                  Cancel
+                </button>
+                <button className="dialog-btn primary" onClick={handleChangeSpeaker}>
+                  Change Speaker
                 </button>
               </div>
             </motion.div>
           </motion.div>
         )}
 
-        {/* Mark Complete Dialog */}
         {showMarkCompleteDialog && (
           <motion.div
             className="dialog-overlay"
@@ -1685,16 +1834,18 @@ const Editor = () => {
                   <i className="fas fa-times"></i>
                 </button>
               </div>
-              <div className="dialog-content">
-                <p>Are you sure you want to mark this project as complete?</p>
-                <p className="dialog-warning">This will save all changes and finalize the project.</p>
+              <div className="dialog-body">
+                <p>
+                  Are you sure you want to mark this project as complete? This will save all changes and return you to
+                  the workspace.
+                </p>
               </div>
-              <div className="dialog-actions">
-                <button className="btn-secondary" onClick={() => setShowMarkCompleteDialog(false)}>
+              <div className="dialog-footer">
+                <button className="dialog-btn secondary" onClick={() => setShowMarkCompleteDialog(false)}>
                   Cancel
                 </button>
-                <button className="btn-primary" onClick={confirmMarkComplete}>
-                  Yes, mark as complete
+                <button className="dialog-btn primary" onClick={confirmMarkComplete}>
+                  Mark Complete
                 </button>
               </div>
             </motion.div>

@@ -66,7 +66,7 @@ const Dashboard = () => {
     { code: "zh", name: "Chinese (Mandarin)", flag: "🇨🇳" },
   ]
 
-  // Load projects from localStorage
+  // Load projects from localStorage and add demo project
   useEffect(() => {
     loadProjects()
   }, [])
@@ -74,9 +74,42 @@ const Dashboard = () => {
   const loadProjects = async () => {
     try {
       const savedProjects = localStorage.getItem("translationProjects")
-      if (savedProjects) {
-        setProjects(JSON.parse(savedProjects))
+      const loadedProjects = savedProjects ? JSON.parse(savedProjects) : []
+
+      // Add demo project if it doesn't exist
+      const demoProjectExists = loadedProjects.some((p) => p.id === "demo_project_1")
+      if (!demoProjectExists) {
+        const demoProject = {
+          id: "demo_project_1",
+          name: "Sample Audio Demo",
+          duration: "1:00",
+          aiGeneration: "SUCCESS",
+          date: new Date(Date.now() - 86400000).toLocaleString(), // 1 day ago
+          status: "completed",
+          fileData: {
+            file: null,
+            fileName: "sample_audio_demo.mp3",
+            fileSize: 1024000,
+            fileSizeFormatted: "1.0 MB",
+            fileType: "audio/mp3",
+            isVideo: false,
+            isAudio: true,
+            duration: 60,
+            durationSeconds: 60,
+          },
+          language: "en",
+          languageName: "English (US)",
+          creditsUsed: 5,
+          uploadLink: "https://api.translatea2z.com/upload/demo_link_123",
+          isDemo: true,
+        }
+        loadedProjects.unshift(demoProject)
       }
+
+      // Sort projects by date (newest first)
+      loadedProjects.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+      setProjects(loadedProjects)
     } catch (error) {
       console.error("Error loading projects:", error)
     }
@@ -107,7 +140,19 @@ const Dashboard = () => {
     }
   }
 
-  // Enhanced file upload with credit system integration
+  // Generate upload link for backend team to integrate
+  const generateUploadLink = (fileMetadata) => {
+    const timestamp = Date.now()
+    const randomId = Math.random().toString(36).substring(2, 15)
+    const uploadLink = `https://api.translatea2z.com/upload/${timestamp}_${randomId}`
+
+    console.log("Generated upload link for backend integration:", uploadLink)
+    console.log("File metadata for backend:", fileMetadata)
+
+    return uploadLink
+  }
+
+  // File upload workflow - ready for backend integration
   const handleFileUpload = async (file) => {
     if (!file.type.includes("audio") && !file.type.includes("video")) {
       alert("Please upload an audio or video file")
@@ -121,6 +166,7 @@ const Dashboard = () => {
       const durationMinutes = fileMetadata.duration / 60
       const fileType = file.type.includes("video") ? "video" : "audio"
 
+      // Check credits
       if (!canProcess(fileType, durationMinutes)) {
         const cost = Math.ceil(planInfo.processingCost[fileType] * durationMinutes)
         alert(`Insufficient credits! You need ${cost} credits but only have ${credits}. Please upgrade your plan.`)
@@ -135,32 +181,24 @@ const Dashboard = () => {
         return
       }
 
-      const uploadData = {
+      // Step 1: Generate upload link (Backend team will implement the actual upload)
+      const uploadLink = generateUploadLink(fileMetadata)
+
+      // Step 2: Prepare data structure for backend team
+      const backendData = {
+        uploadLink: uploadLink,
         file: file,
-        fileName: file.name,
-        fullFileName: file.name,
-        fileSize: file.size,
-        fileSizeFormatted: formatFileSize(file.size),
-        fileType: file.type,
-        isVideo: file.type.includes("video"),
-        isAudio: file.type.includes("audio"),
-        duration: fileMetadata.duration,
-        durationFormatted: formatDuration(fileMetadata.duration),
-        language: selectedLanguage,
-        languageName: languages.find((l) => l.code === selectedLanguage)?.name,
-        folderName: `project_${Date.now()}`,
-        projectId: `proj_${Date.now()}`,
-        uploadedAt: new Date().toISOString(),
-        createdAt: Date.now(),
-        creditsDeducted: deductionResult.cost,
-        remainingCredits: credits - deductionResult.cost,
         metadata: {
           videoLength: fileMetadata.duration,
-          audioVideoFile: file,
           folderName: `uploads/${Date.now()}`,
           fullFileName: file.name,
           sizeOfFile: file.size,
           language: selectedLanguage,
+          fileType: file.type,
+          isVideo: file.type.includes("video"),
+          isAudio: file.type.includes("audio"),
+          creditsDeducted: deductionResult.cost,
+          remainingCredits: credits - deductionResult.cost,
           bitrate: fileMetadata.bitrate || null,
           resolution: fileMetadata.resolution || null,
           frameRate: fileMetadata.frameRate || null,
@@ -169,60 +207,71 @@ const Dashboard = () => {
         },
       }
 
-      console.log("Backend API Integration Data:", uploadData)
+      console.log("Data ready for backend team:", backendData)
 
-      const backendResponse = await uploadToBackend(uploadData)
-
+      // Step 3: Create project entry with processing status
+      const projectId = `proj_${Date.now()}`
       const newProject = {
-        id: uploadData.projectId,
+        id: projectId,
         name: file.name.replace(/\.[^/.]+$/, ""),
-        duration: uploadData.durationFormatted,
+        duration: formatDuration(fileMetadata.duration),
         aiGeneration: "PROCESSING",
         date: new Date().toLocaleString(),
         status: "processing",
         fileData: {
           file: file,
-          fileName: uploadData.fileName,
-          fileSize: uploadData.fileSize,
-          fileSizeFormatted: uploadData.fileSizeFormatted,
-          fileType: uploadData.fileType,
-          isVideo: uploadData.isVideo,
-          isAudio: uploadData.isAudio,
+          fileName: file.name,
+          fileSize: file.size,
+          fileSizeFormatted: formatFileSize(file.size),
+          fileType: file.type,
+          isVideo: file.type.includes("video"),
+          isAudio: file.type.includes("audio"),
           duration: fileMetadata.duration,
           durationSeconds: fileMetadata.duration,
         },
         language: selectedLanguage,
-        languageName: uploadData.languageName,
-        creditsUsed: uploadData.creditsDeducted,
-        backendData: backendResponse,
-        uploadMetadata: uploadData.metadata,
+        languageName: languages.find((l) => l.code === selectedLanguage)?.name,
+        creditsUsed: deductionResult.cost,
+        uploadLink: uploadLink,
+        backendData: backendData,
       }
 
-      const updatedProjects = [...projects, newProject]
+      // Add to projects list (newest first)
+      const updatedProjects = [newProject, ...projects]
       setProjects(updatedProjects)
       localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
 
-      setTimeout(() => {
-        const processed = updatedProjects.map((p) =>
-          p.id === newProject.id
-            ? {
-                ...p,
-                aiGeneration: "SUCCESS",
-                status: "completed",
-                subtitlesGenerated: true,
-                subtitlesCount: 15,
-              }
-            : p,
-        )
-        setProjects(processed)
-        localStorage.setItem("translationProjects", JSON.stringify(processed))
-      }, 3000)
+      // Step 4: Simulate processing for demo (Backend team will replace this with actual API polling)
+      simulateProcessing(projectId, updatedProjects)
     } catch (error) {
       console.error("Upload error:", error)
       alert("Upload failed. Please try again.")
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Simulate processing for demo - Backend team will replace with actual API calls
+  const simulateProcessing = (projectId, currentProjects) => {
+    // Simulate processing time (3-8 seconds)
+    const processingTime = Math.random() * 5000 + 3000
+
+    setTimeout(() => {
+      const updatedProjects = currentProjects.map((p) =>
+        p.id === projectId
+          ? {
+              ...p,
+              aiGeneration: "SUCCESS",
+              status: "completed",
+              subtitlesGenerated: true,
+              subtitlesCount: Math.floor(p.fileData.durationSeconds / 4),
+            }
+          : p,
+      )
+      setProjects(updatedProjects)
+      localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
+      console.log(`Project ${projectId} processing completed (simulated)`)
+    }, processingTime)
   }
 
   const extractFileMetadata = (file) => {
@@ -251,48 +300,6 @@ const Dashboard = () => {
     })
   }
 
-  const uploadToBackend = async (uploadData) => {
-    try {
-      const formData = new FormData()
-      formData.append("file", uploadData.file)
-      formData.append(
-        "metadata",
-        JSON.stringify({
-          videoLength: uploadData.metadata.videoLength,
-          folderName: uploadData.metadata.folderName,
-          fullFileName: uploadData.metadata.fullFileName,
-          sizeOfFile: uploadData.metadata.sizeOfFile,
-          language: uploadData.metadata.language,
-          fileType: uploadData.fileType,
-          isVideo: uploadData.isVideo,
-          isAudio: uploadData.isAudio,
-          projectId: uploadData.projectId,
-          uploadedAt: uploadData.uploadedAt,
-          creditsDeducted: uploadData.creditsDeducted,
-          remainingCredits: uploadData.remainingCredits,
-        }),
-      )
-
-      console.log("Data Being Sent to Backend API:", {
-        file: uploadData.file,
-        metadata: uploadData.metadata,
-      })
-
-      return {
-        success: true,
-        projectId: uploadData.projectId,
-        processingId: `proc_${Date.now()}`,
-        estimatedProcessingTime: Math.ceil(uploadData.metadata.videoLength / 60) * 30,
-        message: "File uploaded successfully and processing started",
-        creditsDeducted: uploadData.creditsDeducted,
-        remainingCredits: uploadData.remainingCredits,
-      }
-    } catch (error) {
-      console.error("Backend upload error:", error)
-      throw error
-    }
-  }
-
   const formatFileSize = (bytes) => {
     if (bytes === 0) return "0 Bytes"
     const k = 1024
@@ -319,7 +326,6 @@ const Dashboard = () => {
     const editorData = {
       ...project,
       fileMetadata: project.fileData,
-      uploadMetadata: project.uploadMetadata,
       backendData: project.backendData,
     }
 
@@ -331,6 +337,13 @@ const Dashboard = () => {
     if (!confirm("Are you sure you want to delete this project?")) return
 
     try {
+      // Don't allow deletion of demo project
+      const project = projects.find((p) => p.id === projectId)
+      if (project?.isDemo) {
+        alert("Cannot delete demo project")
+        return
+      }
+
       const updatedProjects = projects.filter((p) => p.id !== projectId)
       setProjects(updatedProjects)
       localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
@@ -363,9 +376,7 @@ const Dashboard = () => {
       setNewTeamName("")
       setShowCreateTeamDialog(false)
 
-      // Save to localStorage
       localStorage.setItem("organizationTeams", JSON.stringify(updatedTeams))
-
       alert(`Team "${newTeam.name}" created successfully!`)
     }
   }
@@ -505,7 +516,7 @@ const Dashboard = () => {
             <div className="upload-loading">
               <div className="loading-spinner"></div>
               <h3>Uploading and processing...</h3>
-              <p>Please wait while we process your file</p>
+              <p>Generating upload link and preparing for backend processing...</p>
             </div>
           ) : (
             <>
@@ -540,7 +551,7 @@ const Dashboard = () => {
       <div className="projects-section">
         <div className="projects-header">
           <h2>Projects</h2>
-          <p>A list of all the translations in your workspace</p>
+          <p>A list of all the translations in your workspace (sorted by newest first)</p>
         </div>
 
         <div className="projects-table-container">
@@ -553,7 +564,7 @@ const Dashboard = () => {
                 <th className="col-date">Date</th>
                 <th className="col-status">Project Status</th>
                 <th className="col-credits">Credits Used</th>
-                <th className="col-edit">Edit</th>
+                <th className="col-edit">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -573,6 +584,7 @@ const Dashboard = () => {
                       <div className="project-name-cell">
                         <span className="project-name" title={project.name}>
                           {project.name.length > 35 ? `${project.name.substring(0, 35)}...` : project.name}
+                          {project.isDemo && <span className="demo-badge">DEMO</span>}
                         </span>
                         <div className="project-meta">
                           <span className="file-type">{project.fileData?.isVideo ? "Video" : "Audio"}</span>
@@ -596,7 +608,13 @@ const Dashboard = () => {
                     <td className="col-status">
                       <div className="status-cell">
                         <div className={`status-indicator ${project.status}`}></div>
-                        <span className="status-text">{project.status === "completed" ? "Draft" : "Processing"}</span>
+                        <span className="status-text">
+                          {project.status === "completed"
+                            ? "Draft"
+                            : project.status === "processing"
+                              ? "Processing"
+                              : "Unknown"}
+                        </span>
                       </div>
                     </td>
                     <td className="col-credits">
@@ -604,21 +622,27 @@ const Dashboard = () => {
                     </td>
                     <td className="col-edit">
                       <div className="edit-actions">
-                        <button
-                          className={`edit-button ${project.status === "processing" ? "disabled" : ""}`}
-                          onClick={() => openEditor(project)}
-                          disabled={project.status === "processing"}
-                          title={project.status === "processing" ? "Processing..." : "Edit project"}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="delete-button"
-                          onClick={() => deleteProject(project.id)}
-                          title="Delete project"
-                        >
-                          <i className="fas fa-trash"></i>
-                        </button>
+                        {project.status === "processing" ? (
+                          <button className="processing-button" disabled>
+                            <i className="fas fa-spinner fa-spin"></i>
+                            Processing...
+                          </button>
+                        ) : project.status === "completed" ? (
+                          <>
+                            <button className="edit-button" onClick={() => openEditor(project)} title="Edit project">
+                              Edit
+                            </button>
+                            {!project.isDemo && (
+                              <button
+                                className="delete-button"
+                                onClick={() => deleteProject(project.id)}
+                                title="Delete project"
+                              >
+                                <i className="fas fa-trash"></i>
+                              </button>
+                            )}
+                          </>
+                        ) : null}
                       </div>
                     </td>
                   </tr>

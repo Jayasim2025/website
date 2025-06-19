@@ -7,6 +7,7 @@ import { Environment, OrbitControls } from "@react-three/drei"
 import { Suspense } from "react"
 import { useLocation } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
+import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import LoginModal from "../components/LoginModal"
 import BackgroundScene from "../components/BackgroundScene"
@@ -28,6 +29,16 @@ function PricingPage({ theme, toggleTheme }) {
       setPricingType("individual")
     }
   }, [location])
+
+  useEffect(() => {
+    // Listen for custom event to open login modal
+    const handleOpenLoginModal = () => setShowLoginModal(true)
+    window.addEventListener("open-login-modal", handleOpenLoginModal)
+
+    return () => {
+      window.removeEventListener("open-login-modal", handleOpenLoginModal)
+    }
+  }, [])
 
   const toggleLoginModal = () => {
     setShowLoginModal(!showLoginModal)
@@ -159,6 +170,9 @@ function PricingPage({ theme, toggleTheme }) {
         </Canvas>
       </div>
 
+      {/* Navbar */}
+      <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+
       <Sidebar
         theme={theme}
         toggleTheme={toggleTheme}
@@ -176,7 +190,7 @@ function PricingPage({ theme, toggleTheme }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="gradient-text">Pricing Plans</h1>
+              <h1 className="gradient-glow">Pricing Plans</h1>
               <p>Choose the perfect plan for your needs</p>
 
               <div className="pricing-toggle-container">

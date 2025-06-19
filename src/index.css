@@ -165,7 +165,7 @@ img {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -193,7 +193,7 @@ img {
 .placeholder-page h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -202,6 +202,51 @@ img {
 .placeholder-page p {
   font-size: 1.2rem;
   color: var(--text-secondary);
+}
+
+.gradient-glow {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+  font-weight: 700;
+}
+
+.universal-back-button {
+  position: fixed;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  z-index: 1000;
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+  transition: all var(--transition-speed) var(--transition-function);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.universal-back-button:hover {
+  transform: translateY(-50%) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+  background: var(--primary-gradient-hover);
+}
+
+.universal-back-button:active {
+  transform: translateY(-50%) translateY(0);
+}
+
+/* Hide back button when sidebar is open */
+.sidebar-open .universal-back-button {
+  display: none;
 }
 
 @media (max-width: 768px) {
@@ -215,6 +260,13 @@ img {
 
   .section-header p {
     font-size: 1rem;
+  }
+
+  .universal-back-button {
+    left: 10px;
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
   }
 }
 

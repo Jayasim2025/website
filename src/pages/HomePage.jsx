@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion"
 import { Canvas } from "@react-three/fiber"
 import { Environment, OrbitControls } from "@react-three/drei"
 import { Suspense } from "react"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
 import Hero from "../components/Hero"
 import Features from "../components/Features"
@@ -21,6 +21,7 @@ function HomePage({ theme, toggleTheme }) {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const toggleLoginModal = () => {
     setShowLoginModal(!showLoginModal)
@@ -28,6 +29,10 @@ function HomePage({ theme, toggleTheme }) {
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen)
+  }
+
+  const handleGoBack = () => {
+    navigate(-1)
   }
 
   // Handle scrolling to sections when navigating from other pages
@@ -73,8 +78,17 @@ function HomePage({ theme, toggleTheme }) {
         </Canvas>
       </div>
 
+      {/* Back Button - Only show on non-home pages */}
+      {location.pathname !== "/" && (
+        <button className="universal-back-button" onClick={handleGoBack} title="Go Back">
+          <i className="fas fa-arrow-left"></i>
+        </button>
+      )}
+
       {!sidebarOpen && (
-        <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+        <div className="page-header">
+          <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+        </div>
       )}
 
       <Sidebar

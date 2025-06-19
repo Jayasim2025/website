@@ -48,6 +48,11 @@
   transition: all 0.2s ease;
 }
 
+.sidebar-toggle i.fas.fa-bars {
+  position: relative;
+  top: -10px; /* Keep at 0 to avoid icon/background misalignment */
+}
+
 .sidebar-toggle:hover {
   background-color: var(--primary-light);
   color: var(--primary-color);

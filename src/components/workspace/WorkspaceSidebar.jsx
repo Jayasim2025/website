@@ -7,12 +7,11 @@ import "../../styles/workspace/WorkspaceSidebar.css"
 
 const WorkspaceSidebar = ({ isOpen, toggleSidebar }) => {
   const location = useLocation()
-  const [activeSection, setActiveSection] = useState("home")
+  const [activeSection, setActiveSection] = useState("dashboard")
   const [workspaceDropdownOpen, setWorkspaceDropdownOpen] = useState(false)
 
   const menuItems = [
-    { id: "home", label: "Home", icon: "home", path: "/workspace" },
-    { id: "projects", label: "Projects", icon: "folder", path: "/workspace/projects" },
+    { id: "dashboard", label: "Dashboard", icon: "tachometer-alt", path: "/workspace" },
     { id: "settings", label: "Settings", icon: "cog", path: "/workspace/settings" },
     { id: "members", label: "Members", icon: "users", path: "/workspace/members" },
     { id: "billing", label: "Billing", icon: "credit-card", path: "/workspace/billing" },
@@ -127,7 +126,7 @@ const WorkspaceSidebar = ({ isOpen, toggleSidebar }) => {
                 <NavLink
                   to={item.path}
                   className={({ isActive }) => (isActive ? "active" : "")}
-                  end={item.id === "home"}
+                  end={item.id === "dashboard"}
                 >
                   <i className={`fas fa-${item.icon}`}></i>
                   <span>{item.label}</span>

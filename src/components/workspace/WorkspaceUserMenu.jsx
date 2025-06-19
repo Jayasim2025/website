@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import "../../styles/workspace/WorkspaceUserMenu.css"
 
-const WorkspaceUserMenu = ({ closeUserMenu, theme, toggleTheme }) => {
+const WorkspaceUserMenu = ({ closeUserMenu, theme, toggleTheme, toggleNotifications }) => {
   const navigate = useNavigate()
 
   const handleBackdropClick = (e) => {
@@ -17,6 +17,23 @@ const WorkspaceUserMenu = ({ closeUserMenu, theme, toggleTheme }) => {
     navigate("/workspace/dashboard")
     closeUserMenu()
   }
+
+  const handleLogout = () => {
+    // Clear user data from localStorage
+    localStorage.removeItem("userEmail")
+    localStorage.removeItem("authToken")
+    // Navigate to home page
+    navigate("/")
+    closeUserMenu()
+  }
+
+  const handleNotifications = () => {
+    toggleNotifications()
+    closeUserMenu()
+  }
+
+  // Get user email from localStorage
+  const userEmail = localStorage.getItem("userEmail") || "lithins147@gmail.com"
 
   return (
     <motion.div className="user-menu-backdrop" onClick={handleBackdropClick}>
@@ -36,7 +53,7 @@ const WorkspaceUserMenu = ({ closeUserMenu, theme, toggleTheme }) => {
             />
             <div className="user-menu-info">
               <span className="user-menu-name">Lithin</span>
-              <span className="user-menu-email">lithins147@gmail.com</span>
+              <span className="user-menu-email">{userEmail}</span>
             </div>
           </div>
         </div>
@@ -46,26 +63,14 @@ const WorkspaceUserMenu = ({ closeUserMenu, theme, toggleTheme }) => {
             <i className="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
           </button>
-          <a href="#" className="user-menu-item">
+          <button className="user-menu-item" onClick={handleNotifications}>
             <i className="fas fa-bell"></i>
             <span>Notifications</span>
-          </a>
-          <a href="#" className="user-menu-item">
-            <i className="fas fa-cog"></i>
-            <span>Account Settings</span>
-          </a>
-          <a href="#" className="user-menu-item">
-            <i className="fas fa-shield-alt"></i>
-            <span>Security Settings</span>
-          </a>
-          <a href="#" className="user-menu-item">
-            <i className="fas fa-code"></i>
-            <span>Developer Settings</span>
-          </a>
-          <a href="#" className="user-menu-item logout">
+          </button>
+          <button className="user-menu-item logout" onClick={handleLogout}>
             <i className="fas fa-sign-out-alt"></i>
             <span>Log out</span>
-          </a>
+          </button>
         </div>
       </motion.div>
     </motion.div>

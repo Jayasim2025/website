@@ -1,28 +1,42 @@
 .integrations-page {
-  padding: 80px 0 80px;
+  padding: 120px 0 80px;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 .integrations-page-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 4rem;
 }
 
 .integrations-page-header h1 {
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 800;
   margin-bottom: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .integrations-page-header p {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: var(--text-secondary);
-  max-width: 800px;
-  margin: 0 auto;
+}
+
+/* Gradient glow effect for title */
+.gradient-glow {
+  background: linear-gradient(135deg, #a64dff 0%, #d16ba5 50%, #ff7eb3 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline;
 }
 
 @media (max-width: 768px) {
   .integrations-page {
-    padding: 70px 0 60px;
+    padding: 100px 0 60px;
   }
 
   .integrations-page-header h1 {
