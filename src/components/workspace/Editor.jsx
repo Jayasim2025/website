@@ -21,6 +21,165 @@ const Editor = () => {
   const [wordLevelData, setWordLevelData] = useState([])
   const [isLoadingWords, setIsLoadingWords] = useState(false)
 
+  // Backend Integration Point - Get Result API for word-level data
+  const getResultFromAPI = async (projectId) => {
+    try {
+      const apiEndpoint = `/api/projects/${projectId}/get-result`
+      const requestData = {
+        projectId: projectId,
+        requestType: "word_level_data",
+        includeTimestamps: true,
+        includeConfidence: true,
+        timestamp: Date.now(),
+      }
+
+      console.log("🔗 Backend Integration Point: Get Result API")
+      console.log("📡 API Endpoint:", apiEndpoint)
+      console.log("📋 Request Data:", requestData)
+      console.log("📥 Expected Response Format:", {
+        success: true,
+        projectId: "string",
+        status: "processed",
+        wordLevelData: [
+          {
+            id: "number",
+            word: "string",
+            startTime: "number (seconds)",
+            endTime: "number (seconds)",
+            confidence: "number (0-1)",
+            speakerId: "number",
+          },
+        ],
+        totalWords: "number",
+        duration: "number",
+      })
+
+      // For demo purposes, simulate API call
+      // Backend team will replace this with actual fetch call
+      const simulatedResponse = await simulateGetResultAPI(requestData)
+
+      console.log("📤 Get Result API Response:", simulatedResponse)
+      return simulatedResponse
+    } catch (error) {
+      console.error("❌ Get Result API Error:", error)
+      return { success: false, wordLevelData: [] }
+    }
+  }
+
+  // Simulate API response for demo - Backend team will remove this
+  const simulateGetResultAPI = async (requestData) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const demoWords = generateDemoWordData()
+        resolve({
+          success: true,
+          projectId: requestData.projectId,
+          status: "processed",
+          wordLevelData: demoWords,
+          totalWords: demoWords.length,
+          duration: duration,
+          processingTime: "2.3 seconds",
+          confidence: 0.94,
+        })
+      }, 800)
+    })
+  }
+
+  // Word grouping functionality for subtitle creation
+  const groupWordsIntoSubtitles = (words, groupingSettings = null) => {
+    if (!words || words.length === 0) return []
+
+    const effectiveSettings = groupingSettings || settings
+    console.log("🔄 Grouping words into subtitles")
+    console.log("📊 Grouping settings:", effectiveSettings)
+    console.log("📝 Total words to group:", words.length)
+
+    const subtitles = []
+    let currentSubtitle = {
+      id: 1,
+      words: [],
+      startTime: 0,
+      endTime: 0,
+      speakerId: 0,
+    }
+
+    let currentCharCount = 0
+    const maxChars = effectiveSettings.maxCharacters
+    const maxDuration = effectiveSettings.maxDuration
+
+    words.forEach((word, index) => {
+      const wordLength = word.word.length + 1
+
+      const wouldExceedChars = currentCharCount + wordLength > maxChars
+      const wouldExceedDuration =
+        currentSubtitle.words.length > 0 && word.endTime - currentSubtitle.startTime > maxDuration
+
+      if ((wouldExceedChars || wouldExceedDuration) && currentSubtitle.words.length > 0) {
+        const text = currentSubtitle.words.map((w) => w.word).join(" ")
+        subtitles.push({
+          id: currentSubtitle.id,
+          startTime: formatSecondsToTime(currentSubtitle.startTime),
+          endTime: formatSecondsToTime(currentSubtitle.endTime),
+          startSeconds: currentSubtitle.startTime,
+          endSeconds: currentSubtitle.endTime,
+          speakerId: currentSubtitle.speakerId,
+          text: text,
+          characters: text.length,
+          duration: (currentSubtitle.endTime - currentSubtitle.startTime).toFixed(1),
+          words: [...currentSubtitle.words],
+        })
+
+        console.log(`📝 Created subtitle ${currentSubtitle.id}:`, {
+          text: text.substring(0, 50) + (text.length > 50 ? "..." : ""),
+          wordCount: currentSubtitle.words.length,
+          duration: (currentSubtitle.endTime - currentSubtitle.startTime).toFixed(1),
+        })
+
+        currentSubtitle = {
+          id: subtitles.length + 1,
+          words: [],
+          startTime: word.startTime,
+          endTime: word.endTime,
+          speakerId: Math.floor(Math.random() * 3),
+        }
+        currentCharCount = 0
+      }
+
+      if (currentSubtitle.words.length === 0) {
+        currentSubtitle.startTime = word.startTime
+      }
+      currentSubtitle.endTime = word.endTime
+      currentSubtitle.words.push(word)
+      currentCharCount += wordLength
+    })
+
+    if (currentSubtitle.words.length > 0) {
+      const text = currentSubtitle.words.map((w) => w.word).join(" ")
+      subtitles.push({
+        id: currentSubtitle.id,
+        startTime: formatSecondsToTime(currentSubtitle.startTime),
+        endTime: formatSecondsToTime(currentSubtitle.endTime),
+        startSeconds: currentSubtitle.startTime,
+        endSeconds: currentSubtitle.endTime,
+        speakerId: currentSubtitle.speakerId,
+        text: text,
+        characters: text.length,
+        duration: (currentSubtitle.endTime - currentSubtitle.startTime).toFixed(1),
+        words: [...currentSubtitle.words],
+      })
+    }
+
+    console.log("✅ Word grouping completed:", {
+      totalSubtitles: subtitles.length,
+      averageWordsPerSubtitle: (words.length / subtitles.length).toFixed(1),
+      averageCharactersPerSubtitle: (
+        subtitles.reduce((sum, sub) => sum + sub.characters, 0) / subtitles.length
+      ).toFixed(1),
+    })
+
+    return subtitles
+  }
+
   // Media player states
   const [mediaUrl, setMediaUrl] = useState(null)
   const [isVideo, setIsVideo] = useState(false)
@@ -31,8 +190,8 @@ const Editor = () => {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [isUndoRedoAction, setIsUndoRedoAction] = useState(false)
 
-  // Enhanced waveform interaction states
-  const [zoomLevel, setZoomLevel] = useState(100)
+  // Enhanced waveform interaction states with PERFECT zoom ranges
+  const [zoomLevel, setZoomLevel] = useState(50) // Start at 50% for 1-minute videos
   const [selectedSubtitleId, setSelectedSubtitleId] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
@@ -103,28 +262,35 @@ const Editor = () => {
   const fetchWordLevelDataFromBackend = async (projectId) => {
     try {
       setIsLoadingWords(true)
-
-      // Backend team will replace this with actual API call
-      console.log("🔗 Backend Integration Point: Fetch word-level data")
-      console.log("📡 Expected API endpoint: GET /api/project/{projectId}/words")
-      console.log(
-        "📋 Expected response format: { words: [{ word: string, startTime: number, endTime: number, confidence: number }] }",
-      )
+      console.log("🚀 Starting Get Result API Integration")
       console.log("🆔 Project ID:", projectId)
 
-      // For demo purposes, return sample word data
-      const demoWords = generateDemoWordData()
-      setWordLevelData(demoWords)
-      return demoWords
+      const apiResponse = await getResultFromAPI(projectId)
+
+      if (apiResponse.success) {
+        console.log("✅ Word-level data loaded successfully")
+        console.log("📊 Data Statistics:", {
+          totalWords: apiResponse.totalWords,
+          duration: apiResponse.duration,
+          averageConfidence: apiResponse.confidence,
+          processingTime: apiResponse.processingTime,
+        })
+
+        setWordLevelData(apiResponse.wordLevelData)
+        return apiResponse.wordLevelData
+      } else {
+        console.error("❌ Failed to load word-level data from API")
+        return []
+      }
     } catch (error) {
-      console.error("Error fetching word-level data:", error)
+      console.error("❌ Error fetching word-level data:", error)
       return []
     } finally {
       setIsLoadingWords(false)
     }
   }
 
-  // Generate demo word-level data based on project duration
+  // Generate demo word-level data based on project duration - OPTIMIZED FOR 1 MINUTE
   const generateDemoWordData = () => {
     const sampleWords = [
       "Did",
@@ -186,103 +352,91 @@ const Editor = () => {
       "other",
       "classical",
       "writers",
+      "which",
+      "influenced",
+      "his",
+      "lyrical",
+      "style",
+      "throughout",
+      "his",
+      "career",
+      "in",
+      "hip",
+      "hop",
+      "music",
+      "making",
+      "him",
+      "one",
+      "of",
+      "the",
+      "most",
+      "influential",
+      "artists",
+      "of",
+      "all",
+      "time",
+      "with",
+      "his",
+      "powerful",
+      "messages",
+      "about",
+      "social",
+      "justice",
+      "and",
+      "equality",
+      "that",
+      "continue",
+      "to",
+      "resonate",
+      "with",
+      "people",
+      "around",
+      "the",
+      "world",
+      "today",
+      "inspiring",
+      "new",
+      "generations",
+      "of",
+      "artists",
+      "and",
+      "activists",
+      "to",
+      "speak",
+      "out",
+      "against",
+      "injustice",
+      "and",
+      "fight",
+      "for",
+      "positive",
+      "change",
+      "in",
+      "their",
+      "communities",
     ]
 
     const words = []
-    const wordsPerSecond = 2.5
+    const wordsPerSecond = 2.2 // Slightly slower for better readability
     const totalWords = Math.floor(duration * wordsPerSecond)
 
     for (let i = 0; i < totalWords; i++) {
       const word = sampleWords[i % sampleWords.length]
       const startTime = i / wordsPerSecond
-      const endTime = startTime + (0.3 + Math.random() * 0.2)
+      const wordDuration = 0.35 + Math.random() * 0.15 // 0.35-0.5 seconds per word
+      const endTime = Math.min(startTime + wordDuration, duration)
 
       words.push({
         id: i + 1,
         word: word,
         startTime: startTime,
-        endTime: Math.min(endTime, duration),
-        confidence: 0.9 + Math.random() * 0.1,
+        endTime: endTime,
+        confidence: 0.92 + Math.random() * 0.08,
+        speakerId: i < totalWords * 0.3 ? 0 : i < totalWords * 0.7 ? 1 : 2, // Distribute across speakers
       })
     }
 
     return words
-  }
-
-  // Group words into subtitles based on timing and settings
-  const groupWordsIntoSubtitles = (words) => {
-    if (!words || words.length === 0) return []
-
-    const subtitles = []
-    let currentSubtitle = {
-      id: 1,
-      words: [],
-      startTime: 0,
-      endTime: 0,
-      speakerId: 0,
-    }
-
-    let currentCharCount = 0
-    const maxChars = settings.maxCharacters
-    const maxDuration = settings.maxDuration
-
-    words.forEach((word, index) => {
-      const wordLength = word.word.length + 1
-
-      const wouldExceedChars = currentCharCount + wordLength > maxChars
-      const wouldExceedDuration =
-        currentSubtitle.words.length > 0 && word.endTime - currentSubtitle.startTime > maxDuration
-
-      if ((wouldExceedChars || wouldExceedDuration) && currentSubtitle.words.length > 0) {
-        const text = currentSubtitle.words.map((w) => w.word).join(" ")
-        subtitles.push({
-          id: currentSubtitle.id,
-          startTime: formatSecondsToTime(currentSubtitle.startTime),
-          endTime: formatSecondsToTime(currentSubtitle.endTime),
-          startSeconds: currentSubtitle.startTime,
-          endSeconds: currentSubtitle.endTime,
-          speakerId: currentSubtitle.speakerId,
-          text: text,
-          characters: text.length,
-          duration: (currentSubtitle.endTime - currentSubtitle.startTime).toFixed(1),
-          words: [...currentSubtitle.words],
-        })
-
-        currentSubtitle = {
-          id: subtitles.length + 1,
-          words: [],
-          startTime: word.startTime,
-          endTime: word.endTime,
-          speakerId: Math.floor(Math.random() * 3),
-        }
-        currentCharCount = 0
-      }
-
-      if (currentSubtitle.words.length === 0) {
-        currentSubtitle.startTime = word.startTime
-      }
-      currentSubtitle.endTime = word.endTime
-      currentSubtitle.words.push(word)
-      currentCharCount += wordLength
-    })
-
-    if (currentSubtitle.words.length > 0) {
-      const text = currentSubtitle.words.map((w) => w.word).join(" ")
-      subtitles.push({
-        id: currentSubtitle.id,
-        startTime: formatSecondsToTime(currentSubtitle.startTime),
-        endTime: formatSecondsToTime(currentSubtitle.endTime),
-        startSeconds: currentSubtitle.startTime,
-        endSeconds: currentSubtitle.endTime,
-        speakerId: currentSubtitle.speakerId,
-        text: text,
-        characters: text.length,
-        duration: (currentSubtitle.endTime - currentSubtitle.startTime).toFixed(1),
-        words: [...currentSubtitle.words],
-      })
-    }
-
-    return subtitles
   }
 
   const loadProjectData = async (projectData) => {
@@ -291,7 +445,17 @@ const Editor = () => {
       if (projectData.fileData) {
         setIsVideo(projectData.fileData.isVideo)
         setIsAudio(projectData.fileData.isAudio)
-        setDuration(projectData.fileData.durationSeconds || 60)
+        const projectDuration = projectData.fileData.durationSeconds || 60
+        setDuration(projectDuration)
+
+        // Set initial zoom based on duration
+        if (projectDuration <= 60) {
+          setZoomLevel(50) // Start at 50% for 1-minute videos
+        } else if (projectDuration <= 900) {
+          setZoomLevel(25) // Start at 25% for 15-minute videos
+        } else {
+          setZoomLevel(10) // Start at 10% for longer videos
+        }
 
         // Create media URL for playback
         if (projectData.fileData.file) {
@@ -938,46 +1102,82 @@ const Editor = () => {
     setTempSettings((prev) => ({ ...prev, [key]: value }))
   }
 
+  // Handle regrouping of words when user changes settings
+  const handleRegroupWords = async (newSettings) => {
+    try {
+      console.log("🔄 Regrouping words with new settings")
+      console.log("⚙️ New settings:", newSettings)
+      console.log("📝 Current word count:", wordLevelData.length)
+
+      if (wordLevelData.length === 0) {
+        console.warn("⚠️ No word-level data available for regrouping")
+        return
+      }
+
+      const regroupedSubtitles = groupWordsIntoSubtitles(wordLevelData, newSettings)
+
+      console.log("✅ Regrouping completed:", {
+        oldSubtitleCount: subtitles.length,
+        newSubtitleCount: regroupedSubtitles.length,
+        settingsApplied: newSettings,
+      })
+
+      setSubtitles(regroupedSubtitles)
+      saveToHistory("Regroup words with new settings", regroupedSubtitles, speakers, newSettings)
+    } catch (error) {
+      console.error("❌ Error regrouping words:", error)
+    }
+  }
+
   const handleApplySettings = async () => {
     try {
+      console.log("⚙️ Applying new settings")
+      console.log("📋 Settings before:", settings)
+      console.log("📋 Settings after:", tempSettings)
+
       // First update the settings state
       setSettings(tempSettings)
 
-      // Apply character limits to existing subtitles immediately
-      const updatedSubtitles = subtitles.map((subtitle) => {
-        let newText = subtitle.text
+      // If we have word-level data, regroup the words
+      if (wordLevelData.length > 0) {
+        await handleRegroupWords(tempSettings)
+      } else {
+        // Apply character limits to existing subtitles if no word data
+        const updatedSubtitles = subtitles.map((subtitle) => {
+          let newText = subtitle.text
 
-        // Apply character limit
-        if (newText.length > tempSettings.maxCharacters) {
-          newText = newText.substring(0, tempSettings.maxCharacters)
-        }
+          // Apply character limit
+          if (newText.length > tempSettings.maxCharacters) {
+            newText = newText.substring(0, tempSettings.maxCharacters)
+          }
 
-        // Apply duration limits
-        let newDuration = subtitle.endSeconds - subtitle.startSeconds
-        if (newDuration < tempSettings.minDuration) {
-          newDuration = tempSettings.minDuration
-        } else if (newDuration > tempSettings.maxDuration) {
-          newDuration = tempSettings.maxDuration
-        }
+          // Apply duration limits
+          let newDuration = subtitle.endSeconds - subtitle.startSeconds
+          if (newDuration < tempSettings.minDuration) {
+            newDuration = tempSettings.minDuration
+          } else if (newDuration > tempSettings.maxDuration) {
+            newDuration = tempSettings.maxDuration
+          }
 
-        const newEndSeconds = subtitle.startSeconds + newDuration
+          const newEndSeconds = subtitle.startSeconds + newDuration
 
-        return {
-          ...subtitle,
-          text: newText,
-          characters: newText.length,
-          endSeconds: Math.min(newEndSeconds, duration),
-          endTime: formatSecondsToTime(Math.min(newEndSeconds, duration)),
-          duration: newDuration.toFixed(1),
-        }
-      })
+          return {
+            ...subtitle,
+            text: newText,
+            characters: newText.length,
+            endSeconds: Math.min(newEndSeconds, duration),
+            endTime: formatSecondsToTime(Math.min(newEndSeconds, duration)),
+            duration: newDuration.toFixed(1),
+          }
+        })
 
-      setSubtitles(updatedSubtitles)
-      saveToHistory("Apply settings", updatedSubtitles, speakers, tempSettings)
+        setSubtitles(updatedSubtitles)
+        saveToHistory("Apply settings", updatedSubtitles, speakers, tempSettings)
+      }
 
-      console.log("Settings applied successfully - subtitles updated!")
+      console.log("✅ Settings applied successfully")
     } catch (error) {
-      console.error("Apply settings error:", error)
+      console.error("❌ Apply settings error:", error)
     }
   }
 
@@ -1006,8 +1206,48 @@ const Editor = () => {
     return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
+  // PERFECT zoom functionality - Specific ranges as requested
   const handleZoomChange = (newZoom) => {
-    setZoomLevel(Math.max(10, Math.min(500, newZoom)))
+    let minZoom, maxZoom
+
+    if (duration <= 60) {
+      // 1 minute videos: 10% to 100%
+      minZoom = 10
+      maxZoom = 100
+    } else if (duration <= 900) {
+      // 15 minute videos: 10% to 1000%
+      minZoom = 10
+      maxZoom = 1000
+    } else {
+      // Longer videos: 10% to 3000%
+      minZoom = 10
+      maxZoom = 3000
+    }
+
+    const clampedZoom = Math.max(minZoom, Math.min(maxZoom, newZoom))
+    setZoomLevel(clampedZoom)
+
+    console.log("🔍 Perfect Zoom System:", {
+      duration: `${Math.floor(duration / 60)}:${Math.floor(duration % 60)
+        .toString()
+        .padStart(2, "0")}`,
+      requestedZoom: newZoom,
+      appliedZoom: clampedZoom,
+      range: `${minZoom}% - ${maxZoom}%`,
+      category: duration <= 60 ? "1-minute" : duration <= 900 ? "15-minute" : "long-duration",
+    })
+  }
+
+  // Calculate timeline marker intervals based on zoom and duration
+  const getTimelineMarkerInterval = () => {
+    const pixelsPerSecond = (zoomLevel / 100) * 100
+
+    if (pixelsPerSecond > 200) return 1 // Every second
+    if (pixelsPerSecond > 100) return 2 // Every 2 seconds
+    if (pixelsPerSecond > 50) return 5 // Every 5 seconds
+    if (pixelsPerSecond > 20) return 10 // Every 10 seconds
+    if (pixelsPerSecond > 10) return 15 // Every 15 seconds
+    return 30 // Every 30 seconds
   }
 
   // Cleanup media URL on unmount
@@ -1545,34 +1785,41 @@ const Editor = () => {
           </div>
         </div>
 
-        {/* Enhanced Zoom Controls */}
+        {/* PERFECT Zoom Controls with Specific Ranges */}
         <div className="zoom-controls">
-          <button className="zoom-btn" onClick={() => handleZoomChange(zoomLevel - 10)} disabled={zoomLevel <= 10}>
+          <button
+            className="zoom-btn"
+            onClick={() => handleZoomChange(zoomLevel - (duration <= 60 ? 10 : duration <= 900 ? 50 : 100))}
+            disabled={zoomLevel <= 10}
+          >
             <i className="fas fa-search-minus"></i>
           </button>
           <div className="zoom-display">
             <input
               type="range"
               className="zoom-slider"
-              min="10"
-              max="500"
+              min={10}
+              max={duration <= 60 ? 100 : duration <= 900 ? 1000 : 3000}
               value={zoomLevel}
               onChange={(e) => handleZoomChange(Number.parseInt(e.target.value))}
             />
             <span className="zoom-value">{zoomLevel}%</span>
           </div>
-          <button className="zoom-btn" onClick={() => handleZoomChange(zoomLevel + 10)} disabled={zoomLevel >= 500}>
+          <button
+            className="zoom-btn"
+            onClick={() => handleZoomChange(zoomLevel + (duration <= 60 ? 10 : duration <= 900 ? 50 : 100))}
+            disabled={zoomLevel >= (duration <= 60 ? 100 : duration <= 900 ? 1000 : 3000)}
+          >
             <i className="fas fa-search-plus"></i>
           </button>
         </div>
       </div>
 
-      {/* Enhanced Waveform Timeline with Professional Drag & Drop */}
+      {/* Enhanced Waveform Timeline with Perfect Scaling */}
       <div className="waveform-container" ref={waveformRef}>
         <div className="timeline-markers" style={{ width: `${zoomLevel}%` }}>
-          {Array.from({ length: Math.ceil((duration * zoomLevel) / 500) + 1 }, (_, i) => {
-            const timeStep = 500 / zoomLevel
-            const time = i * timeStep
+          {Array.from({ length: Math.ceil(duration / getTimelineMarkerInterval()) + 1 }, (_, i) => {
+            const time = i * getTimelineMarkerInterval()
             if (time > duration) return null
 
             return (
@@ -1595,7 +1842,7 @@ const Editor = () => {
                 className={`waveform-block ${isSelected ? "selected" : ""} ${isDragging && isSelected ? "dragging" : ""} ${isResizing && isSelected ? "resizing" : ""}`}
                 style={{
                   left: `${leftPercent}%`,
-                  width: `${Math.max(widthPercent, 0.8)}%`,
+                  width: `${Math.max(widthPercent, 0.5)}%`,
                   cursor: isDragging ? "grabbing" : "grab",
                   borderColor: getSpeakerColor(subtitle.speakerId),
                   backgroundColor: isSelected

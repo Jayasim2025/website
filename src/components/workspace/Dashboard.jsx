@@ -71,47 +71,135 @@ const Dashboard = () => {
     loadProjects()
   }, [])
 
-  const loadProjects = async () => {
+  // Backend Integration Point - Get Projects API
+  const getProjectsFromAPI = async () => {
     try {
-      const savedProjects = localStorage.getItem("translationProjects")
-      const loadedProjects = savedProjects ? JSON.parse(savedProjects) : []
-
-      // Add demo project if it doesn't exist
-      const demoProjectExists = loadedProjects.some((p) => p.id === "demo_project_1")
-      if (!demoProjectExists) {
-        const demoProject = {
-          id: "demo_project_1",
-          name: "Sample Audio Demo",
-          duration: "1:00",
-          aiGeneration: "SUCCESS",
-          date: new Date(Date.now() - 86400000).toLocaleString(), // 1 day ago
-          status: "completed",
-          fileData: {
-            file: null,
-            fileName: "sample_audio_demo.mp3",
-            fileSize: 1024000,
-            fileSizeFormatted: "1.0 MB",
-            fileType: "audio/mp3",
-            isVideo: false,
-            isAudio: true,
-            duration: 60,
-            durationSeconds: 60,
-          },
-          language: "en",
-          languageName: "English (US)",
-          creditsUsed: 5,
-          uploadLink: "https://api.translatea2z.com/upload/demo_link_123",
-          isDemo: true,
-        }
-        loadedProjects.unshift(demoProject)
+      const apiEndpoint = "/api/projects/get-projects"
+      const requestData = {
+        userId: "current_user_id", // Replace with actual user ID
+        organizationId: "team_translatea2z",
+        folder: "workspace_projects", // Folder-based organization
+        timestamp: Date.now(),
       }
 
-      // Sort projects by date (newest first)
-      loadedProjects.sort((a, b) => new Date(b.date) - new Date(a.date))
+      console.log("🔗 Backend Integration Point: Get Projects API")
+      console.log("📡 API Endpoint:", apiEndpoint)
+      console.log("📋 Request Data:", requestData)
+      console.log("📥 Expected Response Format:", {
+        success: true,
+        projects: [
+          {
+            id: "string",
+            name: "string",
+            status: "processing | processed", // Only these two statuses
+            duration: "string",
+            date: "string",
+            fileData: "object",
+            language: "string",
+            languageName: "string",
+            creditsUsed: "number",
+            uploadLink: "string",
+            folder: "string",
+          },
+        ],
+      })
 
-      setProjects(loadedProjects)
+      // For demo purposes, simulate API call
+      // Backend team will replace this with actual fetch call
+      const simulatedResponse = await simulateGetProjectsAPI(requestData)
+
+      console.log("📤 API Response:", simulatedResponse)
+      return simulatedResponse
     } catch (error) {
-      console.error("Error loading projects:", error)
+      console.error("❌ Get Projects API Error:", error)
+      return { success: false, projects: [] }
+    }
+  }
+
+  // Simulate API response for demo - Backend team will remove this
+  const simulateGetProjectsAPI = async (requestData) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const savedProjects = localStorage.getItem("translationProjects")
+        const existingProjects = savedProjects ? JSON.parse(savedProjects) : []
+
+        // Add ONLY ONE 1-MINUTE DEMO PROJECT with PROCESSED status
+        const demoProjects = [
+          {
+            id: "demo_project_1",
+            name: "Sample Audio Demo",
+            duration: "1:00",
+            status: "processed", // PROCESSED so Edit button shows
+            date: new Date(Date.now() - 86400000).toLocaleString(),
+            fileData: {
+              file: null,
+              fileName: "sample_audio_demo.mp3",
+              fileSize: 1024000,
+              fileSizeFormatted: "1.0 MB",
+              fileType: "audio/mp3",
+              isVideo: false,
+              isAudio: true,
+              duration: 60,
+              durationSeconds: 60,
+            },
+            language: "en",
+            languageName: "English (US)",
+            creditsUsed: 3,
+            uploadLink: "https://api.translatea2z.com/upload/demo_link_123",
+            isDemo: true,
+            folder: requestData.folder,
+          },
+        ]
+
+        // Only add the demo project if it doesn't exist
+        const demoExists = existingProjects.some((p) => p.id === "demo_project_1")
+        if (!demoExists) {
+          existingProjects.unshift(demoProjects[0])
+        }
+
+        resolve({
+          success: true,
+          projects: existingProjects,
+          folder: requestData.folder,
+          totalProjects: existingProjects.length,
+          processingCount: existingProjects.filter((p) => p.status === "processing").length,
+          processedCount: existingProjects.filter((p) => p.status === "processed").length,
+        })
+      }, 1000)
+    })
+  }
+
+  const loadProjects = async () => {
+    try {
+      setIsLoading(true)
+      console.log("🚀 Starting Get Projects API Integration")
+
+      const apiResponse = await getProjectsFromAPI()
+
+      if (apiResponse.success) {
+        console.log("✅ Projects loaded successfully")
+        console.log("📊 Project Statistics:", {
+          total: apiResponse.totalProjects,
+          processing: apiResponse.processingCount,
+          processed: apiResponse.processedCount,
+        })
+
+        // Sort projects by date (newest first)
+        const sortedProjects = apiResponse.projects.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+        setProjects(sortedProjects)
+        localStorage.setItem("translationProjects", JSON.stringify(sortedProjects))
+
+        console.log("💾 Projects saved to state and localStorage")
+      } else {
+        console.error("❌ Failed to load projects from API")
+        setProjects([])
+      }
+    } catch (error) {
+      console.error("❌ Error in loadProjects:", error)
+      setProjects([])
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -242,36 +330,16 @@ const Dashboard = () => {
       localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
 
       // Step 4: Simulate processing for demo (Backend team will replace this with actual API polling)
-      simulateProcessing(projectId, updatedProjects)
+      // simulateProcessing(projectId, updatedProjects)
+      console.log("📤 Project created and ready for backend processing")
+      console.log("🔄 Backend team: Implement polling mechanism to check project status")
+      console.log("📋 Polling endpoint should be: GET /api/projects/status/" + projectId)
     } catch (error) {
       console.error("Upload error:", error)
       alert("Upload failed. Please try again.")
     } finally {
       setIsLoading(false)
     }
-  }
-
-  // Simulate processing for demo - Backend team will replace with actual API calls
-  const simulateProcessing = (projectId, currentProjects) => {
-    // Simulate processing time (3-8 seconds)
-    const processingTime = Math.random() * 5000 + 3000
-
-    setTimeout(() => {
-      const updatedProjects = currentProjects.map((p) =>
-        p.id === projectId
-          ? {
-              ...p,
-              aiGeneration: "SUCCESS",
-              status: "completed",
-              subtitlesGenerated: true,
-              subtitlesCount: Math.floor(p.fileData.durationSeconds / 4),
-            }
-          : p,
-      )
-      setProjects(updatedProjects)
-      localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
-      console.log(`Project ${projectId} processing completed (simulated)`)
-    }, processingTime)
   }
 
   const extractFileMetadata = (file) => {
@@ -337,18 +405,13 @@ const Dashboard = () => {
     if (!confirm("Are you sure you want to delete this project?")) return
 
     try {
-      // Don't allow deletion of demo project
-      const project = projects.find((p) => p.id === projectId)
-      if (project?.isDemo) {
-        alert("Cannot delete demo project")
-        return
-      }
-
       const updatedProjects = projects.filter((p) => p.id !== projectId)
       setProjects(updatedProjects)
       localStorage.setItem("translationProjects", JSON.stringify(updatedProjects))
+      console.log(`✅ Project ${projectId} deleted successfully`)
     } catch (error) {
       console.error("Delete error:", error)
+      alert("Failed to delete project. Please try again.")
     }
   }
 
@@ -598,8 +661,14 @@ const Dashboard = () => {
                       <span className="duration-text">{project.duration}</span>
                     </td>
                     <td className="col-ai">
-                      <span className={`status-badge ${project.aiGeneration.toLowerCase()}`}>
-                        {project.aiGeneration}
+                      <span
+                        className={`status-badge ${project.status === "processing" ? "processing" : project.status === "processed" ? "success" : "unknown"}`}
+                      >
+                        {project.status === "processing"
+                          ? "PROCESSING"
+                          : project.status === "processed"
+                            ? "SUCCESS"
+                            : "UNKNOWN"}
                       </span>
                     </td>
                     <td className="col-date">
@@ -607,9 +676,11 @@ const Dashboard = () => {
                     </td>
                     <td className="col-status">
                       <div className="status-cell">
-                        <div className={`status-indicator ${project.status}`}></div>
+                        <div
+                          className={`status-indicator ${project.status === "processed" ? "completed" : project.status}`}
+                        ></div>
                         <span className="status-text">
-                          {project.status === "completed"
+                          {project.status === "processed"
                             ? "Draft"
                             : project.status === "processing"
                               ? "Processing"
@@ -627,20 +698,18 @@ const Dashboard = () => {
                             <i className="fas fa-spinner fa-spin"></i>
                             Processing...
                           </button>
-                        ) : project.status === "completed" ? (
+                        ) : project.status === "processed" ? (
                           <>
                             <button className="edit-button" onClick={() => openEditor(project)} title="Edit project">
                               Edit
                             </button>
-                            {!project.isDemo && (
-                              <button
-                                className="delete-button"
-                                onClick={() => deleteProject(project.id)}
-                                title="Delete project"
-                              >
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            )}
+                            <button
+                              className="delete-button"
+                              onClick={() => deleteProject(project.id)}
+                              title="Delete project"
+                            >
+                              <i className="fas fa-trash"></i>
+                            </button>
                           </>
                         ) : null}
                       </div>
