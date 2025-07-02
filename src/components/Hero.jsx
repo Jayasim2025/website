@@ -1,37 +1,20 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { useRef, useEffect, useState } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
+import { useRef, useState } from "react"
 import "../styles/Hero.css"
 
 const Hero = ({ toggleLoginModal }) => {
-  const videoRef = useRef(null)
   const fileInputRef = useRef(null)
   const [selectedFile, setSelectedFile] = useState(null)
+  const heroRef = useRef(null)
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  })
 
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch((error) => {
-        console.log("Video autoplay was prevented:", error)
-      })
-    }
-  }, [])
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  }
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"])
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0])
 
   const handleUploadClick = () => {
     fileInputRef.current.click()
@@ -41,67 +24,121 @@ const Hero = ({ toggleLoginModal }) => {
     const file = e.target.files[0]
     if (file && file.type.startsWith("video/")) {
       setSelectedFile(file)
-      // Here you would typically upload the file to your server
       console.log("Video selected:", file.name)
-      // You can add your upload logic here
     } else if (file) {
       alert("Please select a valid video file")
     }
   }
 
   return (
-    <section className="hero-section" id="home">
-      <div className="container">
-        <div className="hero-content">
-          <div className="hero-text">
-            <motion.div className="hero-badges" variants={containerVariants} initial="hidden" animate="visible">
-              <motion.span className="hero-badge" variants={itemVariants} transition={{ duration: 0.5 }}>
-                <span className="badge-dot"></span>
-                125+ Languages Supported
-              </motion.span>
-              <motion.span className="hero-badge" variants={itemVariants} transition={{ duration: 0.5 }}>
-                <span className="badge-dot"></span>
-                AI-Powered Subtitles
-              </motion.span>
-            </motion.div>
+    <section className="hero-section-perfect" id="home" ref={heroRef}>
+      <div className="hero-container-perfect">
+        {/* Floating badges */}
+        <motion.div
+          className="hero-badges-perfect"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <motion.span
+            className="hero-badge-perfect badge-languages"
+            whileHover={{ scale: 1.1, rotate: 2 }}
+            animate={{
+              y: [0, -8, 0],
+              rotate: [0, 1, 0],
+            }}
+            transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+          >
+            <span className="badge-dot-perfect"></span>
+            125+ Languages
+          </motion.span>
+          <motion.span
+            className="hero-badge-perfect badge-ai"
+            whileHover={{ scale: 1.1, rotate: -2 }}
+            animate={{
+              y: [0, 8, 0],
+              rotate: [0, -1, 0],
+            }}
+            transition={{ duration: 3.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 1 }}
+          >
+            <span className="badge-dot-perfect"></span>
+            AI-Powered
+          </motion.span>
+        </motion.div>
 
-            <motion.h1
-              className="hero-title"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-            >
-              Generate <span className="gradient-text-secondary">Subtitles</span> in{" "}
-              <span className="gradient-text-secondary">Seconds</span>
+        {/* Main content area */}
+        <div className="hero-main-perfect">
+          {/* Left side - Text */}
+          <div className="hero-text-perfect">
+            <motion.h1 className="hero-title-perfect">
+              <motion.span
+                className="title-word"
+                initial={{ opacity: 0, x: -50, rotateX: -90 }}
+                animate={{ opacity: 1, x: 0, rotateX: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                GENERATE
+              </motion.span>
+              <motion.span
+                className="title-word title-highlight-perfect"
+                initial={{ opacity: 0, scale: 0.5, rotateY: 180 }}
+                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                transition={{ duration: 1, delay: 0.8 }}
+              >
+                SUBTITLES
+              </motion.span>
+              <motion.span
+                className="title-word"
+                initial={{ opacity: 0, x: 50, rotateX: 90 }}
+                animate={{ opacity: 1, x: 0, rotateX: 0 }}
+                transition={{ duration: 0.8, delay: 1.1 }}
+              >
+                IN SECONDS
+              </motion.span>
             </motion.h1>
 
             <motion.p
-              className="hero-description"
+              className="hero-description-perfect"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
+              transition={{ duration: 0.8, delay: 1.4 }}
             >
-              Transform your audio and video content with accurate speech-to-text, subtitles, and translations. Perfect
-              for creators, media companies, and anyone looking to reach global audiences.
+              Transform your content with AI-powered subtitles and translations. Perfect for creators, businesses, and
+              global audiences.
             </motion.p>
 
             <motion.div
-              className="hero-cta"
-              initial={{ opacity: 0, y: 30 }}
+              className="hero-buttons-perfect"
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.9 }}
+              transition={{ duration: 0.8, delay: 1.7 }}
             >
               <motion.button
-                className="btn btn-primary hero-btn upload-btn"
+                className="btn-upload-perfect"
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 0 25px rgba(138, 43, 226, 0.5)",
+                  boxShadow: "0 15px 35px rgba(20, 184, 166, 0.4)",
+                  y: -3,
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleUploadClick}
+                animate={{
+                  boxShadow: [
+                    "0 8px 25px rgba(20, 184, 166, 0.2)",
+                    "0 8px 25px rgba(94, 234, 212, 0.3)",
+                    "0 8px 25px rgba(20, 184, 166, 0.2)",
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
               >
-                Upload Video
-                <i className="fas fa-cloud-upload-alt"></i>
+                <motion.span
+                  className="btn-icon-perfect"
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                >
+                  ⚡
+                </motion.span>
+                Upload Video Now
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -111,73 +148,140 @@ const Hero = ({ toggleLoginModal }) => {
                 />
               </motion.button>
 
-              {selectedFile && (
-                <div className="selected-file">
-                  <span>Selected: {selectedFile.name}</span>
-                </div>
-              )}
+              <motion.button
+                className="btn-demo-perfect"
+                whileHover={{
+                  scale: 1.05,
+                  y: -3,
+                  borderColor: "#5eead4",
+                }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleLoginModal}
+              >
+                <motion.span
+                  className="btn-icon-perfect"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [0, 5, -5, 0],
+                  }}
+                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  🎬
+                </motion.span>
+                Watch Demo
+              </motion.button>
             </motion.div>
 
-            <motion.div
-              className="trusted-by"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
-            >
-              <p>Trusted by leading organizations</p>
-              <div className="trusted-logos">
-                <motion.span whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                  <img
-                    src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?q=80&w=100&auto=format&fit=crop"
-                    alt="FA logo"
-                  />
+            {selectedFile && (
+              <motion.div
+                className="selected-file-perfect"
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: -20 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <motion.span
+                  className="file-icon-perfect"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  📁
                 </motion.span>
-                <motion.span whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                  <img
-                    src="https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=100&auto=format&fit=crop"
-                    alt="10 LOC logo"
-                  />
+                <span>Ready: {selectedFile.name}</span>
+                <motion.span
+                  className="processing-perfect"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                >
+                  ⚙️
                 </motion.span>
-                <motion.span whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                  <img
-                    src="https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=100&auto=format&fit=crop"
-                    alt="Welocalize logo"
-                  />
-                </motion.span>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
           </div>
 
-          <motion.div
-            className="hero-video"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-          >
-            <div className="video-container">
-              <img
-                src="https://images.unsplash.com/photo-1626379953822-baec19c3accd?q=80&w=1000&auto=format&fit=crop"
-                alt="Subtitle Dashboard Preview"
-                className="feature-video"
-              />
-              <motion.div
-                className="hero-feature-card"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 1.4 }}
-                whileHover={{
-                  x: -5,
-                  boxShadow: "0 15px 30px rgba(0, 0, 0, 0.2)",
+          {/* Right side - Image with overlapping elements */}
+          <div className="hero-visual-perfect">
+            <motion.div
+              className="hero-image-wrapper-perfect"
+              initial={{ opacity: 0, scale: 0.8, rotateY: 30 }}
+              animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+              transition={{ duration: 1.2, delay: 1.2 }}
+              whileHover={{
+                scale: 1.02,
+                rotateY: -5,
+                rotateX: 2,
+              }}
+            >
+              <motion.img
+                src="https://images.unsplash.com/photo-1626379953822-baec19c3accd?q=80&w=600&auto=format&fit=crop"
+                alt="AI Subtitle Generator"
+                className="hero-image-perfect"
+                animate={{
+                  y: [0, -10, 0],
+                  rotateZ: [0, 1, -1, 0],
                 }}
+                transition={{ duration: 6, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+              />
+
+              {/* Floating UI elements */}
+              <motion.div
+                className="floating-element-perfect element-global"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 2 }}
+                whileHover={{ scale: 1.1, rotate: 5 }}
               >
-                <span className="hero-feature-icon">✓</span>
-                <div>
-                  <h4 className="gradient-text-primary">125+ Languages</h4>
-                  <p>Global reach with one click</p>
-                </div>
+                <motion.span
+                  className="element-icon-perfect"
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                >
+                  🌍
+                </motion.span>
+                <span>GLOBAL</span>
               </motion.div>
-            </div>
-          </motion.div>
+
+              <motion.div
+                className="floating-element-perfect element-accurate"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 2.3 }}
+                whileHover={{ scale: 1.1, rotate: -5 }}
+              >
+                <motion.span
+                  className="element-icon-perfect"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    rotate: [0, 10, -10, 0],
+                  }}
+                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  🎯
+                </motion.span>
+                <span>ACCURATE</span>
+              </motion.div>
+
+              <motion.div
+                className="floating-element-perfect element-fast"
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 2.6 }}
+                whileHover={{ scale: 1.1, rotate: 3 }}
+              >
+                <motion.span
+                  className="element-icon-perfect"
+                  animate={{
+                    y: [0, -5, 0],
+                    rotate: [0, 15, 0],
+                  }}
+                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                >
+                  ⚡
+                </motion.span>
+                <span>FAST</span>
+              </motion.div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>

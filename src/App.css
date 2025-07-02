@@ -9,6 +9,10 @@
   --primary-gradient-hover: linear-gradient(135deg, #0f766e, #14b8a6);
   --primary-gradient-soft: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(94, 234, 212, 0.1) 100%);
 
+  /* Green gradient from reference image */
+  --green-gradient: linear-gradient(135deg, #e2fece 0%, #14b8a6 50%, #076633 100%);
+  --green-gradient-hover: linear-gradient(135deg, #d4f7c5 0%, #0f766e 50%, #065a2b 100%);
+
   --secondary-gradient: linear-gradient(to right, #0f766e, #14b8a6);
   --accent-gradient: linear-gradient(135deg, #5eead4, #99f6e4);
   --radial-gradient: radial-gradient(circle at top left, #14b8a6, #0f172a);
@@ -195,7 +199,7 @@ img {
   box-shadow: var(--glow-shadow);
 }
 
-/* Button styles */
+/* Button styles with new gradients */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -207,15 +211,18 @@ img {
   transition: all var(--transition-speed) var(--transition-function);
   position: relative;
   overflow: hidden;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-primary {
-  background: var(--primary-gradient);
+  background: var(--green-gradient);
   color: white;
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
 }
 
 .btn-primary:hover {
-  background: var(--primary-gradient-hover);
+  background: var(--green-gradient-hover);
   transform: translateY(-2px);
   box-shadow: var(--glow-shadow);
 }
@@ -237,14 +244,6 @@ img {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(20, 184, 166, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-[data-theme="light"] .glass-effect {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(138, 43, 226, 0.1);
-  box-shadow: 0 8px 32px rgba(138, 43, 226, 0.1);
 }
 
 /* Media queries */
