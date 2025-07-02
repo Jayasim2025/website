@@ -8,25 +8,13 @@ import router from "./router"
 import "./App.css"
 
 function App() {
-  const [theme, setTheme] = useState("dark")
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  // Enhanced theme toggle with animation preparation
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light"
-    setTheme(newTheme)
-    document.documentElement.setAttribute("data-theme", newTheme)
-    localStorage.setItem("theme", newTheme)
-  }
-
-  // Initialize theme from localStorage and set mounted state
+  // Initialize component
   useEffect(() => {
     // Check if we're in the browser
     if (typeof window !== "undefined") {
-      const savedTheme = localStorage.getItem("theme") || "dark"
-      setTheme(savedTheme)
-      document.documentElement.setAttribute("data-theme", savedTheme)
       setMounted(true)
 
       // Simulate loading for initial animation

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react"
 import "../styles/ParticleBackground.css"
 
-const ParticleBackground = ({ theme }) => {
+const ParticleBackground = () => {
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -22,22 +22,15 @@ const ParticleBackground = ({ theme }) => {
 
     // Create gradient background
     const createGradientBackground = () => {
-      // Create a linear gradient from top to bottom
+      // Create a linear gradient from top to bottom with teal colors
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
 
-      if (theme === "dark") {
-        // Enhanced dark mode with purple gradient
-        gradient.addColorStop(0, "rgba(30, 20, 51, 1)") // Dark purple at top
-        gradient.addColorStop(0.3, "rgba(45, 26, 74, 0.98)") // Medium purple
-        gradient.addColorStop(0.6, "rgba(58, 32, 99, 0.95)") // Light purple
-        gradient.addColorStop(0.9, "rgba(110, 61, 200, 0.92)") // Lighter purple
-        gradient.addColorStop(1, "rgba(138, 43, 226, 0.9)") // Brightest purple at bottom
-      } else {
-        // Light mode with subtle purple gradient
-        gradient.addColorStop(0, "rgba(248, 247, 252, 1)")
-        gradient.addColorStop(0.5, "rgba(240, 235, 255, 0.98)")
-        gradient.addColorStop(1, "rgba(230, 225, 255, 0.95)")
-      }
+      // Teal gradient background
+      gradient.addColorStop(0, "rgba(15, 23, 42, 1)") // Dark background at top
+      gradient.addColorStop(0.3, "rgba(30, 41, 59, 0.98)") // Medium background
+      gradient.addColorStop(0.6, "rgba(51, 65, 85, 0.95)") // Light background
+      gradient.addColorStop(0.9, "rgba(20, 184, 166, 0.92)") // Teal accent
+      gradient.addColorStop(1, "rgba(94, 234, 212, 0.9)") // Light teal at bottom
 
       ctx.fillStyle = gradient
       ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -48,17 +41,14 @@ const ParticleBackground = ({ theme }) => {
     const particles = []
     const maxConnectionDistance = 200 // Increased connection distance
 
-    // Create particles with more vibrant colors and larger sizes
+    // Create particles with teal colors and larger sizes
     for (let i = 0; i < particleCount; i++) {
       const size = Math.random() * 4.5 + 2.5 // Larger particles
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
         radius: size,
-        color:
-          theme === "dark"
-            ? `rgba(${200 + Math.random() * 55}, ${120 + Math.random() * 80}, ${250 + Math.random() * 5}, ${0.85 + Math.random() * 0.15})`
-            : `rgba(${160 + Math.random() * 65}, ${70 + Math.random() * 90}, ${240 + Math.random() * 15}, ${0.6 + Math.random() * 0.25})`,
+        color: `rgba(${20 + Math.random() * 74}, ${184 + Math.random() * 50}, ${166 + Math.random() * 46}, ${0.85 + Math.random() * 0.15})`, // Teal variations
         speedX: (Math.random() - 0.5) * 1.1, // Faster movement
         speedY: (Math.random() - 0.5) * 1.1, // Faster movement
         pulseSpeed: 0.07 + Math.random() * 0.07, // Faster pulsing
@@ -104,7 +94,7 @@ const ParticleBackground = ({ theme }) => {
           currentRadius * 5, // Much larger glow radius
         )
         glow.addColorStop(0, particle.color)
-        glow.addColorStop(1, "rgba(138, 43, 226, 0)")
+        glow.addColorStop(1, "rgba(20, 184, 166, 0)")
 
         ctx.beginPath()
         ctx.arc(particle.x, particle.y, currentRadius * 5, 0, Math.PI * 2)
@@ -127,23 +117,14 @@ const ParticleBackground = ({ theme }) => {
 
           if (distance < maxConnectionDistance) {
             // Calculate opacity based on distance - significantly increased opacity
-            const opacity =
-              theme === "dark"
-                ? 0.45 * (1 - distance / maxConnectionDistance) // Much higher opacity
-                : 0.3 * (1 - distance / maxConnectionDistance) // Higher opacity for light mode
+            const opacity = 0.45 * (1 - distance / maxConnectionDistance) // Much higher opacity
 
-            // Create gradient line with more vibrant colors
+            // Create gradient line with teal colors
             const gradient = ctx.createLinearGradient(particles[i].x, particles[i].y, particles[j].x, particles[j].y)
 
-            if (theme === "dark") {
-              gradient.addColorStop(0, `rgba(220, 140, 255, ${opacity * 1.5})`)
-              gradient.addColorStop(0.5, `rgba(240, 160, 255, ${opacity})`)
-              gradient.addColorStop(1, `rgba(220, 140, 255, ${opacity * 1.5})`)
-            } else {
-              gradient.addColorStop(0, `rgba(180, 120, 250, ${opacity * 1.4})`)
-              gradient.addColorStop(0.5, `rgba(200, 140, 255, ${opacity})`)
-              gradient.addColorStop(1, `rgba(180, 120, 250, ${opacity * 1.4})`)
-            }
+            gradient.addColorStop(0, `rgba(20, 184, 166, ${opacity * 1.5})`)
+            gradient.addColorStop(0.5, `rgba(94, 234, 212, ${opacity})`)
+            gradient.addColorStop(1, `rgba(20, 184, 166, ${opacity * 1.5})`)
 
             ctx.beginPath()
             ctx.moveTo(particles[i].x, particles[i].y)
@@ -164,7 +145,7 @@ const ParticleBackground = ({ theme }) => {
       window.removeEventListener("resize", setCanvasDimensions)
       cancelAnimationFrame(animationFrameId)
     }
-  }, [theme])
+  }, [])
 
   return <canvas ref={canvasRef} className="particle-background" />
 }

@@ -17,7 +17,7 @@ import HowItWorks from "../components/HowItWorks"
 import BackgroundScene from "../components/BackgroundScene"
 import Navbar from "../components/Navbar"
 
-function HomePage({ theme, toggleTheme }) {
+function HomePage() {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
@@ -87,17 +87,11 @@ function HomePage({ theme, toggleTheme }) {
 
       {!sidebarOpen && (
         <div className="page-header">
-          <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+          <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
         </div>
       )}
 
-      <Sidebar
-        theme={theme}
-        toggleTheme={toggleTheme}
-        isOpen={sidebarOpen}
-        toggleSidebar={toggleSidebar}
-        toggleLoginModal={toggleLoginModal}
-      />
+      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} toggleLoginModal={toggleLoginModal} />
 
       <main className={`main-content ${sidebarOpen ? "sidebar-open" : ""}`}>
         <Hero toggleLoginModal={toggleLoginModal} />

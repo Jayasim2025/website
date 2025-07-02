@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import "../styles/Sidebar.css"
 
-const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }) => {
+const Sidebar = ({ isOpen, toggleSidebar, toggleLoginModal }) => {
   const [activeSection, setActiveSection] = useState("home")
   const navigate = useNavigate()
   const location = useLocation()
@@ -172,8 +172,6 @@ const Sidebar = ({ theme, toggleTheme, isOpen, toggleSidebar, toggleLoginModal }
             </ul>
           </nav>
         </div>
-
-        {/* Removed the sidebar-footer with login and theme toggle buttons */}
       </motion.div>
 
       {/* Only show this button when sidebar is closed and on mobile */}

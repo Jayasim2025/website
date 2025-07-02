@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { Link, useNavigate } from "react-router-dom"
 import "../styles/Navbar.css"
 
-const Navbar = ({ theme, toggleTheme, toggleSidebar, isSidebarOpen }) => {
+const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
   const [scrolled, setScrolled] = useState(false)
   const navigate = useNavigate()
 
@@ -95,40 +95,6 @@ const Navbar = ({ theme, toggleTheme, toggleSidebar, isSidebarOpen }) => {
           </div>
 
           <div className="nav-actions">
-            <motion.button
-              className="theme-toggle"
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={theme}
-                  initial={{ opacity: 0, rotate: -30 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, rotate: 30 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {theme === "light" ? (
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/702/702471.png"
-                      alt="Dark mode"
-                      width="24"
-                      height="24"
-                    />
-                  ) : (
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/3073/3073665.png"
-                      alt="Light mode"
-                      width="24"
-                      height="24"
-                    />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </motion.button>
-
             <motion.button
               className="login-button"
               whileHover={{ scale: 1.05, boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)" }}

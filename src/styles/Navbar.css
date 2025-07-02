@@ -15,7 +15,7 @@
   height: 60px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(var(--background-color-rgb), 0.8);
+  background-color: rgba(15, 23, 42, 0.8);
 }
 
 .navbar-container {
@@ -50,7 +50,7 @@
 
 .sidebar-toggle i.fas.fa-bars {
   position: relative;
-  top: -10px; /* Keep at 0 to avoid icon/background misalignment */
+  top: 0;
 }
 
 .sidebar-toggle:hover {
@@ -136,32 +136,13 @@
   gap: 1rem;
 }
 
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  color: var(--text-color);
-  background-color: var(--secondary-color);
-  transition: all var(--transition-speed) var(--transition-function);
-  border: none;
-  cursor: pointer;
-}
-
-.theme-toggle:hover {
-  background-color: var(--primary-light);
-  transform: rotate(10deg);
-}
-
 .login-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
-  background-color: var(--primary-color);
+  background: var(--primary-gradient);
   color: white;
   font-weight: 600;
   border: none;
@@ -170,9 +151,9 @@
 }
 
 .login-button:hover {
-  background-color: var(--primary-dark);
+  background: var(--primary-gradient-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
 }
 
 .login-button i {
@@ -205,7 +186,7 @@
 }
 
 .sidebar-toggle:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(20, 184, 166, 0.1);
 }
 
 .sidebar-toggle.visible {

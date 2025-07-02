@@ -13,7 +13,7 @@ import LoginModal from "../components/LoginModal"
 import BackgroundScene from "../components/BackgroundScene"
 import "../styles/PricingPage.css"
 
-function PricingPage({ theme, toggleTheme }) {
+function PricingPage() {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [pricingType, setPricingType] = useState("individual")
@@ -171,15 +171,9 @@ function PricingPage({ theme, toggleTheme }) {
       </div>
 
       {/* Navbar */}
-      <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+      <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
 
-      <Sidebar
-        theme={theme}
-        toggleTheme={toggleTheme}
-        isOpen={sidebarOpen}
-        toggleSidebar={toggleSidebar}
-        toggleLoginModal={toggleLoginModal}
-      />
+      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} toggleLoginModal={toggleLoginModal} />
 
       <main className={`main-content ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="pricing-page">

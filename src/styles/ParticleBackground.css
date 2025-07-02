@@ -5,15 +5,70 @@
   width: 100%;
   height: 100%;
   z-index: -1;
-  display: block;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #0f766e 75%, #14b8a6 100%);
+  background-size: 400% 400%;
+  animation: backgroundFlow 12s ease-in-out infinite;
 }
 
-.background-container {
-  position: fixed;
+@keyframes backgroundFlow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+}
+
+/* Enhanced particle effects overlay */
+.particle-background::before {
+  content: "";
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
-  overflow: hidden;
+  background: radial-gradient(circle at 20% 80%, rgba(20, 184, 166, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(94, 234, 212, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(153, 246, 228, 0.1) 0%, transparent 50%);
+  animation: particleGlow 8s ease-in-out infinite alternate;
+}
+
+@keyframes particleGlow {
+  0% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+/* Additional texture overlay */
+.particle-background::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 25% 25%, rgba(20, 184, 166, 0.1) 0%, transparent 25%),
+    radial-gradient(circle at 75% 75%, rgba(94, 234, 212, 0.08) 0%, transparent 25%);
+  animation: textureShift 15s linear infinite;
+}
+
+@keyframes textureShift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50px, -50px) rotate(360deg);
+  }
 }
