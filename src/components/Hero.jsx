@@ -30,8 +30,86 @@ const Hero = ({ toggleLoginModal }) => {
     }
   }
 
+  // Digital rain animation particles
+  const digitalRain = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    delay: Math.random() * 3,
+    duration: 2 + Math.random() * 3,
+  }))
+
+  // Floating code snippets
+  const codeSnippets = ["AI.process()", "translate()", "generate()", "analyze()", "optimize()"]
+
   return (
     <section className="hero-section-perfect" id="home" ref={heroRef}>
+      {/* Digital Rain Animation */}
+      <div className="digital-rain-container">
+        {digitalRain.map((drop) => (
+          <motion.div
+            key={drop.id}
+            className="digital-rain-drop"
+            style={{ left: `${drop.x}%` }}
+            initial={{ y: -100, opacity: 0 }}
+            animate={{
+              y: ["0vh", "110vh"],
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{
+              duration: drop.duration,
+              delay: drop.delay,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
+          >
+            {Math.random() > 0.5 ? "1" : "0"}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Floating Code Snippets */}
+      <div className="floating-code-container">
+        {codeSnippets.map((code, index) => (
+          <motion.div
+            key={index}
+            className="floating-code"
+            style={{
+              left: `${20 + index * 15}%`,
+              top: `${30 + (index % 2) * 40}%`,
+            }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{
+              opacity: [0, 0.7, 0],
+              scale: [0, 1, 0],
+              y: [0, -20, 0],
+            }}
+            transition={{
+              duration: 4,
+              delay: index * 0.8,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          >
+            {code}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Pulsing Grid Background */}
+      <div className="grid-background">
+        <motion.div
+          className="grid-overlay"
+          animate={{
+            opacity: [0.1, 0.3, 0.1],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "easeInOut",
+          }}
+        />
+      </div>
+
       <div className="hero-container-perfect">
         {/* Floating badges */}
         <motion.div
@@ -153,7 +231,6 @@ const Hero = ({ toggleLoginModal }) => {
                 whileHover={{
                   scale: 1.05,
                   y: -3,
-                  borderColor: "#5eead4",
                 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLoginModal}
@@ -199,13 +276,13 @@ const Hero = ({ toggleLoginModal }) => {
             )}
           </div>
 
-          {/* Right side - Image with overlapping elements */}
+          {/* Right side - Image with only FAST element */}
           <div className="hero-visual-perfect">
             <motion.div
               className="hero-image-wrapper-perfect"
               initial={{ opacity: 0, scale: 0.8, rotateY: 30 }}
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-              transition={{ duration: 1.2, delay: 1.2 }}
+              transition={{ duration: 1.2, delay: 2.2 }}
               whileHover={{
                 scale: 1.02,
                 rotateY: -5,
@@ -223,49 +300,12 @@ const Hero = ({ toggleLoginModal }) => {
                 transition={{ duration: 6, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
               />
 
-              {/* Floating UI elements */}
-              <motion.div
-                className="floating-element-perfect element-global"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 2 }}
-                whileHover={{ scale: 1.1, rotate: 5 }}
-              >
-                <motion.span
-                  className="element-icon-perfect"
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                >
-                  🌍
-                </motion.span>
-                <span>GLOBAL</span>
-              </motion.div>
-
-              <motion.div
-                className="floating-element-perfect element-accurate"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 2.3 }}
-                whileHover={{ scale: 1.1, rotate: -5 }}
-              >
-                <motion.span
-                  className="element-icon-perfect"
-                  animate={{
-                    scale: [1, 1.3, 1],
-                    rotate: [0, 10, -10, 0],
-                  }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
-                >
-                  🎯
-                </motion.span>
-                <span>ACCURATE</span>
-              </motion.div>
-
+              {/* Only FAST floating element */}
               <motion.div
                 className="floating-element-perfect element-fast"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 2.6 }}
+                initial={{ opacity: 0, scale: 0, x: 30, y: -40 }}
+                animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                transition={{ duration: 0.6, delay: 3.0, type: "spring", stiffness: 200 }}
                 whileHover={{ scale: 1.1, rotate: 3 }}
               >
                 <motion.span

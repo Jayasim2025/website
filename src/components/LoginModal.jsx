@@ -4,10 +4,6 @@ import { motion } from "framer-motion"
 import { useState } from "react"
 import "../styles/LoginModal.css"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
-
-// Update the API_BASE_URL to use the AWS EC2 instance
-const API_BASE_URL = "http://ec2-54-169-176-135.ap-southeast-1.compute.amazonaws.com:8080"
 
 const LoginModal = ({ onClose }) => {
   const [isLogin, setIsLogin] = useState(true)
@@ -19,77 +15,40 @@ const LoginModal = ({ onClose }) => {
 
   const navigate = useNavigate()
 
-  // Update the handleSubmit function to use the correct endpoints
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError("")
 
-    try {
-      // Create headers with CORS settings
-      const headers = {
-        "Content-Type": "application/json"
-    
-      }
-
-      if (isLogin) {
-        // Login API call
-        const response = await axios.post(
-          `${API_BASE_URL}/auth/v1/login`,
-          {
-            email,
-            password,
-          },
-          { headers },
-        )
-
-        // Store token in localStorage
-        if (response.data && response.data.token) {
-          localStorage.setItem("auth_token", response.data.token)
-          console.log("Login successful:", response.data)
-          navigate("/workspace")
-        } else {
-          setError("Invalid response from server")
-        }
-      } else {
-        // Signup API call
-        const response = await axios.post(
-          `${API_BASE_URL}/auth/v1/signup`,
-          {
-            email,
-            password,
-            fullName: name,
-          },
-          { headers },
-        )
-
-        console.log("Signup successful:", response.data)
-
-        // Auto login after signup
-        if (response.data && response.data.success) {
-          const loginResponse = await axios.post(
-            `${API_BASE_URL}/auth/v1/login`,
-            {
-              email,
-              password,
-            },
-            { headers },
-          )
-
-          if (loginResponse.data && loginResponse.data.token) {
-            localStorage.setItem("auth_token", loginResponse.data.token)
-            navigate("/workspace")
-          }
-        } else {
-          setError("Account created but couldn't log in automatically")
-        }
-      }
-    } catch (err) {
-      console.error("Auth error:", err.response?.data || err.message || err)
-      setError(err.response?.data?.message || "Authentication failed. Please check your credentials and try again.")
-    } finally {
+    // Simple validation - just check if fields are filled
+    if (!email || !password || (!isLogin && !name)) {
+      setError("Please fill in all required fields")
       setLoading(false)
+      return
     }
+
+    // Simulate loading time for realistic feel
+    setTimeout(() => {
+      try {
+        // For testing - accept any email/password combination
+        console.log(`${isLogin ? "Login" : "Signup"} successful with:`, {
+        email,
+        password,
+        ...(name && { name }),
+        });
+
+        // Store a dummy token for testing
+        localStorage.setItem("auth_token", "test_token_" + Date.now())
+
+        // Navigate to workspace
+        navigate("/workspace")
+      } catch (err) {
+        console.error("Auth error:", err)
+        setError("Something went wrong. Please try again.")
+      } finally {
+        setLoading(false)
+      }
+    }, 1000) // 1 second delay to simulate API call
   }
 
   const toggleForm = () => {

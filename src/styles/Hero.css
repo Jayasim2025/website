@@ -5,7 +5,72 @@
   align-items: center;
   padding: 2rem 0;
   overflow: hidden;
-  /* Keep the existing starry night background */
+  background: var(--background-gradient);
+}
+
+/* Digital Rain Animation */
+.digital-rain-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.digital-rain-drop {
+  position: absolute;
+  color: rgba(20, 184, 166, 0.6);
+  font-family: "Courier New", monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(20, 184, 166, 0.8);
+}
+
+/* Floating Code Snippets */
+.floating-code-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.floating-code {
+  position: absolute;
+  color: rgba(94, 234, 212, 0.7);
+  font-family: "Courier New", monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: rgba(20, 184, 166, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.2);
+}
+
+/* Grid Background */
+.grid-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background-image: linear-gradient(rgba(20, 184, 166, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 184, 166, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.grid-overlay {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 0%, rgba(15, 23, 42, 0.8) 100%);
 }
 
 .hero-container-perfect {
@@ -82,6 +147,7 @@
   letter-spacing: -0.03em;
   color: #f8fafc;
   margin: 0;
+  font-family: var(--font-secondary);
 }
 
 .title-word {
@@ -113,12 +179,15 @@
   color: #cbd5e1;
   line-height: 1.6;
   max-width: 500px;
+  font-family: var(--font-primary);
+  font-weight: 400;
 }
 
 .hero-buttons-perfect {
   display: flex;
   gap: 1.5rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .btn-upload-perfect,
@@ -135,10 +204,11 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  font-family: var(--font-primary);
 }
 
 .btn-upload-perfect {
-  background: linear-gradient(135deg, #e2fece 0%, #14b8a6 50%, #076633 100%);
+  background: var(--green-gradient);
   color: white;
   box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
 }
@@ -159,10 +229,9 @@
 }
 
 .btn-demo-perfect {
-  background: rgba(20, 184, 166, 0.1);
-  color: #5eead4;
-  border: 2px solid #14b8a6;
-  backdrop-filter: blur(10px);
+  background: var(--green-gradient);
+  color: white;
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
 }
 
 .btn-icon-perfect {
@@ -181,6 +250,7 @@
   color: #5eead4;
   backdrop-filter: blur(10px);
   margin-top: 1rem;
+  font-family: var(--font-primary);
 }
 
 .file-icon-perfect,
@@ -226,20 +296,7 @@
   box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4);
   border: 1px solid rgba(94, 234, 212, 0.3);
   cursor: pointer;
-}
-
-.element-global {
-  top: 10%;
-  right: -15%;
-  background: linear-gradient(135deg, #5eead4, #14b8a6);
-  animation: float-1 4s ease-in-out infinite;
-}
-
-.element-accurate {
-  bottom: 15%;
-  right: -10%;
-  background: linear-gradient(135deg, #14b8a6, #0f766e);
-  animation: float-2 3.5s ease-in-out infinite;
+  font-family: var(--font-primary);
 }
 
 .element-fast {
@@ -247,30 +304,10 @@
   left: -15%;
   background: linear-gradient(135deg, #99f6e4, #5eead4);
   color: #0f172a;
-  animation: float-3 5s ease-in-out infinite;
+  animation: float-fast 5s ease-in-out infinite;
 }
 
-@keyframes float-1 {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-15px) rotate(2deg);
-  }
-}
-
-@keyframes float-2 {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(10px) rotate(-2deg);
-  }
-}
-
-@keyframes float-3 {
+@keyframes float-fast {
   0%,
   100% {
     transform: translateX(0px) rotate(0deg);
@@ -344,6 +381,15 @@
     max-width: 280px;
     justify-content: center;
   }
+
+  .digital-rain-drop {
+    font-size: 1rem;
+  }
+
+  .floating-code {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -353,5 +399,14 @@
 
   .hero-description-perfect {
     font-size: 1rem;
+  }
+
+  .digital-rain-drop {
+    font-size: 0.9rem;
+  }
+
+  .floating-code {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
   }
 }

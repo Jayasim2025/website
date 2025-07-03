@@ -1,4 +1,45 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+/* Yapari Font Face Declarations */
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-Ultra.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
 
 :root {
   /* New Teal Color Palette */
@@ -43,10 +84,10 @@
   --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   --card-hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 
-  /* Typography */
-  --font-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-    "Helvetica Neue", sans-serif;
-  --font-secondary: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+  /* Typography - Updated to use Yapari */
+  --font-primary: "Yapari", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
+  --font-secondary: "Yapari", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
     "Open Sans", "Helvetica Neue", sans-serif;
 
   /* Transitions */
@@ -199,8 +240,9 @@ img {
   box-shadow: var(--glow-shadow);
 }
 
-/* Button styles with new gradients */
-.btn {
+/* Global Button styles with green gradient */
+.btn,
+button:not(.close-sidebar):not(.sidebar-toggle):not(.mobile-sidebar-toggle) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -213,6 +255,16 @@ img {
   overflow: hidden;
   border: none;
   cursor: pointer;
+  background: var(--green-gradient);
+  color: white;
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+}
+
+.btn:hover,
+button:not(.close-sidebar):not(.sidebar-toggle):not(.mobile-sidebar-toggle):hover {
+  background: var(--green-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-shadow);
 }
 
 .btn-primary {
@@ -228,13 +280,13 @@ img {
 }
 
 .btn-secondary {
-  background: var(--secondary-gradient);
-  color: var(--text-color);
+  background: var(--green-gradient);
+  color: white;
 }
 
 .btn-secondary:hover {
   transform: translateY(-2px);
-  background: var(--primary-gradient-soft);
+  background: var(--green-gradient-hover);
 }
 
 /* Glass effect */
@@ -244,6 +296,38 @@ img {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(20, 184, 166, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Bottom sidebar toggle */
+.bottom-sidebar-toggle {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  z-index: 1000;
+  background: var(--green-gradient);
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+  transition: all var(--transition-speed) var(--transition-function);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottom-sidebar-toggle:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--glow-shadow);
+  background: var(--green-gradient-hover);
+}
+
+.bottom-sidebar-toggle.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Media queries */
@@ -262,6 +346,14 @@ img {
 
   .main-content.sidebar-open {
     margin-left: 0;
+  }
+
+  .bottom-sidebar-toggle {
+    bottom: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
   }
 }
 

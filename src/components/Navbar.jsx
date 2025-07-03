@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Link, useNavigate } from "react-router-dom"
 import "../styles/Navbar.css"
 
@@ -38,76 +38,87 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
     }
   }
 
-  // If sidebar is open, only render the toggle button
-  if (isSidebarOpen) {
-    return (
-      <div className="sidebar-toggle-container">
-        <button className="sidebar-toggle visible" onClick={toggleSidebar} aria-label="Toggle sidebar">
-          <i className="fas fa-bars"></i>
-        </button>
-      </div>
-    )
-  }
-
   return (
-    <motion.header
-      className={`navbar ${scrolled ? "scrolled" : ""}`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-    >
-      <div className="navbar-container">
-        <div className="navbar-left">
-          <button className="sidebar-toggle" onClick={toggleSidebar} aria-label="Toggle sidebar">
-            <i className="fas fa-bars"></i>
-          </button>
+    <>
+      {/* Logo positioned at top left */}
+      <motion.div
+        className={`navbar-logo-container ${isSidebarOpen ? "hidden" : ""}`}
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <motion.a href="/" className="logo-link" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <motion.div className="logo-icon" whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }}>
+            T
+          </motion.div>
+          <motion.span
+            className="logo-text"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            Translatea2z
+          </motion.span>
+        </motion.a>
+      </motion.div>
 
-          <motion.a href="/" className="logo-link" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <motion.div
-              className="logo-icon"
-              whileHover={{ rotate: 10 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              T
-            </motion.div>
-            <motion.span
-              className="logo-text"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-            >
-              Translatea2z
-            </motion.span>
-          </motion.a>
-        </div>
+      {/* Sleek Floating Navigation - Top Right */}
+      <AnimatePresence>
+        {!isSidebarOpen && (
+          <motion.nav
+            className={`floating-nav ${scrolled ? "scrolled" : ""}`}
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            <div className="floating-nav-container">
+              <Link to="/" className="nav-link">
+                <span>Home</span>
+              </Link>
+              <Link to="/pricing" className="nav-link">
+                <span>Pricing</span>
+              </Link>
+              <a href="#contact" className="nav-link" onClick={handleContactClick}>
+                <span>Contact Us</span>
+              </a>
+              <motion.button
+                className="login-button"
+                whileHover={{ scale: 1.05, y: -1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.dispatchEvent(new CustomEvent("open-login-modal"))}
+              >
+                <span>Log In</span>
+                <motion.i
+                  className="fas fa-arrow-right"
+                  initial={{ x: 0 }}
+                  whileHover={{ x: 3 }}
+                  transition={{ type: "spring", stiffness: 400 }}
+                />
+              </motion.button>
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
 
-        <div className="navbar-right">
-          <div className="nav-links">
-            <Link to="/" className="nav-link">
-              Home
-            </Link>
-            <Link to="/pricing" className="nav-link">
-              Pricing
-            </Link>
-            <a href="#contact" className="nav-link" onClick={handleContactClick}>
-              Contact Us
-            </a>
-          </div>
-
-          <div className="nav-actions">
-            <motion.button
-              className="login-button"
-              whileHover={{ scale: 1.05, boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)" }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.dispatchEvent(new CustomEvent("open-login-modal"))}
-            >
-              Log In
-              <i className="fas fa-chevron-right"></i>
-            </motion.button>
-          </div>
-        </div>
-      </div>
-    </motion.header>
+      {/* Bottom Sidebar Toggle */}
+      <motion.button
+        className={`bottom-sidebar-toggle ${isSidebarOpen ? "hidden" : ""}`}
+        onClick={toggleSidebar}
+        aria-label="Toggle sidebar"
+        whileHover={{ scale: 1.1, rotate: 5 }}
+        whileTap={{ scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.5, type: "spring", stiffness: 300 }}
+      >
+        <motion.i
+          className="fas fa-bars"
+          animate={{ rotate: [0, 5, -5, 0] }}
+          transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        />
+      </motion.button>
+    </>
   )
 }
 

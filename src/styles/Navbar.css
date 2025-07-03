@@ -1,226 +1,255 @@
-.navbar {
+/* Logo Container - Top Left */
+.navbar-logo-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 70px;
-  background-color: var(--background-color);
+  top: 30px;
+  left: 30px;
   z-index: 1000;
-  transition: all var(--transition-speed) var(--transition-function);
-  border-bottom: 1px solid var(--border-color);
+  transition: all 0.3s ease;
 }
 
-.navbar.scrolled {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  height: 60px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(15, 23, 42, 0.8);
-}
-
-.navbar-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.sidebar-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background-color: transparent;
-  color: var(--text-color);
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.sidebar-toggle i.fas.fa-bars {
-  position: relative;
-  top: 0;
-}
-
-.sidebar-toggle:hover {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+.navbar-logo-container.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-20px);
 }
 
 .logo-link {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: var(--text-color);
   text-decoration: none;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 1.2rem;
 }
 
 .logo-icon {
+  width: 45px;
+  height: 45px;
+  background: var(--green-gradient);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--primary-gradient);
   color: white;
-  border-radius: 8px;
-  font-weight: bold;
-  box-shadow: var(--glow-shadow);
+  font-weight: 800;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+  transition: all 0.3s ease;
 }
 
 .logo-text {
-  font-weight: 800;
   font-family: var(--font-secondary);
+  font-weight: 700;
   background: var(--primary-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
 }
 
-.navbar-right {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-link {
-  color: var(--text-color);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 1rem;
-  transition: color 0.2s ease;
-  position: relative;
-}
-
-.nav-link:after {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -4px;
-  left: 0;
-  background-color: var(--primary-color);
-  transition: width 0.3s ease;
-}
-
-.nav-link:hover {
-  color: var(--primary-color);
-}
-
-.nav-link:hover:after {
-  width: 100%;
-}
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.login-button {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  background: var(--primary-gradient);
-  color: white;
-  font-weight: 600;
-  border: none;
-  transition: all var(--transition-speed) var(--transition-function);
-  text-decoration: none;
-}
-
-.login-button:hover {
-  background: var(--primary-gradient-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
-}
-
-.login-button i {
-  font-size: 0.8rem;
-  margin-left: 4px;
-}
-
-/* Add these styles to ensure the sidebar toggle is always visible */
-.sidebar-toggle-container {
+/* Sleek Floating Navigation - Top Right */
+.floating-nav {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
+  top: 30px;
+  right: 30px;
+  z-index: 999;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sidebar-toggle {
-  background: transparent;
-  border: none;
+.floating-nav.scrolled {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(20, 184, 166, 0.15);
+  border-radius: 60px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(20, 184, 166, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.floating-nav-container {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0.5rem;
+  border-radius: 60px;
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(20, 184, 166, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.floating-nav .nav-link {
   color: var(--text-color);
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  padding: 0.75rem 1.25rem;
+  border-radius: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 80px;
+}
+
+.floating-nav .nav-link:hover {
+  color: var(--primary-color);
+  background: rgba(20, 184, 166, 0.1);
+  transform: translateY(-1px);
+}
+
+.floating-nav .nav-link span {
+  position: relative;
+  z-index: 1;
+}
+
+.floating-nav .nav-link::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(94, 234, 212, 0.1));
+  border-radius: 50px;
   transition: all 0.3s ease;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  transform: translate(-50%, -50%);
+  z-index: 0;
 }
 
-.sidebar-toggle:hover {
-  background-color: rgba(20, 184, 166, 0.1);
+.floating-nav .nav-link:hover::before {
+  width: 100%;
+  height: 100%;
 }
 
-.sidebar-toggle.visible {
-  background-color: rgba(0, 0, 0, 0.2);
+.floating-nav .login-button {
+  background: var(--green-gradient);
   color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
+.floating-nav .login-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.floating-nav .login-button:hover::before {
+  left: 100%;
+}
+
+.floating-nav .login-button:hover {
+  background: var(--green-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(20, 184, 166, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.floating-nav .login-button i {
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+/* Bottom Sidebar Toggle */
+.bottom-sidebar-toggle {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  z-index: 1000;
+  background: var(--green-gradient);
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4), 0 0 0 1px rgba(20, 184, 166, 0.2), inset 0 1px 0
+    rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottom-sidebar-toggle:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 35px rgba(20, 184, 166, 0.5), 0 0 0 1px rgba(20, 184, 166, 0.3), inset 0 1px 0
+    rgba(255, 255, 255, 0.3);
+  background: var(--green-gradient-hover);
+}
+
+.bottom-sidebar-toggle.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.8) translateY(20px);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
+  .navbar-logo-container {
+    top: 20px;
+    left: 20px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
   }
 
   .logo-text {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
   }
 
-  .theme-toggle {
-    width: 36px;
-    height: 36px;
+  .floating-nav {
+    top: 20px;
+    right: 20px;
   }
 
-  .login-button {
-    padding: 0.5rem 1rem;
-  }
-  /* Ensure the sidebar toggle is visible on mobile */
-  .sidebar-toggle-container {
-    top: 10px;
-    left: 10px;
+  .floating-nav-container {
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    border-radius: 20px;
   }
 
-  .sidebar-toggle {
-    font-size: 1.2rem;
-    width: 36px;
-    height: 36px;
+  .floating-nav .nav-link {
+    padding: 0.6rem 1rem;
+    min-width: 100px;
+    font-size: 0.85rem;
+  }
+
+  .floating-nav .login-button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    border-radius: 25px;
+  }
+
+  .bottom-sidebar-toggle {
+    bottom: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
   }
 }
 
@@ -229,7 +258,18 @@
     display: none;
   }
 
-  .navbar-container {
-    padding: 0 1rem;
+  .floating-nav-container {
+    padding: 0.5rem;
+  }
+
+  .floating-nav .nav-link {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 80px;
+  }
+
+  .floating-nav .login-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
   }
 }
