@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap");
 
 /* Font Face Declarations for Yapari Fonts */
 @font-face {
@@ -43,99 +43,254 @@
   font-style: normal;
 }
 
-/* CSS Variables */
 :root {
-  /* Fonts */
-  --font-primary: "Yapari", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-  --font-secondary: "Yapari", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
-  --font-robotic: "Orbitron", "Rajdhani", monospace;
-
-  /* Colors */
-  --background-color: #0f172a;
-  --text-color: #f8fafc;
-  --text-secondary: #cbd5e1;
+  /* New Teal Color Palette */
   --primary-color: #14b8a6;
   --primary-hover: #0f766e;
-
-  /* Gradients */
-  --primary-gradient: linear-gradient(135deg, #14b8a6 0%, #5eead4 50%, #99f6e4 100%);
+  --primary-light: rgba(20, 184, 166, 0.1);
+  --primary-gradient: linear-gradient(135deg, #14b8a6, #5eead4);
+  --primary-gradient-hover: linear-gradient(135deg, #0f766e, #14b8a6);
+  --primary-gradient-soft: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(94, 234, 212, 0.1) 100%);
   --green-gradient: linear-gradient(135deg, #e2fece 0%, #14b8a6 50%, #076633 100%);
-  --green-gradient-hover: linear-gradient(135deg, #f0fdf4 0%, #10b981 50%, #065f46 100%);
-  --background-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  --green-gradient-hover: linear-gradient(135deg, #14b8a6 0%, #0f766e 50%, #065f46 100%);
+
+  --secondary-gradient: linear-gradient(to right, #0f766e, #14b8a6);
+  --accent-gradient: linear-gradient(135deg, #5eead4, #99f6e4);
+  --radial-gradient: radial-gradient(circle at top left, #14b8a6, #0f172a);
+
+  --background-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --card-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  --sidebar-gradient: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+
+  --teal-dark: #0f766e;
+  --teal-light: #99f6e4;
+  --teal-accent: #5eead4;
+
+  --secondary-color: #334155;
+  --text-color: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --background-color: #0f172a;
+  --background-secondary: #1e293b;
+  --border-color: #334155;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --info-color: #14b8a6;
+
+  --card-background: #1e293b;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --glow-shadow: 0 0 15px rgba(20, 184, 166, 0.5);
+
+  /* Typography - Changed to Montserrat */
+  --font-primary: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
+  --font-secondary: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Open Sans", "Helvetica Neue", sans-serif;
+  --font-robotic: "Orbitron", "Rajdhani", monospace;
+
+  /* Transitions */
+  --transition-speed: 0.3s;
+  --transition-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Animations */
+  --animation-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --animation-smooth: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --sidebar-hover: rgba(20, 184, 166, 0.2);
 }
 
-/* Global Styles */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
 }
 
 body {
   font-family: var(--font-primary);
-  background: var(--background-color);
-  color: var(--text-color);
   line-height: 1.6;
+  color: var(--text-color);
+  background: var(--background-gradient);
+  transition: background-color var(--transition-speed) var(--transition-function), color var(--transition-speed)
+    var(--transition-function);
+  min-height: 100vh;
+  width: 100%;
   overflow-x: hidden;
 }
 
-/* Utility Classes */
-.robotic-font {
-  font-family: var(--font-robotic) !important;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-secondary);
+  line-height: 1.2;
+  margin-bottom: 1rem;
 }
 
-/* Button Styles - Apply green gradient to all buttons */
-button,
-.btn,
-.button,
-input[type="submit"],
-input[type="button"] {
-  background: var(--green-gradient);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: var(--font-primary);
-}
-
-button:hover,
-.btn:hover,
-.button:hover,
-input[type="submit"]:hover,
-input[type="button"]:hover {
-  background: var(--green-gradient-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
-}
-
-/* Link Styles */
 a {
   color: var(--primary-color);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color var(--transition-speed) var(--transition-function);
 }
 
 a:hover {
   color: var(--primary-hover);
 }
 
-/* Scrollbar Styles */
-::-webkit-scrollbar {
-  width: 8px;
+button {
+  cursor: pointer;
+  border: none;
+  background: var(--green-gradient);
+  font-family: var(--font-primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all var(--transition-speed) var(--transition-function);
 }
 
-::-webkit-scrollbar-track {
-  background: var(--background-color);
+button:hover {
+  background: var(--green-gradient-hover);
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--primary-color);
-  border-radius: 4px;
+img {
+  max-width: 100%;
+  height: auto;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-hover);
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-header h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.section-header p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.placeholder-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  background: var(--background-gradient);
+}
+
+.placeholder-page h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.placeholder-page p {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.gradient-glow {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(20, 184, 166, 0.3);
+  font-weight: 700;
+}
+
+.universal-back-button {
+  position: fixed;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  z-index: 1000;
+  background: var(--green-gradient);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+  transition: all var(--transition-speed) var(--transition-function);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.universal-back-button:hover {
+  transform: translateY(-50%) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.4);
+  background: var(--green-gradient-hover);
+}
+
+.universal-back-button:active {
+  transform: translateY(-50%) translateY(0);
+}
+
+/* Hide back button when sidebar is open */
+.sidebar-open .universal-back-button {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+  }
+
+  .section-header p {
+    font-size: 1rem;
+  }
+
+  .universal-back-button {
+    left: 10px;
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
 }
