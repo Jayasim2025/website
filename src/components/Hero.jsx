@@ -209,13 +209,6 @@ const Hero = ({ toggleLoginModal }) => {
                 }}
                 transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
               >
-                <motion.span
-                  className="btn-icon-perfect"
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                >
-                  ⚡
-                </motion.span>
                 Upload Video Now
                 <input
                   type="file"
@@ -235,16 +228,6 @@ const Hero = ({ toggleLoginModal }) => {
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleLoginModal}
               >
-                <motion.span
-                  className="btn-icon-perfect"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 5, -5, 0],
-                  }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                >
-                  🎬
-                </motion.span>
                 Watch Demo
               </motion.button>
             </motion.div>
@@ -308,16 +291,6 @@ const Hero = ({ toggleLoginModal }) => {
                 transition={{ duration: 0.6, delay: 3.0, type: "spring", stiffness: 200 }}
                 whileHover={{ scale: 1.1, rotate: 3 }}
               >
-                <motion.span
-                  className="element-icon-perfect"
-                  animate={{
-                    y: [0, -5, 0],
-                    rotate: [0, 15, 0],
-                  }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                >
-                  ⚡
-                </motion.span>
                 <span>FAST</span>
               </motion.div>
             </motion.div>

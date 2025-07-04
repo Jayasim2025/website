@@ -1,92 +1,120 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useInView } from "react-intersection-observer"
-import "../styles/CallToAction.css"
 import { useState } from "react"
+import "../styles/CallToAction.css"
 
 const CallToAction = () => {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  })
-
   const [email, setEmail] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setIsSubmitting(true)
+
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
     console.log("Email submitted:", email)
-    // Add your email submission logic here
+    setEmail("")
+    setIsSubmitting(false)
+    alert("Thank you for signing up! We'll be in touch soon.")
   }
 
+  const features = ["Start for free", "No credit card required", "Cancel anytime", "Dedicated support"]
+
   return (
-    <section className="cta-section" id="contact" ref={ref}>
-      <div className="container">
+    <section className="cta-section" id="cta">
+      <div className="cta-container">
         <motion.div
-          className="cta-content glass-effect"
-          initial={{ opacity: 0, y: 50 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-          transition={{ duration: 0.6 }}
+          className="cta-content"
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <h2 className="gradient-glow">Ready to Transform Your Content?</h2>
-          <p>
+          <motion.h2
+            className="cta-title"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Ready to <span className="highlight">Transform Your Content?</span>
+          </motion.h2>
+
+          <motion.p
+            className="cta-description"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
             Join thousands of creators using our platform to reach global audiences with accurate subtitles and
             translations.
-          </p>
+          </motion.p>
 
-          <div className="cta-features">
-            <div className="feature">
-              <i className="fas fa-check"></i>
-              <span>Start for free</span>
-            </div>
-            <div className="feature">
-              <i className="fas fa-check"></i>
-              <span>No credit card required</span>
-            </div>
-            <div className="feature">
-              <i className="fas fa-check"></i>
-              <span>Cancel anytime</span>
-            </div>
-            <div className="feature">
-              <i className="fas fa-check"></i>
-              <span>Dedicated support</span>
-            </div>
-          </div>
+          <motion.div
+            className="cta-features"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                className="cta-feature"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
+              >
+                <span className="cta-feature-icon">✓</span>
+                {feature}
+              </motion.div>
+            ))}
+          </motion.div>
 
           <motion.form
             className="cta-form"
-            initial={{ opacity: 0, y: 30 }}
-            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
             onSubmit={handleSubmit}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.6 }}
           >
             <input
               type="email"
+              className="cta-input"
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <motion.button type="submit" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              Get Started Free
+            <motion.button
+              type="submit"
+              className="cta-button"
+              disabled={isSubmitting}
+              whileHover={{
+                scale: 1.05,
+                y: -2,
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isSubmitting ? "Getting Started..." : "Get Started Free"}
             </motion.button>
           </motion.form>
 
-          <p className="privacy-note">
-            By signing up, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
-          </p>
-        </motion.div>
-
-        <motion.div
-          className="cta-image"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          <img
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop"
-            alt="Team collaboration"
-          />
+          <motion.p
+            className="cta-disclaimer"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            By signing up, you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+          </motion.p>
         </motion.div>
       </div>
     </section>

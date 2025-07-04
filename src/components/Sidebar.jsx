@@ -64,6 +64,23 @@ const Sidebar = ({ isOpen, toggleSidebar, toggleLoginModal }) => {
       return
     }
 
+    // Handle "Contact" navigation specifically
+    if (item.id === "contact") {
+      setActiveSection("contact")
+
+      if (location.pathname === "/") {
+        // Already on home page, scroll to contact section
+        const contactSection = document.getElementById("contact")
+        if (contactSection) {
+          contactSection.scrollIntoView({ behavior: "smooth" })
+        }
+      } else {
+        // Navigate to home page and then scroll to contact
+        navigate("/", { state: { scrollToSection: "contact" } })
+      }
+      return
+    }
+
     // Check if it's a hash link on the home page
     if (item.path.includes("#")) {
       const sectionId = item.path.split("#")[1]

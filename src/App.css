@@ -1,7 +1,50 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
 
+/* Yapari Font Face Declarations */
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Yapari";
+  src: url("/Yapari-Trial/YapariTrial-Ultra.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
 :root {
-  /* New Teal Color Palette */
+  /* New Teal Color Palette for White Background */
   --primary-color: #14b8a6;
   --primary-hover: #0f766e;
   --primary-light: rgba(20, 184, 166, 0.15);
@@ -10,29 +53,30 @@
   --primary-gradient-soft: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(94, 234, 212, 0.1) 100%);
 
   /* Green gradient from reference image */
-  --green-gradient: linear-gradient(135deg, #e2fece 0%, #14b8a6 50%, #076633 100%);
-  --green-gradient-hover: linear-gradient(135deg, #d4f7c5 0%, #0f766e 50%, #065a2b 100%);
+  --green-gradient: linear-gradient(135deg, #14b8a6 0%, #0f766e 50%, #065f46 100%);
+  --green-gradient-hover: linear-gradient(135deg, #0f766e 0%, #065f46 50%, #064e3b 100%);
 
   --secondary-gradient: linear-gradient(to right, #0f766e, #14b8a6);
   --accent-gradient: linear-gradient(135deg, #5eead4, #99f6e4);
-  --radial-gradient: radial-gradient(circle at top left, #14b8a6, #0f172a);
+  --radial-gradient: radial-gradient(circle at top left, #14b8a6, #ffffff);
 
-  --background-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  --card-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-  --sidebar-gradient: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  /* White background theme */
+  --background-gradient: linear-gradient(135deg, #ffffff 0%, #f0fdfa 50%, #ccfbf1 100%);
+  --card-gradient: linear-gradient(135deg, #ffffff 0%, #f0fdfa 100%);
+  --sidebar-gradient: linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%);
 
   --teal-dark: #0f766e;
   --teal-light: #99f6e4;
   --teal-accent: #5eead4;
 
-  --secondary-color: #334155;
-  --text-color: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --background-color: #0f172a;
-  --background-secondary: #1e293b;
-  --border-color: #334155;
-  --card-background: #1e293b;
-  --card-hover: #334155;
+  --secondary-color: #64748b;
+  --text-color: #1e293b;
+  --text-secondary: #64748b;
+  --background-color: #ffffff;
+  --background-secondary: #f8fafc;
+  --border-color: #e2e8f0;
+  --card-background: #ffffff;
+  --card-hover: #f0fdfa;
 
   --success-color: #10b981;
   --error-color: #ef4444;
@@ -40,14 +84,14 @@
   --info-color: #14b8a6;
 
   --glow-shadow: 0 0 20px rgba(20, 184, 166, 0.4);
-  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  --card-hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --card-shadow: 0 10px 30px rgba(20, 184, 166, 0.1);
+  --card-hover-shadow: 0 20px 40px rgba(20, 184, 166, 0.2);
 
   /* Typography */
   --font-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
     "Helvetica Neue", sans-serif;
-  --font-secondary: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
-    "Open Sans", "Helvetica Neue", sans-serif;
+  --font-secondary: "Yapari", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 
   /* Transitions */
   --transition-speed: 0.3s;
@@ -86,6 +130,7 @@ h6 {
   font-family: var(--font-secondary);
   font-weight: 700;
   line-height: 1.2;
+  color: var(--text-color);
 }
 
 a {
@@ -229,7 +274,7 @@ img {
 
 .btn-secondary {
   background: var(--secondary-gradient);
-  color: var(--text-color);
+  color: white;
 }
 
 .btn-secondary:hover {
@@ -239,11 +284,11 @@ img {
 
 /* Glass effect */
 .glass-effect {
-  background: rgba(30, 41, 59, 0.7);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(20, 184, 166, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(20, 184, 166, 0.1);
 }
 
 /* Media queries */

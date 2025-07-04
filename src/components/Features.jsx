@@ -1,24 +1,50 @@
 "use client"
 
-import { motion, useAnimation } from "framer-motion"
-import { useInView } from "react-intersection-observer"
-import { useEffect } from "react"
+import { motion } from "framer-motion"
 import "../styles/Features.css"
 
 const Features = () => {
-  const controls = useAnimation()
-  const [ref, inView] = useInView({
-    triggerOnce: false,
-    threshold: 0.1,
-  })
-
-  useEffect(() => {
-    if (inView) {
-      controls.start("visible")
-    } else {
-      controls.start("hidden")
-    }
-  }, [controls, inView])
+  const features = [
+    {
+      icon: "🎤",
+      title: "AI Speech Recognition",
+      description: "Industry-leading accuracy with advanced noise reduction technology.",
+      features: [
+        "125+ languages support",
+        "Speaker identification",
+        "Background noise filtering",
+        "Technical terminology support",
+      ],
+    },
+    {
+      icon: "🌐",
+      title: "Automatic Translation",
+      description: "Translate content into multiple languages with natural-sounding results.",
+      features: [
+        "Neural machine translation",
+        "Context preservation",
+        "Dialect recognition",
+        "Slang and idiom handling",
+      ],
+    },
+    {
+      icon: "📚",
+      title: "Custom Dictionaries",
+      description: "Improve accuracy for specialized terminology and proper nouns.",
+      features: ["Industry-specific terms", "Brand name recognition", "Technical vocabulary", "Proper noun handling"],
+    },
+    {
+      icon: "👥",
+      title: "Collaborative Editing",
+      description: "Edit and refine transcripts with your entire team in real-time.",
+      features: [
+        "Real-time collaboration",
+        "Comment & annotation",
+        "Version history tracking",
+        "Role-based permissions",
+      ],
+    },
+  ]
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -26,140 +52,98 @@ const Features = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.2,
-        delayChildren: 0.3,
       },
     },
   }
 
-  const itemVariants = {
+  const cardVariants = {
     hidden: {
       opacity: 0,
-      y: 40,
-      scale: 0.95,
+      y: 50,
+      scale: 0.9,
     },
     visible: {
       opacity: 1,
       y: 0,
       scale: 1,
       transition: {
-        type: "spring",
-        damping: 15,
-        stiffness: 100,
         duration: 0.6,
-      },
-    },
-    hover: {
-      y: -15,
-      scale: 1.02,
-      transition: {
-        type: "spring",
-        damping: 10,
-        stiffness: 300,
+        ease: "easeOut",
       },
     },
   }
 
-  const features = [
-    {
-      title: "AI Speech Recognition",
-      icon: "fa-microphone-alt",
-      description: "Industry-leading accuracy with advanced noise reduction technology.",
-      steps: [
-        "125+ languages support",
-        "Speaker identification",
-        "Background noise filtering",
-        "Technical terminology support",
-      ],
-      accentColor: "#a67bd5", // Updated to lighter purple
-    },
-    {
-      title: "Automatic Translation",
-      icon: "fa-language",
-      description: "Translate content into multiple languages with natural-sounding results.",
-      steps: ["Neural machine translation", "Context preservation", "Dialect recognition", "Slang and idiom handling"],
-      accentColor: "#b68fd9", // Updated to lighter purple
-    },
-    {
-      title: "Custom Dictionaries",
-      icon: "fa-book",
-      description: "Improve accuracy for specialized terminology and proper nouns.",
-      steps: ["Industry-specific terms", "Brand name recognition", "Technical vocabulary", "Proper noun handling"],
-      accentColor: "#c193e3", // Updated to lighter purple
-    },
-    {
-      title: "Collaborative Editing",
-      icon: "fa-users",
-      description: "Edit and refine transcripts with your entire team in real-time.",
-      steps: ["Real-time collaboration", "Comment & annotation", "Version history tracking", "Role-based permissions"],
-      accentColor: "#b68fd9", // Updated to lighter purple
-    },
-  ]
-
   return (
-    <section className="features-section" ref={ref} id="features">
+    <section className="features-section" id="features">
       <div className="features-container">
         <motion.div
-          className="section-header"
-          initial={{ opacity: 0, y: 40 }}
-          animate={controls}
-          variants={{
-            hidden: { opacity: 0, y: 40 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: {
-                type: "spring",
-                damping: 10,
-                stiffness: 100,
-              },
-            },
-          }}
+          className="features-header"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
         >
-          <motion.h2
-            className="section-title gradient-glow"
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            Powerful Features for Media Professionals
-          </motion.h2>
-          <motion.p className="section-subtitle">
-            Transform speech to text and create professional-quality subtitles for global audiences.
-          </motion.p>
+          <h2>
+            Powerful Features for <span className="highlight">Every Creator</span>
+          </h2>
+          <p>
+            Transform your content with cutting-edge AI technology designed for creators, businesses, and global
+            audiences.
+          </p>
         </motion.div>
 
-        <motion.div className="features-grid" variants={containerVariants} initial="hidden" animate={controls}>
+        <motion.div
+          className="features-grid"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
           {features.map((feature, index) => (
             <motion.div
-              className="feature-card glass-effect"
               key={index}
-              variants={itemVariants}
-              whileHover="hover"
-              whileTap={{ scale: 0.98 }}
-              style={{
-                "--accent-color": feature.accentColor,
+              className="feature-card"
+              variants={cardVariants}
+              whileHover={{
+                y: -10,
+                transition: { duration: 0.3 },
               }}
             >
-              <div className="feature-header">
-                <div className="feature-icon">
-                  <i className={`fas ${feature.icon}`}></i>
-                </div>
-                <h3 className="gradient-text">{feature.title}</h3>
-              </div>
-
-              <p className="feature-description">{feature.description}</p>
-
-              <ul className="feature-steps">
-                {feature.steps.map((step, i) => (
-                  <li key={i}>
-                    <i className="fas fa-check-circle"></i>
-                    <span>{step}</span>
+              <div className="feature-icon">{feature.icon}</div>
+              <h3>{feature.title}</h3>
+              <p>{feature.description}</p>
+              <ul className="feature-list">
+                {feature.features.map((item, itemIndex) => (
+                  <li key={itemIndex}>
+                    <span className="feature-check">✓</span>
+                    {item}
                   </li>
                 ))}
               </ul>
-
-              <div className="card-hover-effect"></div>
             </motion.div>
           ))}
+        </motion.div>
+
+        <motion.div
+          className="features-cta"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <h3>Ready to Get Started?</h3>
+          <p>Join thousands of creators already using our platform to reach global audiences.</p>
+          <motion.a
+            href="#pricing"
+            className="cta-button"
+            whileHover={{
+              scale: 1.05,
+              y: -3,
+            }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Start Free Trial
+          </motion.a>
         </motion.div>
       </div>
     </section>

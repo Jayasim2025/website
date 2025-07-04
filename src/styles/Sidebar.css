@@ -43,7 +43,7 @@
 .logo-icon {
   width: 36px;
   height: 36px;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #14b8a6, #5eead4);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -57,6 +57,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   color: white;
+  font-family: "Montserrat", sans-serif;
 }
 
 .close-sidebar {
@@ -66,10 +67,16 @@
   font-size: 1.2rem;
   cursor: pointer;
   transition: color 0.3s ease;
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .close-sidebar:hover {
-  color: var(--primary-color);
+  color: #14b8a6;
+  background-color: rgba(20, 184, 166, 0.1);
 }
 
 .sidebar-content {
@@ -101,12 +108,12 @@
 
 .sidebar-nav a:hover {
   color: white;
-  background-color: var(--sidebar-hover);
+  background-color: rgba(20, 184, 166, 0.1);
 }
 
 .sidebar-nav a.active {
   color: white;
-  background-color: var(--sidebar-hover);
+  background-color: rgba(20, 184, 166, 0.15);
 }
 
 .sidebar-nav a i {
@@ -121,7 +128,7 @@
   top: 0;
   width: 4px;
   height: 100%;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #14b8a6, #5eead4);
   border-radius: 0 4px 4px 0;
 }
 
@@ -174,7 +181,7 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #14b8a6, #5eead4);
   border: none;
   border-radius: 8px;
   color: white;
@@ -209,7 +216,7 @@
 }
 
 .sidebar-toggle:hover {
-  background-color: var(--primary-color);
+  background-color: #14b8a6;
   transform: scale(1.1);
 }
 
@@ -233,7 +240,7 @@
 }
 
 .mobile-sidebar-toggle:hover {
-  background: var(--primary-color);
+  background: #14b8a6;
   transform: scale(1.1);
 }
 
