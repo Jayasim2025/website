@@ -233,8 +233,11 @@ function PricingPage() {
                       </li>
                     ))}
                   </ul>
-                  <button className={`btn ${plan.popular ? "btn-primary" : "btn-secondary"}`}>
-                    {plan.price === 0 ? "Get Started" : plan.price === "Custom" ? "Contact Sales" : "Subscribe Now"}
+                  {/* ✅ Updated Button - All buttons now use same class */}
+                  <button className="btn btn-unified">
+                    <span>
+                      {plan.price === 0 ? "Get Started" : plan.price === "Custom" ? "Contact Sales" : "Subscribe Now"}
+                    </span>
                   </button>
                 </motion.div>
               ))}

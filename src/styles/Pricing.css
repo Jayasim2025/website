@@ -240,7 +240,7 @@
   font-size: 1rem;
 }
 
-/* FIXED BUTTON STYLES - ALL BUTTONS NOW HAVE SAME HOVER EFFECT */
+/* UNIFIED BUTTON STYLES - All buttons now have the same hover effect */
 .btn {
   display: block;
   width: 100%;
@@ -259,13 +259,27 @@
   z-index: 1;
 }
 
-/* Primary button (Get Started, Subscribe Now, etc.) */
-.btn-primary {
-  background: linear-gradient(135deg, #14b8a6, #5eead4);
+/* Single unified button style for all plans */
+.btn-unified,
+.btn-primary,
+.btn-secondary {
+  background: linear-gradient(135deg, #14b8a6, #5eead4) !important;
   color: white !important;
+  border: none !important;
 }
 
-.btn-primary::before {
+/* Unified hover effect for all buttons */
+.btn-unified:hover,
+.btn-primary:hover,
+.btn-secondary:hover {
+  background: linear-gradient(135deg, #0f766e, #14b8a6) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
+}
+
+/* Add a subtle shine effect on hover */
+.btn::before {
   content: "";
   position: absolute;
   top: 0;
@@ -277,46 +291,14 @@
   z-index: -1;
 }
 
-.btn-primary:hover {
-  background: linear-gradient(135deg, #0f766e, #14b8a6) !important;
-  color: white !important;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.25);
-}
-
-.btn-primary:hover::before {
+.btn:hover::before {
   left: 100%;
 }
 
-/* Secondary button (Contact Us, Custom, etc.) */
-.btn-secondary {
-  background: transparent;
-  color: #14b8a6 !important;
-  border: 2px solid #14b8a6;
-}
-
-.btn-secondary::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.1), transparent);
-  transition: left 0.5s ease;
-  z-index: -1;
-}
-
-.btn-secondary:hover {
-  background: linear-gradient(135deg, #0f766e, #14b8a6) !important;
-  color: white !important;
-  border-color: #0f766e;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.25);
-}
-
-.btn-secondary:hover::before {
-  left: 100%;
+/* Ensure text stays above the shine effect */
+.btn span {
+  position: relative;
+  z-index: 2;
 }
 
 .plan-features {

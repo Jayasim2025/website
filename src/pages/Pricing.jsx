@@ -39,8 +39,7 @@ function PricingPage() {
 
   const toggleLoginModal = () => setShowLoginModal(!showLoginModal)
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
-  const togglePricingType = () =>
-    setPricingType(pricingType === "individual" ? "enterprise" : "individual")
+  const togglePricingType = () => setPricingType(pricingType === "individual" ? "enterprise" : "individual")
 
   const individualPlans = [
     {
@@ -221,13 +220,11 @@ function PricingPage() {
                     ))}
                   </ul>
 
-                  {/* ✅ Updated Button (Only change) */}
-                  <button className="plan-button">
-                    {plan.price === 0
-                      ? "Get Started"
-                      : plan.price === "Custom"
-                      ? "Contact Sales"
-                      : "Subscribe Now"}
+                  {/* ✅ Updated Button - All buttons now use same class */}
+                  <button className="btn btn-unified">
+                    <span>
+                      {plan.price === 0 ? "Get Started" : plan.price === "Custom" ? "Contact Sales" : "Subscribe Now"}
+                    </span>
                   </button>
                 </motion.div>
               ))}
