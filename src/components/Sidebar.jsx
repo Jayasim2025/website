@@ -69,7 +69,7 @@ const Sidebar = ({ isOpen, toggleSidebar, toggleLoginModal }) => {
       setActiveSection("contact")
 
       if (location.pathname === "/") {
-        // Already on home page, scroll to contact section
+        // Already on home page, scroll to contact section (call-to-action)
         const contactSection = document.getElementById("contact")
         if (contactSection) {
           contactSection.scrollIntoView({ behavior: "smooth" })
