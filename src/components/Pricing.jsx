@@ -1,283 +1,284 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Canvas } from "@react-three/fiber"
-import { Environment, OrbitControls } from "@react-three/drei"
-import { Suspense } from "react"
-import { useLocation } from "react-router-dom"
-import Sidebar from "../components/Sidebar"
-import Navbar from "../components/Navbar"
-import Footer from "../components/Footer"
-import LoginModal from "../components/LoginModal"
-import BackgroundScene from "../components/BackgroundScene"
-import "../styles/PricingPage.css"
+import { useState } from "react"
+import { motion } from "framer-motion"
+import { useInView } from "react-intersection-observer"
+import "../styles/Pricing.css"
 
-function PricingPage() {
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [pricingType, setPricingType] = useState("individual")
-  const location = useLocation()
+const pricingPlans = [
+  {
+    name: "Free",
+    description: "For individuals and hobby projects. With Rate limits",
+    price: "$0",
+    period: "/month",
+    popular: false,
+    bestFor: "",
+    buttonText: "Get started",
+    features: [
+      { name: "Up to 200 mb of media processing", included: true },
+      { name: "Transcription in 36 languages", included: true },
+      { name: "Translation in 36 languages", included: true },
+      { name: "Basic subtitle editor", included: true },
+      { name: "Export in SRT & VTT formats", included: true },
+      { name: "Email support", included: false },
+      { name: "Glossary customization", included: false },
+    ],
+  },
+  {
+    name: "Pro",
+    description: "For podcasters, content creators, and small teams. Up to 15-20x higher rate limits than free",
+    price: "$20",
+    period: "/month",
+    popular: true,
+    bestFor: "Most Popular",
+    buttonText: "Get Started",
+    features: [
+      { name: "Up to 20 hours of speech processing", included: true },
+      { name: "20 GB storage limit per month", included: true },
+      { name: "Transcription in 125 languages", included: true },
+      { name: "Translation in 125 languages", included: true },
+      { name: "Upto 2 translations per media project", included: true },
+      { name: "Advanced subtitle editor with batch processing", included: true },
+    ],
+  },
+  {
+    name: "Super",
+    description: "For growing teams and agencies. Up to 25-30x higher rate limits than free",
+    price: "$60",
+    period: "/month",
+    popular: false,
+    bestFor: "Best for Teams",
+    buttonText: "Get Started",
+    features: [
+      { name: "Up to 50 hours of speech processing", included: true },
+      { name: "50 GB storage limit per month", included: true },
+      { name: "Transcription in 125 languages", included: true },
+      { name: "Translation in 125 languages", included: true },
+      { name: "Upto 10 translations per media project", included: true },
+      { name: "Advanced subtitle editor with batch processing", included: true },
+    ],
+  },
+]
 
-  useEffect(() => {
-    // Check URL parameters for pricing type
-    const params = new URLSearchParams(location.search)
-    const type = params.get("type")
-    if (type === "enterprise") {
-      setPricingType("enterprise")
-    } else if (type === "individual") {
-      setPricingType("individual")
-    }
-  }, [location])
+const Pricing = () => {
+  const [isAnnual, setIsAnnual] = useState(false)
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  })
 
-  useEffect(() => {
-    // Listen for custom event to open login modal
-    const handleOpenLoginModal = () => setShowLoginModal(true)
-    window.addEventListener("open-login-modal", handleOpenLoginModal)
-
-    return () => {
-      window.removeEventListener("open-login-modal", handleOpenLoginModal)
-    }
-  }, [])
-
-  const toggleLoginModal = () => {
-    setShowLoginModal(!showLoginModal)
+  const calculatePrice = (price, isAnnual) => {
+    if (price === "$0") return "$0"
+    const numericPrice = Number.parseInt(price.replace("$", ""))
+    const annualPrice = Math.floor(numericPrice * 10)
+    return isAnnual ? `$${annualPrice}` : price
   }
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
+  const calculatePeriod = (isAnnual) => {
+    return isAnnual ? "/year" : "/month"
   }
-
-  const togglePricingType = () => {
-    setPricingType(pricingType === "individual" ? "enterprise" : "individual")
-  }
-
-  // Individual pricing plans
-  const individualPlans = [
-    {
-      id: 1,
-      name: "Free",
-      description: "For individuals and hobby projects",
-      price: 0,
-      billingCycle: "monthly",
-      features: [
-        { name: "Up to 200 MB of media processing", included: true },
-        { name: "Transcription in 36 languages", included: true },
-        { name: "Translation in 36 languages", included: true },
-        { name: "Basic subtitle editor", included: true },
-        { name: "Export in SRT & VTT formats", included: true },
-        { name: "Email support", included: false },
-        { name: "Glossary customization", included: false },
-      ],
-      popular: false,
-    },
-    {
-      id: 2,
-      name: "Pro",
-      description: "For podcasters, content creators, and small teams",
-      price: 20,
-      billingCycle: "monthly",
-      features: [
-        { name: "Up to 20 hours of speech processing", included: true },
-        { name: "20 GB storage limit per month", included: true },
-        { name: "Transcription in 125 languages", included: true },
-        { name: "Translation in 125 languages", included: true },
-        { name: "Up to 2 translations per media project", included: true },
-        { name: "Advanced subtitle editor with batch processing", included: true },
-        { name: "Priority email support", included: true },
-        { name: "Glossary customization", included: true },
-      ],
-      popular: true,
-    },
-    {
-      id: 3,
-      name: "Super",
-      description: "For growing teams and agencies",
-      price: 60,
-      billingCycle: "monthly",
-      features: [
-        { name: "Up to 50 hours of speech processing", included: true },
-        { name: "50 GB storage limit per month", included: true },
-        { name: "Transcription in 125 languages", included: true },
-        { name: "Translation in 125 languages", included: true },
-        { name: "Up to 10 translations per media project", included: true },
-        { name: "Advanced subtitle editor with batch processing", included: true },
-        { name: "Priority email support", included: true },
-        { name: "Glossary customization", included: true },
-        { name: "API access", included: true },
-      ],
-      popular: false,
-    },
-  ]
-
-  // Enterprise pricing plans
-  const enterprisePlans = [
-    {
-      id: 4,
-      name: "Business",
-      description: "For power users and growing organizations",
-      price: 200,
-      billingCycle: "monthly",
-      features: [
-        { name: "Up to 200 hours of speech processing", included: true },
-        { name: "200 GB storage limit per month", included: true },
-        { name: "Transcription in 125 languages", included: true },
-        { name: "Translation in 125 languages", included: true },
-        { name: "Unlimited translations per media project", included: true },
-        { name: "Advanced subtitle editor with batch processing", included: true },
-        { name: "Priority support with dedicated account manager", included: true },
-        { name: "Glossary customization", included: true },
-        { name: "API access", included: true },
-        { name: "Custom integrations", included: true },
-      ],
-      popular: true,
-    },
-    {
-      id: 5,
-      name: "Enterprise",
-      description: "For media companies and broadcasters",
-      price: "Custom",
-      billingCycle: "",
-      features: [
-        { name: "Unlimited speech processing", included: true },
-        { name: "Unlimited storage", included: true },
-        { name: "Transcription in 125 languages", included: true },
-        { name: "Translation in 125 languages", included: true },
-        { name: "Unlimited translations per media project", included: true },
-        { name: "Advanced subtitle editor with batch processing", included: true },
-        { name: "24/7 priority support with dedicated account manager", included: true },
-        { name: "Glossary customization", included: true },
-        { name: "API access", included: true },
-        { name: "Custom integrations", included: true },
-        { name: "On-premise deployment option", included: true },
-        { name: "Custom SLAs", included: true },
-      ],
-      popular: false,
-    },
-  ]
-
-  const activePlans = pricingType === "individual" ? individualPlans : enterprisePlans
 
   return (
-    <>
-      <div className="background-container">
-        <Canvas className="background-canvas">
-          <Suspense fallback={null}>
-            <BackgroundScene />
-            <Environment preset="city" />
-            <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
-          </Suspense>
-        </Canvas>
+    <section className="pricing-section" id="pricing" ref={ref}>
+      <div className="pricing-background">
+        <div className="pricing-gradient"></div>
       </div>
 
-      {/* Navbar */}
-      <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+      <div className="container">
+        <motion.div
+          className="section-header"
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h2 className="gradient-glow">Simple, Transparent Pricing</h2>
+          <p>Choose the plan that fits your needs. All plans include a 14-day free trial.</p>
 
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} toggleLoginModal={toggleLoginModal} />
-
-      <main className={`main-content ${sidebarOpen ? "sidebar-open" : ""}`}>
-        <div className="pricing-page">
-          <div className="container">
-            <motion.div
-              className="pricing-page-header"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+          <motion.div
+            className="pricing-toggle"
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <span className={!isAnnual ? "active" : ""}>Monthly</span>
+            <motion.button
+              className={`toggle ${isAnnual ? "active" : ""}`}
+              onClick={() => setIsAnnual(!isAnnual)}
+              whileTap={{ scale: 0.95 }}
             >
-              <h1 className="gradient-glow">Pricing Plans</h1>
-              <p>Choose the perfect plan for your needs</p>
+              <motion.span
+                className="toggle-thumb"
+                animate={{ x: isAnnual ? 22 : 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            </motion.button>
+            <span className={isAnnual ? "active" : ""}>
+              Annual <span className="save-badge">Save 20%</span>
+            </span>
+          </motion.div>
+        </motion.div>
 
-              <div className="pricing-toggle-container">
-                <span className={pricingType === "individual" ? "active" : ""}>Individual</span>
-                <div
-                  className={`pricing-toggle ${pricingType === "enterprise" ? "enterprise" : ""}`}
-                  onClick={togglePricingType}
+        <div className="pricing-plans">
+          {pricingPlans.map((plan, index) => (
+            <motion.div
+              className={`pricing-card ${plan.popular ? "popular" : ""}`}
+              key={index}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
+              whileHover={{
+                y: -10,
+                boxShadow: plan.popular ? "0 20px 40px rgba(138, 43, 226, 0.2)" : "0 20px 40px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              {plan.bestFor && (
+                <motion.div
+                  className="best-for"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5 + index * 0.15, duration: 0.3 }}
                 >
-                  <div className={`toggle-handle ${pricingType === "enterprise" ? "enterprise" : ""}`}></div>
-                </div>
-                <span className={pricingType === "enterprise" ? "active" : ""}>Enterprise</span>
+                  {plan.bestFor}
+                </motion.div>
+              )}
+
+              <div className="plan-header">
+                <h3 className="gradient-text">{plan.name}</h3>
+                <p>{plan.description}</p>
+              </div>
+
+              <motion.div
+                className="plan-price"
+                animate={{
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 0.5,
+                  delay: isAnnual ? 0.1 : 0,
+                  ease: "easeInOut",
+                }}
+              >
+                <span className="price gradient-text">{calculatePrice(plan.price, isAnnual)}</span>
+                <span className="period">{calculatePeriod(isAnnual)}</span>
+              </motion.div>
+
+              <motion.a
+                href="#"
+                className="plan-button"
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 10px 20px rgba(138, 43, 226, 0.2)",
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {plan.buttonText}
+              </motion.a>
+
+              <div className="plan-features">
+                {plan.features.map((feature, featureIndex) => (
+                  <motion.div
+                    className="feature"
+                    key={featureIndex}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
+                    transition={{ duration: 0.3, delay: 0.6 + featureIndex * 0.05 + index * 0.1 }}
+                  >
+                    {feature.included ? (
+                      <motion.div
+                        whileHover={{ scale: 1.2, rotate: 10 }}
+                        transition={{ type: "spring", stiffness: 500 }}
+                      >
+                        <i className="fas fa-check"></i>
+                      </motion.div>
+                    ) : (
+                      <i className="fas fa-times"></i>
+                    )}
+                    <span>{feature.name}</span>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
-
-            <div className="pricing-plans">
-              {activePlans.map((plan, index) => (
-                <motion.div
-                  className={`pricing-plan ${plan.popular ? "popular" : ""}`}
-                  key={plan.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -10, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)" }}
-                >
-                  {plan.popular && <div className="popular-badge">Most Popular</div>}
-                  <div className="plan-header">
-                    <h3>{plan.name}</h3>
-                    <p>{plan.description}</p>
-                  </div>
-                  <div className="plan-price">
-                    {typeof plan.price === "number" ? (
-                      <>
-                        <span className="currency">$</span>
-                        <span className="amount">{plan.price}</span>
-                        {plan.billingCycle && <span className="billing-cycle">/{plan.billingCycle}</span>}
-                      </>
-                    ) : (
-                      <span className="amount">{plan.price}</span>
-                    )}
-                  </div>
-                  <ul className="plan-features">
-                    {plan.features.map((feature, idx) => (
-                      <li key={idx} className={feature.included ? "included" : "excluded"}>
-                        <i className={`fas ${feature.included ? "fa-check" : "fa-times"}`}></i>
-                        {feature.name}
-                      </li>
-                    ))}
-                  </ul>
-                  {/* ✅ Updated Button - All buttons now use same class */}
-                  <button className="btn btn-unified">
-                    <span>
-                      {plan.price === 0 ? "Get Started" : plan.price === "Custom" ? "Contact Sales" : "Subscribe Now"}
-                    </span>
-                  </button>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="pricing-faq">
-              <h2>Frequently Asked Questions</h2>
-              <div className="faq-grid">
-                <div className="faq-item">
-                  <h3>Can I change plans later?</h3>
-                  <p>
-                    Yes, you can upgrade or downgrade your plan at any time. Changes will be applied to your next
-                    billing cycle.
-                  </p>
-                </div>
-                <div className="faq-item">
-                  <h3>Is there a free trial?</h3>
-                  <p>Yes, all paid plans come with a 14-day free trial. No credit card required to start.</p>
-                </div>
-                <div className="faq-item">
-                  <h3>What payment methods do you accept?</h3>
-                  <p>We accept all major credit cards, PayPal, and bank transfers for annual enterprise plans.</p>
-                </div>
-                <div className="faq-item">
-                  <h3>Can I cancel anytime?</h3>
-                  <p>
-                    Yes, you can cancel your subscription at any time. You'll continue to have access until the end of
-                    your billing period.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-        <Footer />
-      </main>
 
-      <AnimatePresence>{showLoginModal && <LoginModal onClose={toggleLoginModal} key="login-modal" />}</AnimatePresence>
-    </>
+        <motion.div
+          className="enterprise-plan"
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <div className="enterprise-header">
+            <h2 className="gradient-glow">High-Volume Media Solutions</h2>
+            <p>
+              Unlock enterprise-grade capabilities designed for media companies, broadcasters, and content networks with
+              demanding workloads. Scale effortlessly with our high-performance infrastructure, dedicated support, and
+              customizable workflows.
+            </p>
+          </div>
+
+          <div className="enterprise-plans">
+            <motion.div
+              className="enterprise-card"
+              whileHover={{
+                y: -10,
+                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <div className="best-value">Best Value</div>
+              <h3 className="gradient-text">Business</h3>
+              <p>For power users and growing organizations. Up to 30-50x higher rate limits than free</p>
+
+              <div className="plan-price">
+                <span className="price gradient-text">{isAnnual ? "$1,800" : "$200"}</span>
+                <span className="period">{isAnnual ? "/year" : "/month"}</span>
+              </div>
+
+              <motion.a
+                href="#"
+                className="plan-button"
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 10px 20px rgba(138, 43, 226, 0.2)",
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Get Started
+              </motion.a>
+            </motion.div>
+
+            <motion.div
+              className="enterprise-card"
+              whileHover={{
+                y: -10,
+                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <h3 className="gradient-text">Enterprise</h3>
+              <p>For media companies and broadcasters</p>
+
+              <div className="plan-price">
+                <p>Starts from</p>
+                <span className="price gradient-text">$2k+</span>
+                <span className="period">{isAnnual ? "/year" : "/month"}</span>
+              </div>
+
+              <motion.a
+                href="#"
+                className="plan-button contact"
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 10px 20px rgba(138, 43, 226, 0.2)",
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Contact sales
+              </motion.a>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
   )
 }
 
-export default PricingPage
+export default Pricing

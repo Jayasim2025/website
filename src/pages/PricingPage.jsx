@@ -196,7 +196,7 @@ function PricingPage() {
               </div>
             </motion.div>
 
-            <div className="pricing-plans">
+            <div className={`pricing-plans ${pricingType}`}>
               {activePlans.map((plan, index) => (
                 <motion.div
                   className={`pricing-plan ${plan.popular ? "popular" : ""}`}

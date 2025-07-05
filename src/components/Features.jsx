@@ -131,19 +131,6 @@ const Features = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <h3>Ready to Get Started?</h3>
-          <p>Join thousands of creators already using our platform to reach global audiences.</p>
-          <motion.a
-            href="#pricing"
-            className="cta-button"
-            whileHover={{
-              scale: 1.05,
-              y: -3,
-            }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Start Free Trial
-          </motion.a>
         </motion.div>
       </div>
     </section>

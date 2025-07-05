@@ -4,6 +4,17 @@
   padding-top: 4rem;
 }
 
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 80%, rgba(20, 184, 166, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
 .footer-content {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -81,6 +92,7 @@
 }
 
 .footer-links-column h4 {
+  font-family: "Montserrat", sans-serif;
   font-size: 1.125rem;
   font-weight: 700;
   margin-bottom: 1.5rem;

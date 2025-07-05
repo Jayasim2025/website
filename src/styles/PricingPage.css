@@ -42,6 +42,12 @@
   margin-left: 0;
 }
 
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
 .pricing-page-header {
   text-align: center;
   padding: 4rem 0 2rem;
@@ -125,11 +131,23 @@
 
 .pricing-plans {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
   margin: 3rem auto;
   max-width: 1200px;
   padding: 0 2rem;
+}
+
+/* Individual plans - 3 columns */
+.pricing-plans.individual {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Enterprise plans - 2 columns centered */
+.pricing-plans.enterprise {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 800px;
+  justify-content: center;
+  padding: 0 4rem;
 }
 
 .pricing-plan {
@@ -254,7 +272,6 @@
   color: #d1d5db;
 }
 
-/* UNIFIED BUTTON STYLES - All buttons now have the same hover effect */
 .btn {
   width: 100%;
   padding: 1rem 2rem;
@@ -271,7 +288,6 @@
   overflow: hidden;
 }
 
-/* Single unified button style for all plans */
 .btn-unified,
 .btn-primary,
 .btn-secondary {
@@ -280,7 +296,6 @@
   border: none !important;
 }
 
-/* Unified hover effect for all buttons */
 .btn-unified:hover,
 .btn-primary:hover,
 .btn-secondary:hover {
@@ -290,7 +305,6 @@
   box-shadow: 0 8px 25px rgba(20, 184, 166, 0.3);
 }
 
-/* Add a subtle shine effect on hover */
 .btn::before {
   content: "";
   position: absolute;
@@ -307,7 +321,6 @@
   left: 100%;
 }
 
-/* Ensure text stays above the shine effect */
 .btn span {
   position: relative;
   z-index: 2;
@@ -349,6 +362,7 @@
 }
 
 .faq-item h3 {
+  font-family: "Montserrat", sans-serif;
   font-size: 1.25rem;
   font-weight: 600;
   color: #1e293b;
@@ -364,8 +378,14 @@
 
 /* Responsive Design */
 @media (max-width: 992px) {
-  .pricing-plans {
+  .pricing-plans.individual {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pricing-plans.enterprise {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 2rem;
+    max-width: 800px;
   }
 
   .pricing-plan.popular {
@@ -390,7 +410,8 @@
     font-size: 2.5rem;
   }
 
-  .pricing-plans {
+  .pricing-plans.individual,
+  .pricing-plans.enterprise {
     grid-template-columns: 1fr;
     gap: 1.5rem;
     padding: 0 1rem;

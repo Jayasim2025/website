@@ -13,13 +13,14 @@ import LoginModal from "../components/LoginModal"
 import BackgroundScene from "../components/BackgroundScene"
 import "../styles/PricingPage.css"
 
-function PricingPage() {
+function PricingPage({ theme, toggleTheme }) {
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [pricingType, setPricingType] = useState("individual")
   const location = useLocation()
 
   useEffect(() => {
+    // Check URL parameters for pricing type
     const params = new URLSearchParams(location.search)
     const type = params.get("type")
     if (type === "enterprise") {
@@ -27,20 +28,29 @@ function PricingPage() {
     } else if (type === "individual") {
       setPricingType("individual")
     }
-  }, [location])
 
-  useEffect(() => {
+    // Listen for custom event to open login modal
     const handleOpenLoginModal = () => setShowLoginModal(true)
     window.addEventListener("open-login-modal", handleOpenLoginModal)
+
     return () => {
       window.removeEventListener("open-login-modal", handleOpenLoginModal)
     }
-  }, [])
+  }, [location])
 
-  const toggleLoginModal = () => setShowLoginModal(!showLoginModal)
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen)
-  const togglePricingType = () => setPricingType(pricingType === "individual" ? "enterprise" : "individual")
+  const toggleLoginModal = () => {
+    setShowLoginModal(!showLoginModal)
+  }
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen)
+  }
+
+  const togglePricingType = () => {
+    setPricingType(pricingType === "individual" ? "enterprise" : "individual")
+  }
+
+  // Individual pricing plans
   const individualPlans = [
     {
       id: 1,
@@ -98,6 +108,7 @@ function PricingPage() {
     },
   ]
 
+  // Enterprise pricing plans
   const enterprisePlans = [
     {
       id: 4,
@@ -157,9 +168,16 @@ function PricingPage() {
         </Canvas>
       </div>
 
-      <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+      {/* Always render the Navbar, but conditionally hide it when sidebar is open */}
+      <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
 
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} toggleLoginModal={toggleLoginModal} />
+      <Sidebar
+        theme={theme}
+        toggleTheme={toggleTheme}
+        isOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+        toggleLoginModal={toggleLoginModal}
+      />
 
       <main className={`main-content ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="pricing-page">
@@ -170,15 +188,12 @@ function PricingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="gradient-glow">Pricing Plans</h1>
+              <h1 className="gradient-text">Pricing Plans</h1>
               <p>Choose the perfect plan for your needs</p>
 
               <div className="pricing-toggle-container">
                 <span className={pricingType === "individual" ? "active" : ""}>Individual</span>
-                <div
-                  className={`pricing-toggle ${pricingType === "enterprise" ? "enterprise" : ""}`}
-                  onClick={togglePricingType}
-                >
+                <div className="pricing-toggle" onClick={togglePricingType}>
                   <div className={`toggle-handle ${pricingType === "enterprise" ? "enterprise" : ""}`}></div>
                 </div>
                 <span className={pricingType === "enterprise" ? "active" : ""}>Enterprise</span>
@@ -219,12 +234,8 @@ function PricingPage() {
                       </li>
                     ))}
                   </ul>
-
-                  {/* ✅ Updated Button - All buttons now use same class */}
-                  <button className="btn btn-unified">
-                    <span>
-                      {plan.price === 0 ? "Get Started" : plan.price === "Custom" ? "Contact Sales" : "Subscribe Now"}
-                    </span>
+                  <button className={`btn ${plan.popular ? "btn-primary" : "btn-secondary"}`}>
+                    {plan.price === 0 ? "Get Started" : plan.price === "Custom" ? "Contact Sales" : "Subscribe Now"}
                   </button>
                 </motion.div>
               ))}
