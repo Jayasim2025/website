@@ -3,9 +3,10 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding: 2rem 0;
+  padding: 0;
+  margin-top: -120px;
   overflow: hidden;
-  background: linear-gradient(135deg, #ffffff 0%, #f0fdfa 30%, #ccfbf1 70%, #ffffff 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 96%, #fefefe 100%);
 }
 
 /* Digital Rain Animation */
@@ -21,11 +22,11 @@
 
 .digital-rain-drop {
   position: absolute;
-  color: rgba(20, 184, 166, 0.3);
+  color: rgba(20, 184, 166, 0.1);
   font-family: var(--font-secondary);
   font-size: 1.2rem;
   font-weight: bold;
-  text-shadow: 0 0 10px rgba(20, 184, 166, 0.4);
+  text-shadow: 0 0 10px rgba(20, 184, 166, 0.1);
 }
 
 /* Floating Code Snippets */
@@ -41,16 +42,16 @@
 
 .floating-code {
   position: absolute;
-  color: rgba(15, 118, 110, 0.8);
+  color: rgba(15, 118, 110, 0.3);
   font-family: var(--font-secondary);
   font-size: 0.9rem;
   font-weight: 600;
-  background: rgba(240, 253, 250, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  border: 1px solid rgba(20, 184, 166, 0.2);
+  border: 1px solid rgba(20, 184, 166, 0.05);
   backdrop-filter: blur(5px);
-  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.1);
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.02);
 }
 
 /* Pulsing Grid Background */
@@ -62,15 +63,15 @@
   height: 100%;
   pointer-events: none;
   z-index: 1;
-  background-image: linear-gradient(rgba(20, 184, 166, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20, 184, 166, 0.05) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(20, 184, 166, 0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 184, 166, 0.01) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 
 .grid-overlay {
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.02) 0%, transparent 70%);
 }
 
 .hero-container-perfect {
@@ -80,6 +81,7 @@
   width: 100%;
   position: relative;
   z-index: 2;
+  padding-top: 80px;
 }
 
 .hero-badges-perfect {
@@ -95,14 +97,14 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(20, 184, 166, 0.2);
+  border: 1px solid rgba(20, 184, 166, 0.1);
   border-radius: 50px;
   color: #0f766e;
   font-weight: 600;
   font-size: 0.9rem;
-  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.1);
+  box-shadow: 0 8px 25px rgba(20, 184, 166, 0.05);
   cursor: pointer;
   font-family: var(--font-primary);
 }
@@ -245,8 +247,8 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  background: rgba(240, 253, 250, 0.8);
-  border: 1px solid rgba(20, 184, 166, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(20, 184, 166, 0.2);
   border-radius: 10px;
   color: #0f766e;
   backdrop-filter: blur(10px);
@@ -355,6 +357,7 @@
 @media (max-width: 768px) {
   .hero-container-perfect {
     padding: 0 1rem;
+    padding-top: 60px;
   }
 
   .hero-badges-perfect {
@@ -401,5 +404,9 @@
   .floating-code {
     font-size: 0.7rem;
     padding: 0.3rem 0.6rem;
+  }
+
+  .hero-container-perfect {
+    padding-top: 40px;
   }
 }

@@ -3,18 +3,58 @@
   min-height: 100vh;
   position: relative;
   z-index: 1;
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+}
+
+.integrations-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 70%, rgba(20, 184, 166, 0.005) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(94, 234, 212, 0.005) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.integrations-page .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .integrations-page-header {
   text-align: center;
   margin-bottom: 4rem;
+  padding: 6rem 0 3rem;
 }
 
 .integrations-page-header h1 {
   font-size: 3.5rem;
   font-weight: 800;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background:  linear-gradient(135deg, #14b8a6, #5eead4);;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #1e293b;
+  font-family: "Yapari", sans-serif;
+}
+
+/* Gradient glow effect for title */
+.gradient-glow {
+  background: linear-gradient(135deg, #14b8a6, #5eead4);;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #14b8a6, #5eead4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -23,15 +63,30 @@
 .integrations-page-header p {
   font-size: 1.25rem;
   color: var(--text-secondary);
+  color: #64748b;
+  margin-bottom: 2rem;
 }
 
-/* Gradient glow effect for title */
-.gradient-glow {
-  background: linear-gradient(135deg, #a64dff 0%, #d16ba5 50%, #ff7eb3 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline;
+.main-content {
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.sidebar-open {
+  margin-left: 0;
+}
+
+.background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.background-canvas {
+  width: 100%;
+  height: 100%;
 }
 
 @media (max-width: 768px) {
@@ -39,7 +94,15 @@
     padding: 100px 0 60px;
   }
 
+  .integrations-page-header {
+    padding: 4rem 0 2rem;
+  }
+
   .integrations-page-header h1 {
     font-size: 2.5rem;
+  }
+
+  .main-content.sidebar-open {
+    margin-left: 0;
   }
 }

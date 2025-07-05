@@ -5,9 +5,9 @@
   width: 100%;
   height: 100%;
   z-index: -1;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #0f766e 75%, #14b8a6 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 25%, #ffffff 50%, #ffffff 75%, #fefefe 100%);
   background-size: 400% 400%;
-  animation: backgroundFlow 12s ease-in-out infinite;
+  animation: backgroundFlow 25s ease-in-out infinite;
 }
 
 @keyframes backgroundFlow {
@@ -26,7 +26,7 @@
   }
 }
 
-/* Enhanced particle effects overlay */
+/* Minimal particle effects overlay - 96% white, 4% teal */
 .particle-background::before {
   content: "";
   position: absolute;
@@ -34,24 +34,24 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 20% 80%, rgba(20, 184, 166, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(94, 234, 212, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(153, 246, 228, 0.1) 0%, transparent 50%);
-  animation: particleGlow 8s ease-in-out infinite alternate;
+  background: radial-gradient(circle at 20% 80%, rgba(20, 184, 166, 0.002) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(94, 234, 212, 0.002) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(153, 246, 228, 0.001) 0%, transparent 50%);
+  animation: particleGlow 20s ease-in-out infinite alternate;
 }
 
 @keyframes particleGlow {
   0% {
-    opacity: 0.3;
+    opacity: 0.04;
     transform: scale(1);
   }
   100% {
-    opacity: 0.6;
-    transform: scale(1.1);
+    opacity: 0.06;
+    transform: scale(1.02);
   }
 }
 
-/* Additional texture overlay */
+/* Ultra subtle texture overlay */
 .particle-background::after {
   content: "";
   position: absolute;
@@ -59,9 +59,9 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(circle at 25% 25%, rgba(20, 184, 166, 0.1) 0%, transparent 25%),
-    radial-gradient(circle at 75% 75%, rgba(94, 234, 212, 0.08) 0%, transparent 25%);
-  animation: textureShift 15s linear infinite;
+  background-image: radial-gradient(circle at 25% 25%, rgba(20, 184, 166, 0.001) 0%, transparent 25%),
+    radial-gradient(circle at 75% 75%, rgba(94, 234, 212, 0.001) 0%, transparent 25%);
+  animation: textureShift 30s linear infinite;
 }
 
 @keyframes textureShift {
@@ -69,6 +69,6 @@
     transform: translate(0, 0) rotate(0deg);
   }
   100% {
-    transform: translate(-50px, -50px) rotate(360deg);
+    transform: translate(-20px, -20px) rotate(360deg);
   }
 }
