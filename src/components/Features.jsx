@@ -110,7 +110,7 @@ const Features = () => {
               }}
             >
               <div className="feature-icon">{feature.icon}</div>
-              <h3>{feature.title}</h3>
+              <h3 style={{ fontFamily: "Montserrat, sans-serif", color: "#14b8a6" }}>{feature.title}</h3>
               <p>{feature.description}</p>
               <ul className="feature-list">
                 {feature.features.map((item, itemIndex) => (
@@ -130,8 +130,7 @@ const Features = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.4 }}
-        >
-        </motion.div>
+        ></motion.div>
       </div>
     </section>
   )

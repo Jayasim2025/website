@@ -113,7 +113,9 @@ const HowItWorks = () => {
               >
                 {step.icon}
               </motion.div>
-              <h3 className="gradient-text">{step.title}</h3>
+              <h3 className="gradient-text" style={{ fontFamily: "Montserrat, sans-serif" }}>
+                {step.title}
+              </h3>
               <p>{step.description}</p>
             </motion.div>
           ))}
@@ -126,7 +128,9 @@ const HowItWorks = () => {
           transition={{ duration: 0.6, delay: 0.6 }}
           whileHover={{ boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)" }}
         >
-          <h3 className="gradient-text">Processing Time Estimates</h3>
+          <h3 className="gradient-text" style={{ fontFamily: "Montserrat, sans-serif" }}>
+            Processing Time Estimates
+          </h3>
           <div className="time-estimates">
             <div className="estimate">
               <span className="estimate-label">1 hour audio (audio-only file)</span>
