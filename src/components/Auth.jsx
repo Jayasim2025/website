@@ -18,6 +18,7 @@ const Auth = ({ onClose, initialMode = "login" }) => {
   const [passwordStrength, setPasswordStrength] = useState(0);
 
   const navigate = useNavigate();
+  //
   const {
     signIn,
     signUp,
