@@ -1,59 +1,59 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Canvas } from "@react-three/fiber"
-import { Environment, OrbitControls } from "@react-three/drei"
-import { Suspense } from "react"
-import Sidebar from "../components/Sidebar"
-import Navbar from "../components/Navbar"
-import Footer from "../components/Footer"
-import LoginModal from "../components/LoginModal"
-import BackgroundScene from "../components/BackgroundScene"
-import FAQ from "../components/FAQ"
-import "../styles/FAQPage.css"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Canvas } from "@react-three/fiber";
+import { Environment, OrbitControls } from "@react-three/drei";
+import { Suspense } from "react";
+import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Auth from "../components/Auth";
+import BackgroundScene from "../components/BackgroundScene";
+import FAQ from "../components/FAQ";
+import "../styles/FAQPage.css";
 
 function FAQPage({ theme, toggleTheme }) {
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [questionSubmitted, setQuestionSubmitted] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [questionSubmitted, setQuestionSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     question: "",
-  })
+  });
 
   useEffect(() => {
     // Listen for custom event to open login modal
-    const handleOpenLoginModal = () => setShowLoginModal(true)
-    window.addEventListener("open-login-modal", handleOpenLoginModal)
+    const handleOpenLoginModal = () => setShowLoginModal(true);
+    window.addEventListener("open-login-modal", handleOpenLoginModal);
 
     return () => {
-      window.removeEventListener("open-login-modal", handleOpenLoginModal)
-    }
-  }, [])
+      window.removeEventListener("open-login-modal", handleOpenLoginModal);
+    };
+  }, []);
 
   const toggleLoginModal = () => {
-    setShowLoginModal(!showLoginModal)
-  }
+    setShowLoginModal(!showLoginModal);
+  };
 
   const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
-  }
+    setSidebarOpen(!sidebarOpen);
+  };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Question submitted:", formData)
+    e.preventDefault();
+    console.log("Question submitted:", formData);
     // Here you would typically send this data to your backend
-    setQuestionSubmitted(true)
+    setQuestionSubmitted(true);
 
     // Reset form after submission
     setTimeout(() => {
@@ -61,10 +61,10 @@ function FAQPage({ theme, toggleTheme }) {
         name: "",
         email: "",
         question: "",
-      })
-      setQuestionSubmitted(false)
-    }, 3000)
-  }
+      });
+      setQuestionSubmitted(false);
+    }, 3000);
+  };
 
   return (
     <>
@@ -73,13 +73,22 @@ function FAQPage({ theme, toggleTheme }) {
           <Suspense fallback={null}>
             <BackgroundScene />
             <Environment preset="city" />
-            <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              enableRotate={false}
+            />
           </Suspense>
         </Canvas>
       </div>
 
       {/* Always render the Navbar, but conditionally hide it when sidebar is open */}
-      <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+      <Navbar
+        theme={theme}
+        toggleTheme={toggleTheme}
+        toggleSidebar={toggleSidebar}
+        isSidebarOpen={sidebarOpen}
+      />
 
       <Sidebar
         theme={theme}
@@ -110,7 +119,10 @@ function FAQPage({ theme, toggleTheme }) {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <h2>Can't find what you're looking for?</h2>
-              <p>Submit your question and our team will get back to you as soon as possible.</p>
+              <p>
+                Submit your question and our team will get back to you as soon
+                as possible.
+              </p>
 
               <div className="question-form-container">
                 <form onSubmit={handleSubmit} className="question-form">
@@ -163,7 +175,9 @@ function FAQPage({ theme, toggleTheme }) {
                     whileTap={{ scale: 0.95 }}
                     disabled={questionSubmitted}
                   >
-                    {questionSubmitted ? "Question Submitted!" : "Submit Question"}
+                    {questionSubmitted
+                      ? "Question Submitted!"
+                      : "Submit Question"}
                   </motion.button>
                 </form>
 
@@ -176,7 +190,10 @@ function FAQPage({ theme, toggleTheme }) {
                       exit={{ opacity: 0 }}
                     >
                       <i className="fas fa-check-circle"></i>
-                      <p>Thank you for your question! We'll respond to you shortly.</p>
+                      <p>
+                        Thank you for your question! We'll respond to you
+                        shortly.
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -187,9 +204,11 @@ function FAQPage({ theme, toggleTheme }) {
         <Footer />
       </main>
 
-      <AnimatePresence>{showLoginModal && <LoginModal onClose={toggleLoginModal} key="login-modal" />}</AnimatePresence>
+      <AnimatePresence>
+        {showLoginModal && <Auth onClose={toggleLoginModal} key="auth-modal" />}
+      </AnimatePresence>
     </>
-  )
+  );
 }
 
-export default FAQPage
+export default FAQPage;

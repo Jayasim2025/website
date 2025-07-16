@@ -1,39 +1,39 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Canvas } from "@react-three/fiber"
-import { Environment, OrbitControls } from "@react-three/drei"
-import { Suspense } from "react"
-import Sidebar from "../components/Sidebar"
-import Navbar from "../components/Navbar"
-import Footer from "../components/Footer"
-import LoginModal from "../components/LoginModal"
-import BackgroundScene from "../components/BackgroundScene"
-import Integrations from "../components/Integrations"
-import "../styles/IntegrationsPage.css"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Canvas } from "@react-three/fiber";
+import { Environment, OrbitControls } from "@react-three/drei";
+import { Suspense } from "react";
+import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Auth from "../components/Auth";
+import BackgroundScene from "../components/BackgroundScene";
+import Integrations from "../components/Integrations";
+import "../styles/IntegrationsPage.css";
 
 function IntegrationsPage({ theme, toggleTheme }) {
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     // Listen for custom event to open login modal
-    const handleOpenLoginModal = () => setShowLoginModal(true)
-    window.addEventListener("open-login-modal", handleOpenLoginModal)
+    const handleOpenLoginModal = () => setShowLoginModal(true);
+    window.addEventListener("open-login-modal", handleOpenLoginModal);
 
     return () => {
-      window.removeEventListener("open-login-modal", handleOpenLoginModal)
-    }
-  }, [])
+      window.removeEventListener("open-login-modal", handleOpenLoginModal);
+    };
+  }, []);
 
   const toggleLoginModal = () => {
-    setShowLoginModal(!showLoginModal)
-  }
+    setShowLoginModal(!showLoginModal);
+  };
 
   const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
-  }
+    setSidebarOpen(!sidebarOpen);
+  };
 
   return (
     <>
@@ -42,13 +42,22 @@ function IntegrationsPage({ theme, toggleTheme }) {
           <Suspense fallback={null}>
             <BackgroundScene />
             <Environment preset="city" />
-            <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              enableRotate={false}
+            />
           </Suspense>
         </Canvas>
       </div>
 
       {/* Always render the Navbar, but conditionally hide it when sidebar is open */}
-      <Navbar theme={theme} toggleTheme={toggleTheme} toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
+      <Navbar
+        theme={theme}
+        toggleTheme={toggleTheme}
+        toggleSidebar={toggleSidebar}
+        isSidebarOpen={sidebarOpen}
+      />
 
       <Sidebar
         theme={theme}
@@ -77,9 +86,11 @@ function IntegrationsPage({ theme, toggleTheme }) {
         <Footer />
       </main>
 
-      <AnimatePresence>{showLoginModal && <LoginModal onClose={toggleLoginModal} key="login-modal" />}</AnimatePresence>
+      <AnimatePresence>
+        {showLoginModal && <Auth onClose={toggleLoginModal} key="auth-modal" />}
+      </AnimatePresence>
     </>
-  )
+  );
 }
 
-export default IntegrationsPage
+export default IntegrationsPage;

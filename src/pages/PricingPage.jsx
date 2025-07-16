@@ -1,56 +1,56 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Canvas } from "@react-three/fiber"
-import { Environment, OrbitControls } from "@react-three/drei"
-import { Suspense } from "react"
-import { useLocation } from "react-router-dom"
-import Sidebar from "../components/Sidebar"
-import Navbar from "../components/Navbar"
-import Footer from "../components/Footer"
-import LoginModal from "../components/LoginModal"
-import BackgroundScene from "../components/BackgroundScene"
-import "../styles/PricingPage.css"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Canvas } from "@react-three/fiber";
+import { Environment, OrbitControls } from "@react-three/drei";
+import { Suspense } from "react";
+import { useLocation } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Auth from "../components/Auth";
+import BackgroundScene from "../components/BackgroundScene";
+import "../styles/PricingPage.css";
 
 function PricingPage() {
-  const [showLoginModal, setShowLoginModal] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [pricingType, setPricingType] = useState("individual")
-  const location = useLocation()
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pricingType, setPricingType] = useState("individual");
+  const location = useLocation();
 
   useEffect(() => {
     // Check URL parameters for pricing type
-    const params = new URLSearchParams(location.search)
-    const type = params.get("type")
+    const params = new URLSearchParams(location.search);
+    const type = params.get("type");
     if (type === "enterprise") {
-      setPricingType("enterprise")
+      setPricingType("enterprise");
     } else if (type === "individual") {
-      setPricingType("individual")
+      setPricingType("individual");
     }
-  }, [location])
+  }, [location]);
 
   useEffect(() => {
     // Listen for custom event to open login modal
-    const handleOpenLoginModal = () => setShowLoginModal(true)
-    window.addEventListener("open-login-modal", handleOpenLoginModal)
+    const handleOpenLoginModal = () => setShowLoginModal(true);
+    window.addEventListener("open-login-modal", handleOpenLoginModal);
 
     return () => {
-      window.removeEventListener("open-login-modal", handleOpenLoginModal)
-    }
-  }, [])
+      window.removeEventListener("open-login-modal", handleOpenLoginModal);
+    };
+  }, []);
 
   const toggleLoginModal = () => {
-    setShowLoginModal(!showLoginModal)
-  }
+    setShowLoginModal(!showLoginModal);
+  };
 
   const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
-  }
+    setSidebarOpen(!sidebarOpen);
+  };
 
   const togglePricingType = () => {
-    setPricingType(pricingType === "individual" ? "enterprise" : "individual")
-  }
+    setPricingType(pricingType === "individual" ? "enterprise" : "individual");
+  };
 
   // Individual pricing plans
   const individualPlans = [
@@ -83,7 +83,10 @@ function PricingPage() {
         { name: "Transcription in 125 languages", included: true },
         { name: "Translation in 125 languages", included: true },
         { name: "Up to 2 translations per media project", included: true },
-        { name: "Advanced subtitle editor with batch processing", included: true },
+        {
+          name: "Advanced subtitle editor with batch processing",
+          included: true,
+        },
         { name: "Priority email support", included: true },
         { name: "Glossary customization", included: true },
       ],
@@ -101,14 +104,17 @@ function PricingPage() {
         { name: "Transcription in 125 languages", included: true },
         { name: "Translation in 125 languages", included: true },
         { name: "Up to 10 translations per media project", included: true },
-        { name: "Advanced subtitle editor with batch processing", included: true },
+        {
+          name: "Advanced subtitle editor with batch processing",
+          included: true,
+        },
         { name: "Priority email support", included: true },
         { name: "Glossary customization", included: true },
         { name: "API access", included: true },
       ],
       popular: false,
     },
-  ]
+  ];
 
   // Enterprise pricing plans
   const enterprisePlans = [
@@ -124,8 +130,14 @@ function PricingPage() {
         { name: "Transcription in 125 languages", included: true },
         { name: "Translation in 125 languages", included: true },
         { name: "Unlimited translations per media project", included: true },
-        { name: "Advanced subtitle editor with batch processing", included: true },
-        { name: "Priority support with dedicated account manager", included: true },
+        {
+          name: "Advanced subtitle editor with batch processing",
+          included: true,
+        },
+        {
+          name: "Priority support with dedicated account manager",
+          included: true,
+        },
         { name: "Glossary customization", included: true },
         { name: "API access", included: true },
         { name: "Custom integrations", included: true },
@@ -144,8 +156,14 @@ function PricingPage() {
         { name: "Transcription in 125 languages", included: true },
         { name: "Translation in 125 languages", included: true },
         { name: "Unlimited translations per media project", included: true },
-        { name: "Advanced subtitle editor with batch processing", included: true },
-        { name: "24/7 priority support with dedicated account manager", included: true },
+        {
+          name: "Advanced subtitle editor with batch processing",
+          included: true,
+        },
+        {
+          name: "24/7 priority support with dedicated account manager",
+          included: true,
+        },
         { name: "Glossary customization", included: true },
         { name: "API access", included: true },
         { name: "Custom integrations", included: true },
@@ -154,9 +172,10 @@ function PricingPage() {
       ],
       popular: false,
     },
-  ]
+  ];
 
-  const activePlans = pricingType === "individual" ? individualPlans : enterprisePlans
+  const activePlans =
+    pricingType === "individual" ? individualPlans : enterprisePlans;
 
   return (
     <>
@@ -165,7 +184,11 @@ function PricingPage() {
           <Suspense fallback={null}>
             <BackgroundScene />
             <Environment preset="city" />
-            <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              enableRotate={false}
+            />
           </Suspense>
         </Canvas>
       </div>
@@ -173,7 +196,11 @@ function PricingPage() {
       {/* Navbar */}
       <Navbar toggleSidebar={toggleSidebar} isSidebarOpen={sidebarOpen} />
 
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} toggleLoginModal={toggleLoginModal} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        toggleSidebar={toggleSidebar}
+        toggleLoginModal={toggleLoginModal}
+      />
 
       <main className={`main-content ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="pricing-page">
@@ -188,11 +215,19 @@ function PricingPage() {
               <p>Choose the perfect plan for your needs</p>
 
               <div className="pricing-toggle-container">
-                <span className={pricingType === "individual" ? "active" : ""}>Individual</span>
+                <span className={pricingType === "individual" ? "active" : ""}>
+                  Individual
+                </span>
                 <div className="pricing-toggle" onClick={togglePricingType}>
-                  <div className={`toggle-handle ${pricingType === "enterprise" ? "enterprise" : ""}`}></div>
+                  <div
+                    className={`toggle-handle ${
+                      pricingType === "enterprise" ? "enterprise" : ""
+                    }`}
+                  ></div>
                 </div>
-                <span className={pricingType === "enterprise" ? "active" : ""}>Enterprise</span>
+                <span className={pricingType === "enterprise" ? "active" : ""}>
+                  Enterprise
+                </span>
               </div>
             </motion.div>
 
@@ -204,9 +239,14 @@ function PricingPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -10, boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)" }}
+                  whileHover={{
+                    y: -10,
+                    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
+                  }}
                 >
-                  {plan.popular && <div className="popular-badge">Most Popular</div>}
+                  {plan.popular && (
+                    <div className="popular-badge">Most Popular</div>
+                  )}
                   <div className="plan-header">
                     <h3>{plan.name}</h3>
                     <p>{plan.description}</p>
@@ -216,7 +256,11 @@ function PricingPage() {
                       <>
                         <span className="currency">$</span>
                         <span className="amount">{plan.price}</span>
-                        {plan.billingCycle && <span className="billing-cycle">/{plan.billingCycle}</span>}
+                        {plan.billingCycle && (
+                          <span className="billing-cycle">
+                            /{plan.billingCycle}
+                          </span>
+                        )}
                       </>
                     ) : (
                       <span className="amount">{plan.price}</span>
@@ -224,14 +268,29 @@ function PricingPage() {
                   </div>
                   <ul className="plan-features">
                     {plan.features.map((feature, idx) => (
-                      <li key={idx} className={feature.included ? "included" : "excluded"}>
-                        <i className={`fas ${feature.included ? "fa-check" : "fa-times"}`}></i>
+                      <li
+                        key={idx}
+                        className={feature.included ? "included" : "excluded"}
+                      >
+                        <i
+                          className={`fas ${
+                            feature.included ? "fa-check" : "fa-times"
+                          }`}
+                        ></i>
                         {feature.name}
                       </li>
                     ))}
                   </ul>
-                  <button className={`btn ${plan.popular ? "btn-primary" : "btn-secondary"}`}>
-                    {plan.price === 0 ? "Get Started" : plan.price === "Custom" ? "Contact Sales" : "Subscribe Now"}
+                  <button
+                    className={`btn ${
+                      plan.popular ? "btn-primary" : "btn-secondary"
+                    }`}
+                  >
+                    {plan.price === 0
+                      ? "Get Started"
+                      : plan.price === "Custom"
+                      ? "Contact Sales"
+                      : "Subscribe Now"}
                   </button>
                 </motion.div>
               ))}
@@ -243,23 +302,30 @@ function PricingPage() {
                 <div className="faq-item">
                   <h3>Can I change plans later?</h3>
                   <p>
-                    Yes, you can upgrade or downgrade your plan at any time. Changes will be applied to your next
-                    billing cycle.
+                    Yes, you can upgrade or downgrade your plan at any time.
+                    Changes will be applied to your next billing cycle.
                   </p>
                 </div>
                 <div className="faq-item">
                   <h3>Is there a free trial?</h3>
-                  <p>Yes, all paid plans come with a 14-day free trial. No credit card required to start.</p>
+                  <p>
+                    Yes, all paid plans come with a 14-day free trial. No credit
+                    card required to start.
+                  </p>
                 </div>
                 <div className="faq-item">
                   <h3>What payment methods do you accept?</h3>
-                  <p>We accept all major credit cards, PayPal, and bank transfers for annual enterprise plans.</p>
+                  <p>
+                    We accept all major credit cards, PayPal, and bank transfers
+                    for annual enterprise plans.
+                  </p>
                 </div>
                 <div className="faq-item">
                   <h3>Can I cancel anytime?</h3>
                   <p>
-                    Yes, you can cancel your subscription at any time. You'll continue to have access until the end of
-                    your billing period.
+                    Yes, you can cancel your subscription at any time. You'll
+                    continue to have access until the end of your billing
+                    period.
                   </p>
                 </div>
               </div>
@@ -269,9 +335,11 @@ function PricingPage() {
         <Footer />
       </main>
 
-      <AnimatePresence>{showLoginModal && <LoginModal onClose={toggleLoginModal} key="login-modal" />}</AnimatePresence>
+      <AnimatePresence>
+        {showLoginModal && <Auth onClose={toggleLoginModal} key="auth-modal" />}
+      </AnimatePresence>
     </>
-  )
+  );
 }
 
-export default PricingPage
+export default PricingPage;

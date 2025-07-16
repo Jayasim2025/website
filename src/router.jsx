@@ -1,81 +1,88 @@
-"use client"
+"use client";
 
-import { createBrowserRouter } from "react-router-dom"
-import { useState, useEffect } from "react"
-import HomePage from "./pages/HomePage"
-import PricingPage from "./pages/PricingPage"
-import IntegrationsPage from "./pages/IntegrationsPage"
-import FAQPage from "./pages/FAQPage"
-import WorkspaceLayout from "./components/workspace/WorkspaceLayout"
-import Dashboard from "./components/workspace/Dashboard"
-import Members from "./components/workspace/Members"
-import Billing from "./components/workspace/Billing"
-import WorkspaceIntegrations from "./components/workspace/Integrations"
-import UserDashboard from "./components/workspace/dashboard/UserDashboard"
-import Editor from "./components/workspace/Editor"
-import UserSettings from "./components/workspace/UserSettings"
-import OrganizationSettings from "./components/workspace/OrganizationSettings"
+import { createBrowserRouter } from "react-router-dom";
+import { useState, useEffect } from "react";
+import HomePage from "./pages/HomePage";
+import PricingPage from "./pages/PricingPage";
+import IntegrationsPage from "./pages/IntegrationsPage";
+import FAQPage from "./pages/FAQPage";
+import WorkspaceLayout from "./components/workspace/WorkspaceLayout";
+import Dashboard from "./components/workspace/Dashboard";
+import Members from "./components/workspace/Members";
+import Billing from "./components/workspace/Billing";
+import WorkspaceIntegrations from "./components/workspace/Integrations";
+import UserDashboard from "./components/workspace/dashboard/UserDashboard";
+import Editor from "./components/workspace/Editor";
+import UserSettings from "./components/workspace/UserSettings";
+import OrganizationSettings from "./components/workspace/OrganizationSettings";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Admin components
-import AdminLayout from "./admin/AdminLayout"
-import AdminLogin from "./admin/AdminLogin"
-import AdminDashboard from "./admin/AdminDashboard"
-import AdminAnalytics from "./admin/AdminAnalytics"
-import AdminHelp from "./admin/AdminHelp"
+import AdminLayout from "./admin/AdminLayout";
+import AdminLogin from "./admin/AdminLogin";
+import AdminDashboard from "./admin/AdminDashboard";
+import AdminAnalytics from "./admin/AdminAnalytics";
+import AdminHelp from "./admin/AdminHelp";
 
 // Placeholder pages
-import AboutPage from "./pages/placeholders/AboutPage"
-import CareersPage from "./pages/placeholders/CareersPage"
-import BlogPage from "./pages/placeholders/BlogPage"
-import ContactPage from "./pages/placeholders/ContactPage"
-import DocumentationPage from "./pages/placeholders/DocumentationPage"
-import ApiReferencePage from "./pages/placeholders/ApiReferencePage"
-import CommunityPage from "./pages/placeholders/CommunityPage"
-import SupportPage from "./pages/placeholders/SupportPage"
-import PrivacyPolicyPage from "./pages/placeholders/PrivacyPolicyPage"
-import TermsOfServicePage from "./pages/placeholders/TermsOfServicePage"
-import CookiePolicyPage from "./pages/placeholders/CookiePolicyPage"
-import GdprPage from "./pages/placeholders/GdprPage"
-import Users from "./pages/Users"
-import Translations from "./pages/Translations"
-import Content from "./pages/Content"
-import Languages from "./pages/Languages"
-import Pricing from "./pages/Pricing"
-import Feedback from "./pages/Feedback"
+import AboutPage from "./pages/placeholders/AboutPage";
+import CareersPage from "./pages/placeholders/CareersPage";
+import BlogPage from "./pages/placeholders/BlogPage";
+import ContactPage from "./pages/placeholders/ContactPage";
+import DocumentationPage from "./pages/placeholders/DocumentationPage";
+import ApiReferencePage from "./pages/placeholders/ApiReferencePage";
+import CommunityPage from "./pages/placeholders/CommunityPage";
+import SupportPage from "./pages/placeholders/SupportPage";
+import PrivacyPolicyPage from "./pages/placeholders/PrivacyPolicyPage";
+import TermsOfServicePage from "./pages/placeholders/TermsOfServicePage";
+import CookiePolicyPage from "./pages/placeholders/CookiePolicyPage";
+import GdprPage from "./pages/placeholders/GdprPage";
+import Users from "./pages/Users";
+import Translations from "./pages/Translations";
+import Content from "./pages/Content";
+import Languages from "./pages/Languages";
+import Pricing from "./pages/Pricing";
+import Feedback from "./pages/Feedback";
 
 // Create a theme state provider
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     // Get theme from localStorage or default to dark
-    return localStorage.getItem("theme") || "dark"
-  })
+    return localStorage.getItem("theme") || "dark";
+  });
 
   useEffect(() => {
     // Set theme attribute on document
-    document.documentElement.setAttribute("data-theme", theme)
-  }, [theme])
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light"
-    setTheme(newTheme)
-    localStorage.setItem("theme", newTheme)
-  }
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
 
-  return children({ theme, toggleTheme })
-}
+  return children({ theme, toggleTheme });
+};
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <ThemeProvider>{({ theme, toggleTheme }) => <HomePage theme={theme} toggleTheme={toggleTheme} />}</ThemeProvider>
+      <ThemeProvider>
+        {({ theme, toggleTheme }) => (
+          <HomePage theme={theme} toggleTheme={toggleTheme} />
+        )}
+      </ThemeProvider>
     ),
   },
   {
     path: "/pricing",
     element: (
       <ThemeProvider>
-        {({ theme, toggleTheme }) => <PricingPage theme={theme} toggleTheme={toggleTheme} />}
+        {({ theme, toggleTheme }) => (
+          <PricingPage theme={theme} toggleTheme={toggleTheme} />
+        )}
       </ThemeProvider>
     ),
   },
@@ -83,14 +90,20 @@ const router = createBrowserRouter([
     path: "/integrations",
     element: (
       <ThemeProvider>
-        {({ theme, toggleTheme }) => <IntegrationsPage theme={theme} toggleTheme={toggleTheme} />}
+        {({ theme, toggleTheme }) => (
+          <IntegrationsPage theme={theme} toggleTheme={toggleTheme} />
+        )}
       </ThemeProvider>
     ),
   },
   {
     path: "/faq",
     element: (
-      <ThemeProvider>{({ theme, toggleTheme }) => <FAQPage theme={theme} toggleTheme={toggleTheme} />}</ThemeProvider>
+      <ThemeProvider>
+        {({ theme, toggleTheme }) => (
+          <FAQPage theme={theme} toggleTheme={toggleTheme} />
+        )}
+      </ThemeProvider>
     ),
   },
   {
@@ -156,9 +169,13 @@ const router = createBrowserRouter([
   {
     path: "/workspace",
     element: (
-      <ThemeProvider>
-        {({ theme, toggleTheme }) => <WorkspaceLayout theme={theme} toggleTheme={toggleTheme} />}
-      </ThemeProvider>
+      <ProtectedRoute>
+        <ThemeProvider>
+          {({ theme, toggleTheme }) => (
+            <WorkspaceLayout theme={theme} toggleTheme={toggleTheme} />
+          )}
+        </ThemeProvider>
+      </ProtectedRoute>
     ),
     children: [
       { index: true, element: <Dashboard /> },
@@ -175,7 +192,9 @@ const router = createBrowserRouter([
     path: "/admin-login",
     element: (
       <ThemeProvider>
-        {({ theme, toggleTheme }) => <AdminLogin theme={theme} toggleTheme={toggleTheme} />}
+        {({ theme, toggleTheme }) => (
+          <AdminLogin theme={theme} toggleTheme={toggleTheme} />
+        )}
       </ThemeProvider>
     ),
   },
@@ -183,7 +202,9 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <ThemeProvider>
-        {({ theme, toggleTheme }) => <AdminLayout theme={theme} toggleTheme={toggleTheme} />}
+        {({ theme, toggleTheme }) => (
+          <AdminLayout theme={theme} toggleTheme={toggleTheme} />
+        )}
       </ThemeProvider>
     ),
     children: [
@@ -200,6 +221,6 @@ const router = createBrowserRouter([
       { path: "help", element: <AdminHelp /> },
     ],
   },
-])
+]);
 
-export default router
+export default router;

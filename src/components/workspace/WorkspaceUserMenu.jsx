@@ -1,39 +1,51 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { useNavigate } from "react-router-dom"
-import "../../styles/workspace/WorkspaceUserMenu.css"
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import "../../styles/workspace/WorkspaceUserMenu.css";
 
-const WorkspaceUserMenu = ({ closeUserMenu, theme, toggleTheme, toggleNotifications }) => {
-  const navigate = useNavigate()
+const WorkspaceUserMenu = ({
+  closeUserMenu,
+  theme,
+  toggleTheme,
+  toggleNotifications,
+}) => {
+  const navigate = useNavigate();
+  const { signOut, user } = useAuth();
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
-      closeUserMenu()
+      closeUserMenu();
     }
-  }
+  };
 
   const navigateToDashboard = () => {
-    navigate("/workspace/dashboard")
-    closeUserMenu()
-  }
+    navigate("/workspace/dashboard");
+    closeUserMenu();
+  };
 
-  const handleLogout = () => {
-    // Clear user data from localStorage
-    localStorage.removeItem("userEmail")
-    localStorage.removeItem("authToken")
-    // Navigate to home page
-    navigate("/")
-    closeUserMenu()
-  }
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/");
+      closeUserMenu();
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback - still navigate away even if signOut fails
+      navigate("/");
+      closeUserMenu();
+    }
+  };
 
   const handleNotifications = () => {
-    toggleNotifications()
-    closeUserMenu()
-  }
+    toggleNotifications();
+    closeUserMenu();
+  };
 
-  // Get user email from localStorage
-  const userEmail = localStorage.getItem("userEmail") || "lithins147@gmail.com"
+  // Get user email from auth context or fallback to localStorage
+  const userEmail =
+    user?.email || localStorage.getItem("userEmail") || "lithins147@gmail.com";
 
   return (
     <motion.div className="user-menu-backdrop" onClick={handleBackdropClick}>
@@ -74,7 +86,7 @@ const WorkspaceUserMenu = ({ closeUserMenu, theme, toggleTheme, toggleNotificati
         </div>
       </motion.div>
     </motion.div>
-  )
-}
+  );
+};
 
-export default WorkspaceUserMenu
+export default WorkspaceUserMenu;
